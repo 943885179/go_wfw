@@ -2,27 +2,20 @@ syntax ="proto3";
 package sysuser;
 option go_package = "proto/sysuser";
 service UserSrv{
-  rpc LoginByName(LoginByNameReq)returns(LoginResp){}
-  rpc LoginByEmail(LoginByEmailReq)returns(LoginResp){}
-  rpc LoginByPhone(LoginByPhoneReq)returns(LoginResp){}
+  rpc Login(LoginReq)returns(LoginResp){}
   rpc Registry(RegistryReq)returns(RegistryResp){}
 }
+enum LoginType{
+  NAME=0;//用户名登陆
+  PHONE=1;//手机登录
+  EMAIL=2;//邮箱登录
+}
 //用户登录
-message LoginByNameReq{
-  string  user_name=1;//用户名
-  string user_password=2;//密码
+message LoginReq{
+  LoginType login_type=1;
+  string  user_name_or_phone_or_email=2;//用户名
+  string user_password_or_code=3;//密码
 }
-//邮箱登录
-message LoginByEmailReq{
-  string  user_email=1;//邮箱
-  string code=2;//验证码
-}
-//手机登录
-message LoginByPhoneReq{
-  string  user_phone=1;//电话
-  string code=2;//验证码
-}
-
 //用户登录返回
 message LoginResp{
   string token=1;//token
@@ -30,7 +23,7 @@ message LoginResp{
   string user_img=3;//用户头像
 }
 message RegistryReq{
-  string uer_name=1;//用户名
+  string user_name=1;//用户名
   string user_password=2;//密码
   string user_password_again=3;//确认密码
   string user_phone=4;//电话

@@ -24,6 +24,7 @@ require (
 	github.com/jackc/pgx v3.6.0+incompatible // indirect
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jinzhu/gorm v1.9.16
+	github.com/jordan-wright/email v4.0.1-0.20200917010138-e1c00e156980+incompatible
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lestrrat/go-envload v0.0.0-20180220120943-6ed08b54a570 // indirect
 	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f
@@ -46,6 +47,7 @@ require (
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.20
 	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
+	github.com/typa01/go-utils v0.0.0-20181126045345-a86b05b01c1e
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/vladoatanasov/logrus_amqp v0.0.0-20181023103017-b21faf6f8ae3
 	github.com/wangbin/jiebago v0.3.2 // indirect
@@ -54,8 +56,10 @@ require (
 	golang.org/x/image v0.0.0-20200430140353-33d19683fad8
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.23.0
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gopkg.in/olivere/elastic.v5 v5.0.84
 	gopkg.in/sohlich/elogrus.v2 v2.0.2
 	gopkg.in/yaml.v2 v2.2.8 // indirect

@@ -1,18 +1,23 @@
 package models
+
 import (
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
+
+type Model struct {
+	//ID        uint `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+}
 
 //SysUser 用户表
 type SysUser struct {
-	gorm.Model
-
-	UserName     string  `gorm:"column:user_name;type:varchar(50);not null;comment:'登录名';unique" json:"user_name"`
-	TrueName     string  `gorm:"column:true_name;type:varchar(50);comment:'真实姓名';unique" json:"true_name"`
+	ID        int64 `gorm:"primary_key"`
+	UserName     string  `gorm:"column:user_name;type:varchar(50);not null;comment:'登录名';unique" json:"user_name"` //unique唯一
+	TrueName     string  `gorm:"column:true_name;type:varchar(50);comment:'真实姓名'" json:"true_name"`
 	UserPassword string  `gorm:"column:user_password;type:varchar(80);not null;comment:'登录密码'" json:"user_password"`
-	UserPhone    string  `gorm:"column:user_phone;type:varchar(20);not null;comment:'电话号码'" json:"user_phone"`
+	UserPhone    string  `gorm:"column:user_phone;type:varchar(20);not null;comment:'电话号码';unique" json:"user_phone"`
 	UserWx       string  `gorm:"column:user_wx;type:varchar(20);comment:'微信'" json:"user_wx"`
 	UserIcon     int     `gorm:"index;column:user_icon;type:int;comment:'用户头像'" json:"user_icon"`
 	Icon         SysFile `gorm:"ForeignKey:UserIcon"` //;AssociationForeignKey:Code
@@ -43,40 +48,44 @@ type SysUser struct {
 	Groups            []SysGroup         `gorm:"many2many:sys_user_group"`
 	LogisticsAddresss []LogisticsAddress `gorm:"Foreignkey:user_id"` //地址管理
 	Qualificationss   []Qualifications   `gorm:"Foreignkey:user_id"` //资质管理
+	Model
 }
 
 //SysRole 角色表
 type SysRole struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	RoleName    string     `gorm:"column:role_name;type:varchar(50);not null;comment:'角色名称'" json:"role_name"`
 	RoleExplain string     `gorm:"column:role_explain;type:varchar(200);comment:'角色描述'" json:"role_explain"`
 	Menus       []SysMenu  `gorm:"many2many:sys_role_menu"`
 	Groups      []SysGroup `gorm:"many2many:sys_group_role"`
 	Users       []SysUser  `gorm:"many2many:sys_user_role"`
+	Model
 }
 
 //SysGroup  用户组
 type SysGroup struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	GroupName    string    `gorm:"column:group_name;type:varchar(40);not null;comment:'用户组名称'" json:"group_name"`
 	GroupExplain string    `gorm:"column:group_explain;type:varchar(200);comment:'用户组描述'" json:"group_explain"`
 	Roles        []SysRole `gorm:"many2many:sys_group_role"`
 	Users        []SysUser `gorm:"many2many:sys_user_group"`
+	Model
 }
 
 //SysTree 树管理
 type SysTree struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	Code     string    `gorm:"column:code;type:char(20);comment:'编码'" json:"code"`
 	Text     string    `gorm:"column:text;type:varchar(20);not null;comment:'树名称'" json:"text"`
 	Sort     int       `gorm:"column:sort;type:int;comment:'排序'" json:"sort"`
 	Pid      uint      `gorm:"column:pid;type:int;comment:'上级id，为0表示没有上级'" json:"pid"`
 	Children []SysTree `gorm:"ForeignKey:pid"  json:"children"`
+	Model
 }
 
 //SysMenu 菜单管理
 type SysMenu struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	Key          string `gorm:"column:key;type:varchar(20);not null;comment:'菜单项唯一标识符，可用于 getItem、setItem 来更新某个菜单'" json:"key"`
 	Text         string `gorm:"column:text;type:varchar(20);not null;comment:'树名称'" json:"text"`
 	I18n         string `gorm:"column:i18n;type:varchar(20);not null;comment:'i18n主键（支持HTML）'" json:"i18n"`
@@ -102,23 +111,24 @@ type SysMenu struct {
 
 	Pid      uint      `gorm:"column:pid;type:int;comment:'上级id，为0表示没有上级'" json:"pid"`
 	Children []SysMenu `gorm:"ForeignKey:pid"  json:"children,omitempty"`
+	Model
 }
 
 //SysFile 资源表
 type SysFile struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	Path         string  `gorm:"column:path;type:varchar(200);not null;comment:'路径'" json:"path"`
-	Size         float64 `gorm:"column:size;type:decimal(18,2);comment:'大小'" json:"size"`
+	Size         int64 `gorm:"column:size;type:bigint;comment:'大小'" json:"size"`
 	FileExplain  string  `gorm:"column:file_explain;type:varchar(100);comment:'描述'" json:"file_explain"`
-	FileBsTypeID uint    `gorm:"index;column:file_bs_type_id;type:int;not null;comment:'商业用途（头像，店铺logo，商品图片等）'" json:"file_bs_type_id"`
-	//FileBsType   SysTree `gorm:"Foreignkey:file_bs_type_id"`//这里会造成相互依赖导致报错
-	FileTypID uint `gorm:"index;column:file_type_id;type:int;not null;comment:'文件类型（img，png等）'" json:"file_type_id"`
-	//FileType     SysTree `gorm:"Foreignkey:file_type_id"`//这里会造成相互依赖导致报错
+	FileType int32    `gorm:"index;column:file_type;type:int;not null;comment:'商业用途（头像，店铺logo，商品图片等）'"json:"file_type"`
+	FileSuffix string `gorm:"index;column:file_suffix;type:varchar(10);not null;comment:'文件后缀（.img,.png等）'" json:"file_suffix"`
+	Sort int32 `gorm:"column:sort;type:int;coment:'排序'" json:"sort"`
+	Model
 }
 
 //SysShop 商家店铺基础信息表
 type SysShop struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	ShopName    string `gorm:"column:shop_name;type:varchar(100);not null;comment:'店铺名称'" json:"shop_name"`
 	ShopExplain string `gorm:"column:shop_explain;type:text;comment:'公告描述'" json:"shop_explain"`
 	IsSht       bool   `gorm:"column:is_sht;type:tinyint(1);not null;default:0;comment:'四海通认证状态'" json:"is_sht"`
@@ -143,11 +153,12 @@ type SysShop struct {
 	Classify []SysTree `gorm:"many2many:sys_shop_classify"` //商家分类
 	User     []SysUser `gorm:"many2many:sys_shop_user"`
 	Imgs     []SysFile `gorm:"many2many:sys_shop_imgs"`
+	Model
 }
 
 //SysShopCustomer 商家客户对照表
 type SysShopCustomer struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	Point        float64 `gorm:"column:point;type:decimal(18,4);default:0;comment:'积分'" json:"point"`
 	Price        float64 `gorm:"column:price;type:decimal(18,4);default:0;comment:'店铺余额'" json:"price"`
 	HasPrice     float64 `gorm:"column:has_price;type:decimal(18,4);default:0;comment:'剩余积分'" json:"has_price"`
@@ -157,11 +168,12 @@ type SysShopCustomer struct {
 	Shop       SysShop `gorm:"Foreignkey:shopid"`
 	CustomerID uint    `gorm:"index;column:customer_id;type:int;not null;comment:'客户id'" json:"customer_id"`
 	Customer   SysUser `gorm:"Foreignkey:customer_id"`
+	Model
 }
 
 //LogisticsAddress 发收货地址管理
 type LogisticsAddress struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	IsDefault  bool    `gorm:"column:is_default;type:tinyint(1);not null;default:0;comment:'是否默认收发货地址'" json:"is_default"`
 	UserID     uint    `gorm:"index;column:user_id;type:int;not null;comment:'用户id'" json:"user_id"`
 	User       SysUser `gorm:"Foreignkey:user_id"`
@@ -172,11 +184,12 @@ type LogisticsAddress struct {
 	AreaID     uint    `gorm:"index;column:areaid;type:int;comment:'区id'" json:"area"`
 	Area       SysTree `gorm:"Foreignkey:areaid"`
 	Address    string  `gorm:"column:address;type:varchar(200)" json:"address"`
+	Model
 }
 
 //Product 商品信息表
 type Product struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	GoodsCode   string `gorm:"column:goods_code;type:varchar(50);not null;comment:'商品编码'" json:"goods_code"`
 	GoodsName   string `gorm:"column:goods_name;type:varchar(100);comment:'商品名称'" json:"goods_name"`
 	Factory     string `gorm:"column:factory;type:varchar(100);comment:'生产厂家'" json:"factory"`
@@ -225,11 +238,12 @@ type Product struct {
 	//ProductPartServants    []ProductPartServant `gorm:"Foreignkey:goods_id"` //商品分佣表
 
 	ProductLogs []ProductLog `gorm:"Foreignkey:goods_id"`
+	Model
 }
 
 //ProductSku 商品规格表
 type ProductSku struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	SkuName      string  `gorm:"column:sku_name;type:varchar(50);not null;comment:'Sku值（医药批发多批号，所以默认为批号）'" json:"sku_name"`
 	AttriList    string  `gorm:"column:attri_list;type:text;not null;comment:'Sku描述（这里还没想好，初步打算存放json）'" json:"attri_list"`
 	Point        float64 `gorm:"column:point;type:decimal(18,4);default:0;comment:'积分'" json:"point"`
@@ -243,21 +257,23 @@ type ProductSku struct {
 	IsChecked bool    `gorm:"column:is_checked;type:tinyint(1);not null;comment:'是否选择'" json:"is_checked"`
 	GoodsID   int     `gorm:"index;column:goods_id;type:int;not null" json:"goods_id"`
 	Goods     Product `gorm:"Foreignkey:goods_id"`
+	Model
 }
 
 //ProductLog 商品日志表
 type ProductLog struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	GoodsID int     `gorm:"index;column:goods_id;type:int;not null" json:"goods_id"`
 	Goods   Product `gorm:"Foreignkey:goods_id"`
 	Action  string  `gorm:"column:action;type:varchar(40);comment:'操作内容（比如发货之类的）'" json:"action"`
 	UserID  uint    `gorm:"index;column:user_id;type:int;not null" json:"user_id"`
 	User    SysUser `gorm:"Foreignkey:user_id"`
+	Model
 }
 
 //PartServant 分佣表
 type PartServant struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	PartType  uint    `gorm:"index;column:part_type;type:int;not null;default:0;comment:'分佣方式（1固定金额，0百分比）'" json:"part_type"`
 	PartValue float64 `gorm:"column:part_value;type:decimal(18,2);not null;comment:'分佣值'" json:"part_value"`
 	//GoodsID         uint    `gorm:"index;column:goods_id;type:int;not null;comment:'商品编码'" json:"goods_id"`
@@ -265,11 +281,12 @@ type PartServant struct {
 	PartPriceTypeID uint      `gorm:"index;column:part_price_type_id;type:int;not null;comment:'费用类型（平台推广费。。。）'" json:"part_price_type_id"`
 	PartPriceType   SysTree   `gorm:"Foreignkey:part_price_type_id"`
 	Area            []SysTree `gorm:"many2many:part_servant_"`
+	Model
 }
 
 //Qualifications 资质表
 type Qualifications struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	QuaTypeID            uint                  `gorm:"index;column:qua_type_id;type:int;not null;comment:'资质类型（身份证正面，身份证背面，营业执照，。。。）'" json:"qua_type_id"`
 	QuaType              SysTree               `gorm:"Foreignkey:qua_type_id"`
 	UserID               uint                  `gorm:"index;column:user_id;type:int;not null;comment:'用户ID'" json:"user_id"`
@@ -281,32 +298,35 @@ type Qualifications struct {
 	EndTime              time.Time             `gorm:"column:end_time;type:datetime;comment:'过期日期'" json:"end_time"`
 	QuaNumber            string                `gorm:"column:qua_number;type:varchar(40);comment:'资质编号'" json:"qua_number"`
 	QualificationsRanges []QualificationsRange `gorm:"Foreignkey:qualifications_id"`
+	Model
 }
 
 //QualificationsRange 资质对应范围
 type QualificationsRange struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	QualificationsID uint    `gorm:"index;column:qualifications_id;type:int;not null;comment:'资质对应范围ID'" json:"qualifications_id"`
 	GpmID            uint    `gorm:"index;column:gpmid;type:int;not null;comment:'资质类型（生产范围剂型，经营范围，诊疗机构等）'" json:"gpmid"`
 	Gpm              SysTree `gorm:"Foreignkey:gpmid"`
 	QualID           uint    `gorm:"index;column:qualid;type:int;not null;comment:'资质范围类型（根据资质类型生产的明细 中成药，等）'" json:"qualid"`
 	Qual             SysTree `gorm:"Foreignkey:qualid"`
+	Model
 }
 
 //Express 快递公司设置表
 type Express struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	ExpressName    int       `gorm:"column:express_name;type:varchar(50);not null;comment:'快递公司名称'" json:"express_name"`
 	ExpressURL     int       `gorm:"column:express_url;type:varchar(50);not null;comment:'快递公司网址'" json:"express_url"`
 	ShopID         int       `gorm:"index;column:shop_id;type:int;not null;comment:'店铺iD'" json:"shop_id"`
 	Shop           SysShop   `gorm:"Foreignkey:shopid"`
 	ExpressExplain string    `gorm:"column:express_explain;type:varchar(200);comment:'说明'" json:"express_explain"`
 	Freight        []Freight `gorm:"Foreignkey:express_id"`
+	Model
 }
 
 //Freight 运费设置
 type Freight struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	FirstPrice   float64 `gorm:"column:first_price;type:decimal(18,4);not null;comment:'首重价格'" json:"first_price"`
 	FirstWeight  float64 `gorm:"column:first_weight;type:decimal(18,2);not null;comment:'首重重量(克)'" json:"first_weight"`
 	SecondWeight float64 `gorm:"column:second_weight;type:decimal(18,2);not null;comment:'续重重量(克)'" json:"second_weight"`
@@ -316,11 +336,12 @@ type Freight struct {
 	AreaID       uint    `gorm:"index;column:area_id;type:int;not null;comment:'物流公司ID'" json:"area_id"`
 	Area         SysTree `gorm:"Foreignkey:area_id"`
 	IsDefault    bool    `gorm:"column:is_default;type:tinyint(1);not null;comment:'是否为默认（只能有一个是默认的，默认地址支持全部可售范围）'" json:"is_default"`
+	Model
 }
 
 //Orders 订单主表
 type Orders struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	OrderNumber  string `gorm:"column:order_number;type:varchar(40);not null;comment:'订单号'" json:"order_number"`
 	SerialNumber string `gorm:"column:serial_number;type:varchar(40);comment:'三方支付流水号'" json:"serial_number"`
 
@@ -380,11 +401,12 @@ type Orders struct {
 	PayStatus uint `gorm:"column:pay_status;type:int;not null;comment:'支付状态 0未支付,1已支付'" json:"pay_status"`
 	//PayStatus     SysTree `gorm:"Foreignkey:pay_status"`
 	DistributionStatus uint `gorm:"column:distribution_status;type:int;not null;comment:'配送状态 0：未发送,1：已发送,2：部分发送'" json:"distribution_status"`
+	Model
 }
 
 //OrderItem 订单明细表
 type OrderItem struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	GoodsSkuID            int                    `gorm:"index;column:goods_sku_id;type:int;not null;comment:'商品编码'" json:"goods_sku_id"`
 	OrderID               int                    `gorm:"index;column:order_id;type:int" json:"order_id"`
 	Orders                Orders                 `gorm:"Foreignkey:order_id"`
@@ -394,21 +416,23 @@ type OrderItem struct {
 	SendQuantity          float64                `gorm:"column:send_quantity;type:decimal(18,4);not null;comment:'实发数量'" json:"send_quantity"`
 	TotalPrice            float64                `gorm:"column:total_price;type:decimal(18,4);not null;comment:'总价'" json:"total_price"`
 	OrderItemPartServants []OrderItemPartServant `gorm:"Foreignkey:order_item_id"`
+	Model
 }
 
 //OrderLog 订单日志表
 type OrderLog struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	OrderID uint    `gorm:"index;column:order_id;type:int" json:"order_id"`
 	Orders  Orders  `gorm:"Foreignkey:order_id"`
 	Action  string  `gorm:"column:action;type:varchar(40);comment:'操作内容（比如发货之类的）'" json:"action"`
 	UserID  uint    `gorm:"index;column:user_id;type:int;not null" json:"user_id"`
 	User    SysUser `gorm:"Foreignkey:user_id"`
+	Model
 }
 
 //OrderEvaluate 订单评价表
 type OrderEvaluate struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	Orders  Orders  `gorm:"Foreignkey:order_id"`
 	GradeWl float64 `gorm:"index;column:grade_wl;type:decimal(18,4);comment:'物流评分总数'" json:"grade_wl"`
 	GradeFw float64 `gorm:"index;column:grade_fw;type:decimal(18,4);comment:'服务评分总数'" json:"grade_fw"`
@@ -416,29 +440,32 @@ type OrderEvaluate struct {
 
 	Content string    `gorm:"column:content;type:text;comment:'内容'" json:"content"`
 	Imgs    []SysFile `gorm:"many2many:order_evaluate_imgs"`
+	Model
 }
 
 //OrderItemPartServant 商品分佣明细表(每个)
 type OrderItemPartServant struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	OrderItemID   uint        `gorm:"index;column:order_item_id;type:int;not null;comment:'订单明细id'" json:"order_item_id"`
 	OrderItem     OrderItem   `gorm:"Foreignkey:order_item_id"`
 	PartServantID uint        `gorm:"index;column:part_servant_id;type:int;not null;comment:'分佣明细id'" json:"part_servant_id"`
 	PartServant   PartServant `gorm:"Foreignkey:part_servant_id"`
+	Model
 }
 
 //Cart 购物车
 type Cart struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	Userid     int     `gorm:"index;column:userid;type:int;not null" json:"userid"`
 	GoodsSkuID int     `gorm:"index;column:goods_sku_id;type:int;not null" json:"goods_sku_id"`
 	Quantity   float64 `gorm:"column:quantity;type:decimal(18,4);not null" json:"quantity"`
 	IsChecked  bool    `gorm:"column:is_checked;type:tinyint(1);not null" json:"is_checked"`
+	Model
 }
 
 //Prop  道具表（优惠券等）
 type Prop struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	PropName      string    `gorm:"column:prop_name;type:varchar(40);not null;comment:'道具名称'" json:"prop_name"`
 	CardName      string    `gorm:"column:card_name;type:varchar(40);comment:'道具的卡号'" json:"card_name"`
 	CardPwd       string    `gorm:"column:card_pwd;type:varchar(40);comment:'道具的密码'" json:"card_pwd"`
@@ -458,15 +485,17 @@ type Prop struct {
 	ShopID     uint      `gorm:"column:shop_id;type:int;comment:'商家'" json:"shop_id"`
 	Shop       SysShop   `gorm:"Foreignkey:shop_id"`
 	Goods      []Product `gorm:"many2many:prop_goods"` //针对特定产品使用
+	Model
 }
 
 //PropLog 优惠券领取记录
 type PropLog struct {
-	gorm.Model
+	ID        int64 `gorm:"primary_key"`
 	PropID   uint    `gorm:"index;column:prop;type:int;not null" json:"prop"`
 	Prop     Prop    `gorm:"Foreignkey:prop"`
 	UserID   uint    `gorm:"index;column:user_id;type:int;not null" json:"user_id"`
 	User     SysUser `gorm:"Foreignkey:user_id"`
 	IsExpire bool    `gorm:"column:is_expire;type:tinyint(1);not null;comment:'是否过期'" json:"is_expire"`
 	IsUserd  bool    `gorm:"column:is_userd;tinyint(1);default:0;comment:'是否使用'" json:"is_userd"`
+	Model
 }

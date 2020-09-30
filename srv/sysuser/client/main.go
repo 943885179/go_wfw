@@ -8,63 +8,61 @@ import (
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjgin"
 	"qshapi/utils/mzjinit"
-	v2 "qshapi/utils/mzjmicro/v2"
 )
 
 var (
+	webName="userWeb"
+	svName="userSrv"
 	conf models.APIConfig
-	sv *v2.Service
 	client sysuser.UserSrvService
-	resp mzjgin.Resp
+	resp= mzjgin.Resp{}
 )
 func init(){
-	if err:=mzjinit.InitByMicroConfig("config.conf",&conf);err != nil {
+	if err:=mzjinit.Default(&conf);err != nil {
 		log.Fatal(err)
 	}
-	resp= mzjgin.Resp{}
-	sv=v2.NewService(conf.Services["userWeb"])
-	client=sysuser.NewUserSrvService(conf.Services["userSrv"].Name,sv.NewRoundSrv().Options().Client)
 }
 func main() {
-	s:=sv.NewGinWeb(userGin())
+	service := conf.Services[webName]
+	client=sysuser.NewUserSrvService(conf.Services[svName].Name, service.NewRoundSrv().Options().Client)
+	s:= service.NewGinWeb(SrvGin())
 	if err:=s.Run();err!= nil {
 		log.Fatal(err)
 	}
 }
-
-func userGin() *gin.Engine {
-	g:=gin.Default()
+func SrvGin() *gin.Engine {
+	g:=mzjgin.NewGin().Default()
 	r:=g.Group("/")
 	{
 		r.GET("/", func(c *gin.Context) {
 			resp.APIOK(c,"用户webapi")
 		})
 		r.POST("/", func(c *gin.Context) {
-			resp.APIOK(c,"用户webapi")
+			resp.APIOK(c,gin.H{
+				"webconfig":conf.Services[webName],
+				"service":conf.Services[svName].Name,
+			})
 		})
-		r.POST("LoginByName",LoginByName)
-		r.POST("LoginByEmail",LoginByEmail)
-		r.POST("LoginByPhone",LoginByPhone)
+		r.POST("Login",Login)
 		r.POST("Registry",Registry)
 	}
 	return g
 }
 
-func LoginByName(c *gin.Context)  {
-	req:=&sysuser.LoginByNameReq{}
+func Login(c *gin.Context)  {
+	req:=&sysuser.LoginReq{}
 	c.Bind(req)
-	result, err := client.LoginByName(context.TODO(), req)
-	if err != nil {
-		resp.APIError(c,err.Error())
-	}
-	 resp.APIOK(c,result)
-}
-func LoginByEmail(c *gin.Context)  {
-
-}
-func LoginByPhone(c *gin.Context)  {
-
+	result, err := client.Login(context.TODO(), req)
+	resp.MicroResp(c,result,err)
+	//if err != nil {
+	//	resp.APIError(c,err.Error())
+	//	return
+	//}
+	// resp.APIOK(c,result)
 }
 func Registry(c *gin.Context)  {
-
+	req:=&sysuser.RegistryReq{}
+	c.Bind(req)
+	result, err := client.Registry(context.TODO(), req)
+	resp.MicroResp(c,result,err)
 }

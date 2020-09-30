@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
-	"qshapi/utils/mzjgorm"
 	"qshapi/utils/mzjinit"
 )
 var (
 	conf models.APIConfig
-	dbConfig *mzjgorm.DbConfig
 )
 type Server struct {
 
@@ -19,10 +17,6 @@ type Server struct {
 func init(){
 	if err:=mzjinit.Default(&conf);err != nil {
 		log.Fatal(err)
-	}
-	dbConfig=mzjgorm.NewDbConfig(conf.DbConfig)
-	if dbConfig == nil {
-		log.Fatal("数据库连接初始化失败",conf.DbConfig)
 	}
 }
 func main() {
@@ -65,7 +59,7 @@ func main() {
 }
 
 func dbInit(){
-	db:=dbConfig.New()
+	db:=conf.DbConfig.New()
 	defer db.Close()
 	/*menus := []models.SysTree{
 		{

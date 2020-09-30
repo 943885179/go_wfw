@@ -1,0 +1,42 @@
+syntax="proto3";
+package send;
+option go_package="send";
+import "google/protobuf/empty.proto";
+//SendSrv 消息服务
+service SendSrv{
+  rpc SendCode(SendCodeReq)returns(SendCodeResp){} //发送验证码
+  rpc CodeVerify(CodeVerifyReq)returns(CodeVerifyResp){}//验证验证码是否正确
+  rpc Send(SendReq)returns(google.protobuf.Empty){} //发送消息
+  rpc SendAll(SendAllReq)returns(google.protobuf.Empty){}//批量发送消息，只支持一种类型
+}
+
+enum SendType{
+  PHONE=0;//proto3版本中，首成员必须为0，成员不应有相同的值 ,电话
+  EMAIL=1;//邮箱
+}
+
+message SendCodeReq{
+  SendType send_type=1;
+  string email_or_phone=2;//手机
+}
+message SendCodeResp{
+  string code=1;//验证码
+}
+message  CodeVerifyReq{
+  //SendType send_type=1;
+  string email_or_phone=1;//手机
+  string code=2;//验证码
+}
+message  CodeVerifyResp{
+  bool verify=1;//是否存在
+}
+message  SendReq{
+  SendType send_type=1;
+  string email_or_phone=2;//手机
+  string msg=3;//消息
+}
+message  SendAllReq{
+  SendType send_type=1;
+  repeated string email_or_phone=2;//手机
+  string msg=3;//消息
+}

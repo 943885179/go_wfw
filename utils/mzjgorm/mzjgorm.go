@@ -2,35 +2,33 @@ package mzjgorm
 
 import (
 	"fmt"
-	"log"
-	"qshapi/models"
-
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/micro/go-micro/v2/util/log"
 )
 
 //DriverType 数据库驱动
 type DriverType int
 
 const (
-	mysql      DriverType = iota //0
-	mssql                        //1
-	oracle                       //2
-	sqllite                      //3
-	postgresql                   //4
+	MYSQL      DriverType = iota //0
+	MSSQL                        //1
+	ORACLE                       //2
+	SQLLITE                      //3
+	POSTGRESQL                   //4
 )
 
 func (d DriverType) String() string {
 	switch d {
-	case mysql:
+	case MYSQL:
 		return "mysql" //go get github.com/jinzhu/gorm/dialects/mysql
-	case mssql:
+	case MSSQL:
 		return "mssql" //go get  github.com/jinzhu/gorm/dialects/mssql
-	case oracle:
+	case ORACLE:
 		return "oci8" //go get github.com/mattn/go-oci8
-	case sqllite:
+	case SQLLITE:
 		return "sqlite3" //go get github.com/jinzhu/gorm/dialects/sqlite
-	case postgresql:
+	case POSTGRESQL:
 		return "postgres" //go get github.com/jinzhu/gorm/dialects/postgres
 	default:
 		return "暂时没有设置该驱动"
@@ -46,9 +44,10 @@ type DbConfig struct {
 	Password   string     `json:"password"`   //密码
 	Database   string     `json:"database"`   //数据库
 	Source     string     `json:"source"`     //完整连接（优先读取）
-	IsDebug    bool       `json:"isDebug"`    //是否为调试模式
+	IsDebug    bool     `json:"isDebug"`    //是否为调试模式
 }
 
+/*
 func NewDbConfig(config models.DbConfig) *DbConfig {
 	c:=DbConfig{
 		DriverType: DriverType(config.DriverType),
@@ -61,21 +60,21 @@ func NewDbConfig(config models.DbConfig) *DbConfig {
 		IsDebug: config.IsDebug,
 	}
 	return &c
-}
+}*/
 func (c *DbConfig) init() {
 	if c.Source != "" { //如果有数据库链接了那么直接使用
 		return
 	}
 	switch c.DriverType {
-	case mysql:
+	case MYSQL:
 		c.Source = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.User, c.Password, c.Server, c.Port, c.Database)
-	case mssql:
+	case MSSQL:
 		c.Source = fmt.Sprintf("server=%s;port=%d;database=%s;user id=%s;password=%s", c.Server, c.Port, c.Database, c.User, c.Password)
-	case oracle:
+	case ORACLE:
 		c.Source = fmt.Sprintf("%s/%s@%s:%d/%s", c.User, c.Password, c.Server, c.Port, c.Database)
-	case sqllite:
+	case SQLLITE:
 		c.Source = "./foo.db" //设置默认的db
-	case postgresql:
+	case POSTGRESQL:
 		//c.Source = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=verify-full", c.User, c.Password, c.Server, c.Database)
 		c.Source = fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s sslmode=verify-full", c.User, c.Password, c.Server, c.Port, c.Database) //https://godoc.org/github.com/lib/pq 参数请参阅
 	default:

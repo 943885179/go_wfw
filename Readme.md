@@ -13,4 +13,12 @@
 
 ### 用户服务（sysuser）
 
-`protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/*.proto`
+~~protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/*.proto~~
+
+`protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/sysuser.proto`
+
+## 消息服务（send）
+`protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/send/send.proto`
+
+## 文件服务（file）
+`protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/file/file.proto`

@@ -8,6 +8,7 @@ import (
 	"github.com/micro/go-micro/v2/config"
 	"qshapi/models"
 	"qshapi/utils/mzjjson"
+	"sync"
 )
 
 var defaultPath = "config.conf"
@@ -23,10 +24,10 @@ func InitByMicroConfig(path string,resp interface{})error  {//测试发现只支
 	if path=="" {
 		return errors.New("请输入配置文件")
 	}
-	err:= config.LoadFile(path)
-	if err != nil {
-		return err
-	}
+	var once sync.Once
+	once.Do(func() {
+		 config.LoadFile(path)
+	})
 	return json.Unmarshal(config.Bytes(),resp)
 }
 //MicroConfig 读取config

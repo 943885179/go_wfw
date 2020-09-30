@@ -8,22 +8,20 @@ import (
 	"github.com/micro/go-micro/v2/registry"
 	"github.com/micro/go-micro/v2/registry/etcd"
 	"github.com/micro/go-micro/v2/transport/grpc"
-	"qshapi/models"
-
 	//"github.com/micro/go-plugins/registry/consul/v2"
 	"github.com/micro/go-micro/v2/web"
 	"time"
 )
 //Service 服务
 type Service struct {
-	Ip string //Ip地址
-	Port int //端口
-	Version string //版本
-	Name string //服务名称
-	Describe string //叙述
-	Etcd string //注入的etcd地址
+	Ip string `json:"ip"` //Ip地址
+	Port int        `json:"port"`//端口
+	Version string  `json:"version"`//版本
+	Name string     `json:"name"`//服务名称
+	Describe string `json:"describe"`//叙述
+	Etcd string `json:"etcd"`//注入的etcd地址
 }
-
+/*
 func NewService(sv models.Service)*Service{
 	s:=Service{
 		Ip:sv.Ip,
@@ -34,7 +32,7 @@ func NewService(sv models.Service)*Service{
 		Etcd:sv.Etcd,
 	}
 	return &s
-}
+}*/
 
 const (
 	interal time.Duration =time.Second*10 //重新注册时间
