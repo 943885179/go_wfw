@@ -44,11 +44,14 @@ func (s *Service) NewGinWeb(g *gin.Engine) web.Service {
 	sv:=web.NewService(
 		web.Name(s.Name),
 		web.Version(s.Version),
-		web.Address(fmt.Sprintf("%s:%d",s.Ip,s.Port)),
+		//web.Address(fmt.Sprintf("%s:%d",s.Ip,s.Port)),
 		web.RegisterInterval(interal),//间隔多久再次注册服务
 		web.RegisterTTL(ttl),//注册服务的过期时间
 		//web.Registry(reg),
 		)
+	if s.Port>0  {//设置了特定的端口和地址
+		sv.Init(web.Address(fmt.Sprintf("%s:%d",s.Ip,s.Port)))
+	}
 	sv.Handle("/",g)
 	if len(s.Etcd)>0 {
 		reg:=etcd.NewRegistry(registry.Addrs(s.Etcd))
@@ -65,10 +68,13 @@ func (s *Service) NewWeb() web.Service {
 	sv:=web.NewService(
 		web.Name(s.Name),
 		web.Version(s.Version),
-		web.Address(fmt.Sprintf("%s:%d",s.Ip,s.Port)),
+		//web.Address(fmt.Sprintf("%s:%d",s.Ip,s.Port)),
 		web.RegisterInterval(interal),//间隔多久再次注册服务
 		web.RegisterTTL(ttl),//注册服务的过期时间
 		)
+	if s.Port>0 {//设置了特定的端口和地址
+		sv.Init(web.Address(fmt.Sprintf("%s:%d",s.Ip,s.Port)))
+	}
 	sv.Init(web.AfterStart(func() error {
 		fmt.Printf("启动服务成功:%s,地址为:%s:%d",s.Name,s.Ip,s.Port)
 		fmt.Println(s.Describe)
@@ -85,7 +91,7 @@ func (s *Service) NewSrv() micro.Service  {
 	sv:=micro.NewService(
 		micro.Name(s.Name),
 		micro.Version(s.Version),
-		micro.Address(fmt.Sprintf("%s:%d",s.Ip,s.Port)),
+
 		micro.RegisterInterval(interal),//间隔多久再次注册服务
 		micro.RegisterTTL(ttl),//注册服务的过期时间
 		micro.Transport(grpc.NewTransport()),
@@ -94,6 +100,9 @@ func (s *Service) NewSrv() micro.Service  {
 			Usage: "Launch the client",
 		}),
 		)
+	if s.Port>0 {//设置了特定的端口和地址
+		sv.Init(micro.Address(fmt.Sprintf("%s:%d",s.Ip,s.Port)))
+	}
 	if len(s.Etcd)>0 {
 		reg:=etcd.NewRegistry(registry.Addrs(s.Etcd))
 		sv.Init(micro.Registry(reg))

@@ -35,8 +35,22 @@ func NewServer(tp send.SendType)ISend{
 	}
 }
 
+type sendServer struct {}
+func (s *sendServer)CodeVerify(req *send.CodeVerifyReq, resp *send.CodeVerifyResp) error {
+	if len(req.EmailOrPhone)==0 || len(req.Code)==0 {
+		return errors.New("电话/邮箱/验证码不能为空")
+	}
+	v,err:=conf.RedisConfig.Get(fmt.Sprintf("%s%s",sendHeard,req.EmailOrPhone))
+	if err != nil {
+		return err
+	}
+	resp.Verify=v==req.Code
+	return nil
+}
 
-type emailServer struct {}
+type emailServer struct {
+	sendServer
+}
 func (s *emailServer)SendCode(email string,resp *send.SendCodeResp) error {
 	if len(email)==0 {
 		return errors.New("邮箱不能为空")
@@ -60,19 +74,10 @@ func (s *emailServer)Send(msg string,to ...string)error  {
 	go e.Send()
 	return nil
 }
-func (s *emailServer)CodeVerify(req *send.CodeVerifyReq, resp *send.CodeVerifyResp) error {
-	if len(req.EmailOrPhone)==0 || len(req.Code)==0 {
-		return errors.New("电话/邮箱/验证码不能为空")
-	}
-	v,err:=conf.RedisConfig.Get(fmt.Sprintf("%s%s",sendHeard,req.EmailOrPhone))
-	if err != nil {
-		return err
-	}
-	resp.Verify=v==req.Code
-	return nil
-}
 
-type phoneServer struct {}
+type phoneServer struct {
+	sendServer
+}
 func (s *phoneServer)SendCode(phone string,resp *send.SendCodeResp)  error{
 	if len(phone)==0 {
 		return errors.New("电话不能为空")
@@ -88,15 +93,4 @@ func (s *phoneServer)Send(msg string,to ...string)error  {
 	}
 	//TODO:发送手机消息
 	return errors.New("手机短信群发正在开发中...")
-}
-func (s *phoneServer)CodeVerify(req *send.CodeVerifyReq, resp *send.CodeVerifyResp) error {
-	if len(req.EmailOrPhone)==0 || len(req.Code)==0 {
-		return errors.New("电话/邮箱/验证码不能为空")
-	}
-	v,err:=conf.RedisConfig.Get(fmt.Sprintf("%s%s",sendHeard,req.EmailOrPhone))
-	if err != nil {
-		return err
-	}
-	resp.Verify=v==req.Code
-	return nil
 }

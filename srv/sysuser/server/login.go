@@ -40,13 +40,7 @@ func (*loginByName) Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error 
 		// First 返回record not found表示没有数据， Find返回nil
 		return errors.New("用户名或密码错误")
 	}
-	resp.UserName=u.UserName
-	Conf.Jwt.Data=u
-	resp.Token,err=Conf.Jwt.CreateToken()
-	if err != nil {
-		return err
-	}
-	go Conf.RedisConfig.Set(fmt.Sprintf("LoginByName_%s",u.UserName),resp.Token,Conf.Jwt.TimeOut) //添加到redis中
+	addToken(u,resp)
 	return nil
 }
 type loginByEmail struct {}
@@ -62,16 +56,9 @@ func (*loginByEmail) Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error
 	}
 	err:=  db.Where(&u).First(&u).Error
 	if err != nil {
-		return err
+		return errors.New("用户未注册")
 	}
-
-	resp.UserName=u.UserName
-	Conf.Jwt.Data=u
-	resp.Token,err=Conf.Jwt.CreateToken()
-	if err != nil {
-		return err
-	}
-	go Conf.RedisConfig.Set(fmt.Sprintf("LoginByName_%s",u.UserName),resp.Token,Conf.Jwt.TimeOut) //添加到redis中
+	addToken(u,resp)
 	return nil
 }
 type loginByPhone struct {}
@@ -88,14 +75,15 @@ func (*loginByPhone) Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error
 	}
 	err:=  db.Where(&u).First(&u).Error
 	if err != nil {
-		return err
+		return errors.New("用户未注册")
 	}
+	addToken(u,resp)
+	return nil
+}
+func addToken(u models.SysUser ,resp *sysuser.LoginResp){
 	resp.UserName=u.UserName
 	Conf.Jwt.Data=u
-	resp.Token,err=Conf.Jwt.CreateToken()
-	if err != nil {
-		return err
-	}
+	tk, _:= Conf.Jwt.CreateToken()
+	resp.Token=tk
 	go Conf.RedisConfig.Set(fmt.Sprintf("LoginByName_%s",u.UserName),resp.Token,Conf.Jwt.TimeOut) //添加到redis中
-	return nil
 }

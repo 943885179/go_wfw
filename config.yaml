@@ -1,19 +1,5 @@
-# 微服务项目
-
-## 系统架构
-
->go micro + gin + grpc
-
-## 项目注意
-
->gprc版本太高会导致micro v2版本下载错误，go.mod 添加`replace google.golang.org/grpc => google.golang.org/grpc v1.26.0`
->由于micro v3版本在开发，所以最好不要拉去，然后>go get github.com/micro/protoc-gen-micro 不要加-u 否则拉去最新版本，报错
->go get  github.com/golang/protobuf/protoc-gen-go
-
-## 配置文件说明
-```yaml
 {
-    "dbConfig":{
+    "dbConfig":{ #数据库配置
         "driverName":"mysql",
         "server":"127.0.0.1",
         "port":3306,
@@ -28,13 +14,13 @@
         "network":"",
         "addr":"127.0.0.1:6379",
         "password":"",
-        "db":"0"
+        "db":0
     },
     "txOcrApi":{
         "region":"ap-beijing",
         "endpoint":"ocr.tencentcloudapi.com",
-        "secretId":"xxxxxx",
-        "secretKey":"xxxxx"
+        "secretId":"AKIDnQsERTVtSuTtAenY2LTbZN4aeS5YuMYX",
+        "secretKey":"0d7NuAGF4k4veDmCSXSfnlYQA91Tr6BN"
     },
     "jwt":{
         "secret":"weixiao_keji_007",
@@ -46,8 +32,8 @@
     },
     "emailConfig":{
         "emailType":0,
-        "userName":"xxx@qq.com",
-        "password":"xxxx",
+        "userName":"943885179@qq.com",
+        "password":"ppiqtqrtrzdpbcjf",
         "bcc":[
 
         ],
@@ -106,17 +92,3 @@
         }
     }
 }
-```
-## 微服务划分
-
-### 用户服务（sysuser）
-
-~~protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/*.proto~~
-
-`protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/sysuser.proto`
-
-## 消息服务（send）
-`protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/send/send.proto`
-
-## 文件服务（file）
-`protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/file/file.proto`

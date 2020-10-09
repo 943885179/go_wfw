@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
 	"qshapi/proto/sysuser"
@@ -15,6 +16,7 @@ func init(){
 	if err:=mzjinit.Default(&conf);err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(conf)
 
 
 }

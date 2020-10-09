@@ -11,7 +11,7 @@ import (
 	"sync"
 )
 
-var defaultPath = "config.conf"
+var defaultPath = "config.yaml"//"E:/go/qshapi/config.conf" 如果测试用go run 启动最好指定固定路径
 
 func InitByJson(path string,resp interface{}) error {
 	if path=="" {
