@@ -23,9 +23,9 @@ message SendCodeResp{
   string code=1;//验证码
 }
 message  CodeVerifyReq{
-  //SendType send_type=1;
-  string email_or_phone=1;//手机
-  string code=2;//验证码
+  SendType send_type=1;
+  string email_or_phone=2;//手机
+  string code=3;//验证码
 }
 message  CodeVerifyResp{
   bool verify=1;//是否存在

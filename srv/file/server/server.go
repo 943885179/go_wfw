@@ -10,17 +10,24 @@ import (
 
 var conf models.APIConfig
 const sendHeard="code_"
-
-type Server struct {
-
-}
-
 func init(){
 	if err:=mzjinit.Default(&conf);err != nil {
 		log.Fatal(err)
 	}
 }
-func (s Server) UploadFile(req *file.FileReq, resp *file.FileResp) error {
+
+type IFile interface {
+	UploadFile(req *file.FileReq, resp *file.FileResp)error
+}
+
+func NewFile() IFile {
+	return &fileSrv{}
+}
+
+type fileSrv struct {
+
+}
+func (*fileSrv) UploadFile(req *file.FileReq, resp *file.FileResp) error {
 	db:=conf.DbConfig.New()
 	defer db.Close()
 	file:=models.SysFile{
