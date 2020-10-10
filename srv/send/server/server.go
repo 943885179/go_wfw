@@ -8,6 +8,7 @@ import (
 	"qshapi/proto/send"
 	"qshapi/utils/mzjcode"
 	"qshapi/utils/mzjinit"
+	"time"
 )
 
 var conf models.APIConfig
@@ -40,11 +41,22 @@ func (s *sendServer)CodeVerify(req *send.CodeVerifyReq, resp *send.CodeVerifyRes
 	if len(req.EmailOrPhone)==0 || len(req.Code)==0 {
 		return errors.New("电话/邮箱/验证码不能为空")
 	}
-	v,err:=conf.RedisConfig.Get(fmt.Sprintf("%s%s",sendHeard,req.EmailOrPhone))
+	key:=fmt.Sprintf("%s%s",sendHeard,req.EmailOrPhone)
+	i, err:= conf.RedisConfig.Exists(key)
+	if err != nil {
+		return err
+	}
+	if i==0 {
+		return errors.New("验证码不存在或已过期")
+	}
+	v,err:=conf.RedisConfig.Get(key)
 	if err != nil {
 		return err
 	}
 	resp.Verify=v==req.Code
+	if !resp.Verify {
+		return errors.New("验证码错误")
+	}
 	return nil
 }
 
@@ -55,13 +67,16 @@ func (s *emailServer)SendCode(email string,resp *send.SendCodeResp) error {
 	if len(email)==0 {
 		return errors.New("邮箱不能为空")
 	}
-	resp.Code=mzjcode.GetRandCode(conf.Yzm.Width)//获取六位验证码随机数
-
+	code:=mzjcode.GetRandCode(conf.Yzm.Width)//获取六位验证码随机数
 	e:=conf.EmailConfig.Copy()
 	e.To=[]string{email}
-	e.HTML=fmt.Sprintf("<h3>验证码：%s</h3>",resp.Code)
-	go e.Send()
-	go  conf.RedisConfig.Set(fmt.Sprintf("%s%s",sendHeard,email),resp.Code,conf.Yzm.TimeOut) //添加到redis中
+	e.HTML=fmt.Sprintf("<h3>验证码：%s</h3>",code)
+	//go e.Send()
+	go  conf.RedisConfig.Set(fmt.Sprintf("%s%s",sendHeard,email),code,conf.Yzm.TimeOut*time.Second) //添加到redis中
+	if conf.RedisConfig.IsDebug{
+		resp.Code=code
+	}
+	resp.Code=code
 	return nil
 }
 func (s *emailServer)Send(msg string,to ...string)error  {
@@ -82,9 +97,12 @@ func (s *phoneServer)SendCode(phone string,resp *send.SendCodeResp)  error{
 	if len(phone)==0 {
 		return errors.New("电话不能为空")
 	}
-	resp.Code=mzjcode.GetRandCode(conf.Yzm.Width)//获取六位验证码随机数
+	code:=mzjcode.GetRandCode(conf.Yzm.Width)//获取六位验证码随机数
 	//TODO:发送手机验证码
-	go  conf.RedisConfig.Set(fmt.Sprintf("%s%s",sendHeard,phone),resp.Code,conf.Yzm.TimeOut) //添加到redis中
+	go  conf.RedisConfig.Set(fmt.Sprintf("%s%s",sendHeard,phone),code,conf.Yzm.TimeOut*time.Second) //添加到redis中
+	if conf.RedisConfig.IsDebug{
+		resp.Code=code
+	}
 	return errors.New("手机验证码发正在开发中...")
 }
 func (s *phoneServer)Send(msg string,to ...string)error  {

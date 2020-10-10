@@ -24,7 +24,7 @@ func (t *Jwt)CreateToken() (tokenValue string,err error) {
 	//t.CreateTime = time.Now().Unix()
 	//t.OutTime = time.Now().Add(t.TimeOut).Unix()
 	claim := make(jwt.MapClaims)
-	claim["exe"] = time.Now().Add(t.TimeOut).Unix()  //过期时间设定
+	claim["exe"] = time.Now().Add(t.TimeOut*time.Second).Unix()  //过期时间设定
 	claim["iat"] =  time.Now().Unix() //创建时间
 	claim["nbf"] =  time.Now().Unix() //生效时间
 	claim["iss"] = t.Iss

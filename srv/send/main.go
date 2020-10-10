@@ -3,12 +3,12 @@ package main
 import (
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
-	"qshapi/proto/file"
-	"qshapi/srv/file/handler"
+	"qshapi/proto/send"
+	"qshapi/srv/send/handler"
 	"qshapi/utils/mzjinit"
 )
 var (
-	svName="fileSrv"
+	svName="sendSrv"
 	conf models.APIConfig
 )
 func init(){
@@ -21,7 +21,7 @@ func init(){
 func main() {
 	service := conf.Services[svName]
 	s:= service.NewSrv()
-	file.RegisterFileSrvHandler(s.Server(),handler.Handler{})
+	send.RegisterSendSrvHandler(s.Server(),handler.Handler{})
 	if err:=s.Run();err != nil {
 		log.Fatal(err)
 	}

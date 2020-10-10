@@ -127,7 +127,7 @@ func (r Resp) APIWary(c *gin.Context, errMsg string) {
 	r.APIResult(c, int(APIWary), errMsg)
 }
 var (
-  notoken=[]string{"/user/login", "/user/addUser","/static","/swagger","/favicon.ico","/login","/registry" }
+  notoken=[]string{"/user/login", "/user/addUser","/static","/swagger","/favicon.ico","/login","/registry","/codeVerify","/sendCode" }
   apiresp= Resp{}
 )
 //APIGin 自定义gin

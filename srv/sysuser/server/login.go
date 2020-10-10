@@ -7,6 +7,7 @@ import (
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjmd5"
 	"strings"
+	"time"
 )
 
 type ILogin interface {
@@ -85,5 +86,5 @@ func addToken(u models.SysUser ,resp *sysuser.LoginResp){
 	Conf.Jwt.Data=u
 	tk, _:= Conf.Jwt.CreateToken()
 	resp.Token=tk
-	go Conf.RedisConfig.Set(fmt.Sprintf("LoginByName_%s",u.UserName),resp.Token,Conf.Jwt.TimeOut) //添加到redis中
+	go Conf.RedisConfig.Set(fmt.Sprintf("LoginByName_%s",u.UserName),resp.Token,Conf.Jwt.TimeOut*time.Second) //添加到redis中
 }

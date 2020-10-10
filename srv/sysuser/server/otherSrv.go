@@ -8,9 +8,9 @@ import (
 var (
 	webName="sendWeb"
 	svName="sendSrv"
-	client send.SendSrvService
+	SendClient send.SendSrvService
 )
-func main() {
+func init() {
 	service := Conf.Services[webName]
-	client=send.NewSendSrvService(Conf.Services[svName].Name,service.NewRoundSrv().Options().Client)
+	SendClient=send.NewSendSrvService(Conf.Services[svName].Name,service.NewRoundSrv().Options().Client)
 }
