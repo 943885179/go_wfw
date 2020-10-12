@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	webName="userWeb"
+	cliName="userCli"
 	svName="userSrv"
 	conf models.APIConfig
 	client sysuser.UserSrvService
@@ -23,7 +23,7 @@ func init(){
 	}
 }
 func main() {
-	service := conf.Services[webName]
+	service := conf.Services[cliName]
 	client=sysuser.NewUserSrvService(conf.Services[svName].Name, service.NewRoundSrv().Options().Client)
 	s:= service.NewGinWeb(SrvGin())
 	if err:=s.Run();err!= nil {
@@ -39,7 +39,7 @@ func SrvGin() *gin.Engine {
 		})
 		r.POST("/", func(c *gin.Context) {
 			resp.APIOK(c,gin.H{
-				"webconfig":conf.Services[webName],
+				"webconfig":conf.Services[cliName],
 				"service":conf.Services[svName].Name,
 			})
 		})

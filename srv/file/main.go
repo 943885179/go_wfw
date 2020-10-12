@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
 	"qshapi/proto/file"
@@ -15,11 +16,10 @@ func init(){
 	if err:=mzjinit.Default(&conf);err != nil {
 		log.Fatal(err)
 	}
-
-
 }
 func main() {
 	service := conf.Services[svName]
+	fmt.Println(service)
 	s:= service.NewSrv()
 	file.RegisterFileSrvHandler(s.Server(),handler.Handler{})
 	if err:=s.Run();err != nil {

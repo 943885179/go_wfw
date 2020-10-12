@@ -1,11 +1,9 @@
 package server
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"qshapi/models"
-	"qshapi/proto/send"
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjmd5"
 	"qshapi/utils/mzjuuid"
@@ -37,17 +35,8 @@ func (*Registry) Registry(req *sysuser.RegistryReq, resp *sysuser.RegistryResp) 
 	if len(req.UserPhoneCode)==0 {
 		return errors.New("请输入验证码")
 	}
-	codereq:=&send.CodeVerifyReq{
-		EmailOrPhone: req.UserPhoneCode,
-		SendType: send.SendType_PHONE,
-		Code: req.UserPhoneCode,
-	}
-	sendResp,err:= SendClient.CodeVerify(context.Background(),codereq)
-	if err != nil {
-		return errors.New("验证码验证失败!"+err.Error())
-	}
-	if !sendResp.Verify {
-		return errors.New("验证码验证失败")
+	if  v,err:= CodeVerify(req.UserPhone,req.UserPhoneCode);err!= nil || !v {
+		return errors.New("验证码错误")
 	}
 	db:=Conf.DbConfig.New()
 	defer  db.Close()

@@ -118,6 +118,7 @@ type SysMenu struct {
 type SysFile struct {
 	ID        int64 `gorm:"primary_key"`
 	Path         string  `gorm:"column:path;type:varchar(200);not null;comment:'路径'" json:"path"`
+	Name         string  `gorm:"column:name;type:varchar(200);not null;comment:'文件名称（一般是id+后缀）'" json:"name"`
 	Size         int64 `gorm:"column:size;type:bigint;comment:'大小'" json:"size"`
 	FileExplain  string  `gorm:"column:file_explain;type:varchar(100);comment:'描述'" json:"file_explain"`
 	FileType int32    `gorm:"index;column:file_type;type:int;not null;comment:'商业用途（头像，店铺logo，商品图片等）'"json:"file_type"`

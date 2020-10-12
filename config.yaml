@@ -9,7 +9,7 @@
         "dateSourceName":"",
         "isDebug":true
     },
-    "filePath":"/static/upload",
+    "filePath":"static/upload",#前缀加./或不加表示在该程序下，只加/表示在磁盘文件下
     "redisConfig":{
         "network":"",
         "addr":"127.0.0.1:6379",
@@ -24,11 +24,11 @@
     },
     "jwt":{
         "secret":"weixiao_keji_007",
-        "TimeOut":30000000
+        "TimeOut":1800
     },
     "yzm":{
         "width":6,
-        "TimeOut":1000000
+        "TimeOut":60
     },
     "emailConfig":{
         "emailType":0,
@@ -55,9 +55,9 @@
             "ip":"",
             "port":0
         },
-        "userWeb":{
+        "userCli":{
             "etcd":"",
-            "name":"com.weixiao.userWeb",
+            "name":"com.weixiao.userCli",
             "version":"latest",
             "ip":"",
             "port":8701
@@ -69,9 +69,9 @@
             "ip":"",
             "port":8702
         },
-        "sendWeb":{
+        "sendCli":{
             "etcd":"",
-            "name":"com.weixiao.sendWeb",
+            "name":"com.weixiao.sendCli",
             "version":"latest",
             "ip":"",
             "port":8703
@@ -83,12 +83,17 @@
             "ip":"",
             "port":8704
         },
-        "fileWeb":{
+        "fileCli":{
             "etcd":"",
-            "name":"com.weixiao.fileWeb",
+            "name":"com.weixiao.fileCli",
             "version":"latest",
             "ip":"",
             "port":8705
+        },
+        "midCli":{
+            "etcd":"",
+            "name":"com.weixiao.midCli",#中间服务调用micro接口
+            "version":"latest",
         }
     }
 }

@@ -3,6 +3,7 @@ package mzjgin
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gin-contrib/gzip"
 	"github.com/micro/go-micro/v2/util/log"
 	"io"
 	"net/http"
@@ -147,14 +148,20 @@ func(api *APIGin) Default() *gin.Engine{
 	g.Use(api.cors())//支持跨域
 	g.NoMethod(handleNotFound)
 	g.NoRoute(handleNotFound)
+	g.Use(gzip.Gzip(gzip.DefaultCompression)) //使用gzip压缩
 	//添加Token中间件
-	g.Use(APITokenMiddleware)
+	//g.Use(APITokenMiddleware)
 	//或者使用下面的方法
 	//g.engine.Use(TokenAuthMiddleware())
 	// 加载html文件，即template包下所有文件
 	//g.engine.LoadHTMLGlob("wwwroot/*")
 	//g.engine.LoadHTMLGlob("template/*")
-	g.StaticFS("/static", http.Dir("./static"))
+	//g.Static("/assets", "/var/www/tizi365/assets")// /assets/images/1.jpg 这个url文件，存储在/var/www/tizi365/assets/images/1.jpg
+	// 静态资源加载
+	 g.StaticFS("static", http.Dir("./static"))
+	//g.StaticFS("/", http.Dir("./static/upload"))
+	//g.StaticFS("/public", http.Dir("D:/goproject/src/github.com/ffhelicopter/tmm/website/static"))
+	//g.StaticFile("/favicon.ico", "./resources/favicon.ico")
 	return g
 }
 func (api *APIGin)Run(addr string) {

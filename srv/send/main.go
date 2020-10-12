@@ -15,8 +15,6 @@ func init(){
 	if err:=mzjinit.Default(&conf);err != nil {
 		log.Fatal(err)
 	}
-
-
 }
 func main() {
 	service := conf.Services[svName]

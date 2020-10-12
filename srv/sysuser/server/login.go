@@ -51,6 +51,9 @@ func (*loginByEmail) Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error
 	if len(req.UserNameOrPhoneOrEmail)==0 || len(req.UserPasswordOrCode)==0 {
 		return errors.New("邮箱和验证码不能为空")
 	}
+	if  v,err:= CodeVerify(req.UserNameOrPhoneOrEmail,req.UserPasswordOrCode);err!= nil || !v {
+		return errors.New("验证码错误")
+	}
 	db:=Conf.DbConfig.New()
 	u:=models.SysUser{
 		UserEmail: req.UserNameOrPhoneOrEmail,
@@ -69,6 +72,9 @@ func (*loginByPhone) Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error
 	if len(req.UserNameOrPhoneOrEmail)==0 || len(req.UserPasswordOrCode)==0 {
 		return errors.New("电话或验证码不能为空")
 	}
+	if  v,err:= CodeVerify(req.UserNameOrPhoneOrEmail,req.UserPasswordOrCode);err!= nil || !v {
+		return errors.New("验证码错误")
+	}
 	db:=Conf.DbConfig.New()
 	defer  db.Close()
 	u:=models.SysUser{
@@ -86,5 +92,5 @@ func addToken(u models.SysUser ,resp *sysuser.LoginResp){
 	Conf.Jwt.Data=u
 	tk, _:= Conf.Jwt.CreateToken()
 	resp.Token=tk
-	go Conf.RedisConfig.Set(fmt.Sprintf("LoginByName_%s",u.UserName),resp.Token,Conf.Jwt.TimeOut*time.Second) //添加到redis中
+	go Conf.RedisConfig.Set(fmt.Sprintf("Login_%s",u.UserName),resp.Token,Conf.Jwt.TimeOut*time.Second) //添加到redis中
 }

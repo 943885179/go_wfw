@@ -2,16 +2,18 @@ syntax="proto3";
 package file;
 option go_package="file";
 service FileSrv{
-  rpc UploadFile(FileReq)returns(FileResp){}
+  rpc UploadFile(FileInfo)returns(FileId){}
+  rpc GetFile(FileId)returns(FileInfo){}
 }
-message FileReq{
-  string name=1;//上传文件名称
-  string path=2;//路径
-  int64 size=3;//大小
-  string  file_explain=4;//描述
-  int32 sort=5;//排序
-  FileType file_type=6;//图片类型
-  string file_suffix=7;//图片后缀
+message FileInfo{
+  int64 id=1;//文件id
+  string name=2;//上传文件名称，一般设置为id+后缀
+  string path=3;//路径
+  int64 size=4;//大小
+  string  file_explain=5;//描述
+  int32 sort=6;//排序
+  FileType file_type=7;//图片类型
+  string file_suffix=8;//图片后缀
 }
 enum FileType{
   USERLOG=0;//用户头像
@@ -21,6 +23,6 @@ enum FileType{
   PRODUCTIMG=4;//商品图片
   OTHERIMG=5;//其他图片
 }
-message FileResp{
+message FileId{
   int64 id=1;//唯一Id
 }

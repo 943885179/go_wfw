@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	webName="sendWeb"
+	cliName="sendCli"
 	svName="sendSrv"
 	conf models.APIConfig
 	client send.SendSrvService
@@ -23,7 +23,7 @@ func init(){
 	}
 }
 func main() {
-	service := conf.Services[webName]
+	service := conf.Services[cliName]
 	client=send.NewSendSrvService(conf.Services[svName].Name,service.NewRoundSrv().Options().Client)
 	s:= service.NewGinWeb(SrvGin())
 	if err:=s.Run();err!= nil {
@@ -40,7 +40,7 @@ func SrvGin() *gin.Engine {
 		})
 		r.POST("/", func(c *gin.Context) {
 			resp.APIOK(c,gin.H{
-				"webconfig":conf.Services[webName],
+				"webconfig":conf.Services[cliName],
 				"service":conf.Services[svName].Name,
 			})
 		})
