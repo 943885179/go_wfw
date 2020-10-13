@@ -246,6 +246,7 @@ func APITokenMiddleware(c *gin.Context) {
 		apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
 		return
 	}
+	fmt.Println(user)
 	//Todo：根据返回的用户查询操作权限范围
 	c.Next()
 }

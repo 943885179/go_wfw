@@ -1,0 +1,37 @@
+language: go
+
+go: 
+ - 1.14.7
+
+env: GO111MODULE=on
+arch:
+  - amd64
+  - arm64
+os:
+  - windows
+  - osx
+  - linux
+
+script: sh scripts/build.sh $TRAVIS_OS_NAME $TRAVIS_CPU_ARCH
+
+jobs:
+  include:
+    - stage: "Unit Tests"
+      arch:
+        - amd64
+      os:
+        - linux
+      script:
+        - go test -v -cover encoder_test.go encoder.go helper.go
+        - go test -v -cover helper_test.go helper.go
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file_glob: true
+  file: builds/*
+  skip_cleanup: true
+  on:
+      repo: webp-sh/webp_server_go
+      tags: true
+      branch: master

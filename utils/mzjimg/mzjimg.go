@@ -163,7 +163,13 @@ func ImageResize(imgPath, resultPath string, width, height, ts int) error {
 	return err
 }
 
-//ImageResizeImg 压缩图片返回图片(不保存)
+/**
+ * @Author mzj
+ * @Description 图片剪切
+ * @Date 上午 10:47 2020/10/13 0013
+ * @Param imgPath string 图片路径, width 长度, height 高度, ts 压缩类型 int
+ * @return
+ **/
 func ImageResizeImg(imgPath string, width, height, ts int) (image image.Image, err error) {
 	imgData, err := ioutil.ReadFile(imgPath)
 	if err != nil {

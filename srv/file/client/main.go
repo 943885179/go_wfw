@@ -5,7 +5,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/v2/util/log"
+	"image/png"
+	"io"
+	"io/ioutil"
 	"mime/multipart"
+	"net/http"
 	"os"
 	"path"
 	"qshapi/models"
@@ -15,6 +19,7 @@ import (
 	"qshapi/utils/mzjinit"
 	"qshapi/utils/mzjuuid"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -38,7 +43,15 @@ func main() {
 		log.Fatal(err)
 	}
 }
-//SrvGin 初始化file
+//图像显示：https://github.com/webp-sh/webp_server_go/releases，直接使用改程序然后做部署先、后续在此基础上做修改
+
+/**
+ * @Author mzj
+ * @Description SrvGin 初始化file
+ * @Date 上午 8:48 2020/10/13 0013
+ * @Param
+ * @return
+ **/
 func SrvGin() *gin.Engine {
 	g:=mzjgin.NewGin().Default()
 	g.MaxMultipartMemory = 100
@@ -57,7 +70,8 @@ func SrvGin() *gin.Engine {
 		r.POST("uploadMutiple", uploadMultiple)
 		r.GET("showFile",showFile)
 		r.GET("/fileById/:id",fileById)
-		r.POST("ImgWH",ImgWH)
+		//r.GET("/fileDownload",fileDownload)
+		r.GET("/ImgWH/:img",ImgWH)
 		//file.GET("getCaptcha", getCaptcha)
 		//file.GET("verifyCaptcha", verifyCaptcha)
 	}
@@ -66,7 +80,6 @@ func SrvGin() *gin.Engine {
 
 func fileById(c *gin.Context){
 	id,_:=  strconv.Atoi(c.Param("id"))
-	fmt.Println(id)
 	 req := &file.FileId{
 		Id: int64(id),
 	} //c.Bind(req)
@@ -76,34 +89,95 @@ func fileById(c *gin.Context){
 		resp.APIError(c,err.Error())
 		return
 	}
-	c.File(result.Path+"/"+result.Name)
-}
+	c.Request.RequestURI=c.Request.RequestURI+result.FileSuffix
+	c.File(result.Path+"/"+result.Name) //因为id和name一致所以随便用一个就可以，如果是有后缀文件只能用name
+	/*copyFile(result.Path+"/"+result.Name,result.FileSuffix)
+	f, _ := ioutil.TempFile(result.Path, result.Name+result.FileSuffix)
+	defer f.Close()
+	bt, _ := mzjfile.File2Bytes(f)
+	c.Writer.WriteString(string(bt))
+	os.Remove(result.Path+"/"+result.Name+result.FileSuffix)*/
+	//c.Redirect(http.StatusMovedPermanently,"../"+result.Path+"/"+result.Name+result.FileSuffix)
+
+
+ }
+
+/**
+ * @Author mzj
+ * @Description 加载资源文件方法一
+ * @Date 上午 8:39 2020/10/13 0013
+ * @Param
+ * @return
+ **/
 func showFile(c *gin.Context){
-	//http://localhost:8705/img?imageName=static/upload/321988436372230144.png
+	//http://localhost:8705/img?url=321988436372230144.png
+	//["jpg","png","jpeg","bmp"]
+	for _, ext := range AllowedTypes {
+	haystack := strings.ToLower(ImgFilename)
+	needle := strings.ToLower("." + ext)
+	if strings.HasSuffix(haystack, needle) {
+	allowed = true
+	break
+	} else {
+	allowed = false
+	}
+	}
+	if !allowed {
+		c.Redirect(http.StatusMovedPermanently,)
+		return
+	}
 	url := c.Query("url")
-	c.File(url)
+	c.File(path.Join(conf.FilePath,url))
 }
 
-type imgShow struct {
-	Name string `json:"name"`
-	W int `json:"w"`
-	H int `json:"h"`
-}
-
-func ImgWH(c * gin.Context)  {
-	i:=&imgShow{}
-	c.Bind(i)
-	fmt.Println(i)
-	img, _ := mzjimg.ImageResizeImg(i.Name, i.W, i.H, 98)
-	resp.APIOK(c,mzjimg.Img2Base64(img))
-}
-/*
+/**
+ * @Author mzj
+ * @Description  加载资源文件方法二
+ * @Date 上午 8:38 2020/10/13 0013
+ * @Param
+ * @return
+ **/
 func getImage(c *gin.Context){
-	imageName := c.Query("imageName")
-	file, _ := ioutil.ReadFile(imageName)
+	url := c.Query("url")
+	file, _ := ioutil.ReadFile(path.Join(conf.FilePath,url))
 	c.Writer.WriteString(string(file))
-}*/
-//上传
+}
+
+/**
+ * @Author mzj
+ * @Description 资源（图片）压缩显示
+ * @Date 上午 8:43 2020/10/13 0013
+ * @Param
+ * @return
+ **/
+func ImgWH(c * gin.Context)  {
+	//http://localhost:8705/ImgWH/321988436372230144_100*100
+	imgstr:=c.Param("img")
+	s:=strings.Split(imgstr,"_")
+	id,_:=  strconv.Atoi(s[0])
+	req := &file.FileId{
+		Id: int64(id),
+	}
+	result, err := client.GetFile(context.Background(),req)
+	if err!=nil{
+		resp.APIError(c,err.Error())
+		return
+	}
+	wh:=strings.Split(s[1],"*")
+	w,_:=strconv.Atoi(wh[0])
+	h,_:=strconv.Atoi(wh[1])
+	img, _ := mzjimg.ImageResizeImg(result.Name, w, h, 0)
+	png.Encode(c.Writer,img)
+	//c.Writer.WriteString(string(img))
+}
+
+/**
+ * @Author mzj
+ * @Description 上传
+ * @Date 上午 8:43 2020/10/13 0013
+ * @Param
+ * @return
+ **/
 func upload(c *gin.Context) {
 	f, err := c.FormFile("file")
 	if err != nil {
@@ -119,19 +193,42 @@ func upload(c *gin.Context) {
 	resp.MicroResp(c,result,err)
 }
 
+/**
+ * @Author mzj
+ * @Description  资源基本信息配置
+ * @Date 上午 8:41 2020/10/13 0013
+ * @Param
+ * @return
+ **/
 func fileAttribute(c *gin.Context,f *multipart.FileHeader,sort int) *file.FileInfo {
 	req:=&file.FileInfo{
 	}
 	c.Bind(req) //这里可以得到path(文件存放路径),file_type(文件业务类型)，file_explain（文件描述）
 	req.FileSuffix=path.Ext(f.Filename)
 	req.Id=mzjuuid.WorkerDefault()
-	req.Name=strconv.Itoa(int(req.Id))+path.Ext(f.Filename)
+	req.Name=strconv.Itoa(int(req.Id)) +path.Ext(f.Filename) //这个后缀看情况吧，需要先解决下载doc，excel等问题
 	req.Size= f.Size
 	req.Path=path.Join(conf.FilePath,req.Path)//文件夹前面加上文件系统路径
 	req.Sort= int32(sort + 1)
 	return req
 }
-//uploadFile 上传图片保存
+
+func webPImg(){
+	webpPath:="webp" //压缩图存放路径
+	if _,err:=os.Stat(webpPath);os.IsNotExist(err) {
+		os.MkdirAll(webpPath, os.ModePerm)// 先创建文件夹
+		os.Chmod(webpPath, 0777) // 再修改权限
+	}
+
+}
+
+/**
+ * @Author mzj
+ * @Description 保存资源
+ * @Date 上午 8:41 2020/10/13 0013
+ * @Param
+ * @return
+ **/
 func uploadFile(c *gin.Context, file *multipart.FileHeader,req *file.FileInfo)error  {
 	if _, err := os.Stat(req.Path); os.IsNotExist(err) { // 必须分成两步创建文件夹
 		//os.Mkdir(Config.FilePath, 0777)//创建单级目录
@@ -141,7 +238,13 @@ func uploadFile(c *gin.Context, file *multipart.FileHeader,req *file.FileInfo)er
 	return c.SaveUploadedFile(file, path.Join(req.Path,req.Name))
 }
 
-//批量上传
+/**
+ * @Author mzj
+ * @Description 批量上传
+ * @Date 上午 8:42 2020/10/13 0013
+ * @Param
+ * @return
+ **/
 func uploadMultiple(c *gin.Context) {
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -168,6 +271,31 @@ func uploadMultiple(c *gin.Context) {
 		result = append(result, r)
 	}
 	resp.APIOK(c,result)
+}
+
+/**
+ * @Author mzj
+ * @Description fileDownload下载资源
+ * @Date 上午 9:04 2020/10/13 0013
+ * @Param
+ * @return
+ **/
+func fileDownload(c *gin.Context){
+	url:= c.Query("url")
+	//适用了gzip压缩，下面的设置不生效
+	//c.Writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=%s", url))//fmt.Sprintf("attachment; filename=%s", filename)对下载的文件重命名
+	//c.Writer.Header().Add("Content-Type", "application/octet-stream")
+	file, _ := ioutil.ReadFile(url)
+	c.Writer.WriteString(string(file))
+	//c.File(url+".ini")
+	//os.Remove(url+".ini")
+}
+func copyFile(url,suffix string)  {
+	srcFile,_:=os.Open(url)
+	defer srcFile.Close()
+	dstFile,_:=os.Create(url+suffix)
+	defer dstFile.Close()
+	io.Copy(dstFile,srcFile)
 }
 /*
 //生成验证码
@@ -197,6 +325,3 @@ func verifyCaptcha(c *gin.Context) {
 	apiresp.APIOK(c, b)
 }
 */
-//Base64Upload 稍等
-func Base64Upload(context *gin.Context) {
-}

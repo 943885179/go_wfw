@@ -120,3 +120,15 @@
 
 ## 文件服务（file）
 `protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/file/file.proto`
+## 图片webp服务（第三方服务，将图片转成webp压缩）
+
+>本项目中我直接下载了源码，然后build,下面介绍docker中如何部署
+
+>>`docker pull webpsh/webps`
+
+>>找到图片资源的文件夹 
+
+>>创建容器`docker run -d -p 3333:3333 -v /path/to/pics:/opt/pics --name webps webpsh/webps` 
+>>>我的是window.`docker run -d -p 3333:3333 -v E/go/qshapi/static/upload:/opt/pics --name webps webpsh/webps` 挂在文件夹
+
+>>测试：`docke ps` 查看是否有容器webps,然后在浏览器中输入图片地址`http://localhost:3333/no.gif`查看

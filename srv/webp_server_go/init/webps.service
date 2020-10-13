@@ -1,0 +1,16 @@
+[Unit]
+Description=WebP Server Go
+Documentation=https://github.com/webp-sh/webp_server_go
+After=nginx.target
+
+[Service]
+Type=simple
+StandardError=journal
+WorkingDirectory=/opt/webps
+ExecStart=/opt/webps/webp-server --config /opt/webps/config.json
+Restart=always
+RestartSec=3s
+
+[Install]
+WantedBy=multi-user.target
+Alias=webp-server.service

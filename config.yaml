@@ -10,6 +10,14 @@
         "isDebug":true
     },
     "filePath":"static/upload",#前缀加./或不加表示在该程序下，只加/表示在磁盘文件下
+    "webp":{ ##需要和docker一致
+        "HOST": "127.0.0.1",
+        "PORT": 3333,
+        "QUALITY": 80,
+        "IMG_PATH": "/path/to/pics",
+        "EXHAUST_PATH": "",
+        "ALLOWED_TYPES": ["jpg","png","jpeg","bmp"]
+    },
     "redisConfig":{
         "network":"",
         "addr":"127.0.0.1:6379",
