@@ -2,14 +2,24 @@ syntax ="proto3";
 package sysuser;
 option go_package = "proto/sysuser";
 service UserSrv{
-  rpc Login(LoginReq)returns(LoginResp){}
-  rpc Registry(RegistryReq)returns(RegistryResp){}
+  rpc Login(LoginReq)returns(LoginResp){} //登录
+  rpc Registry(RegistryReq)returns(RegistryResp){} //注册
+
 }
+
+
 enum LoginType{
   NAME=0;//用户名登陆
   PHONE=1;//手机登录
   EMAIL=2;//邮箱登录
 }
+enum UserType{
+  ADMIN =0; //超级管理员
+  PLATFORM=1;//平台用户（业务员）
+  SHOP=2;//平台入驻商家（商家，批发商）
+  CUSTOMER=3;//平台客户（客户，采购商）
+}
+
 //用户登录
 message LoginReq{
   LoginType login_type=1;
@@ -22,7 +32,9 @@ message LoginResp{
   string user_name=2;//用户名
   string user_img=3;//用户头像
 }
+//用户注册请求
 message RegistryReq{
+  UserType user_type=6;//用户类型（注册通道）
   string user_name=1;//用户名
   string user_password=2;//密码
   string user_password_again=3;//确认密码
@@ -30,9 +42,15 @@ message RegistryReq{
   string user_phone_code=5;//验证码
 }
 
-//用户登录返回
+//用户注册返回
 message RegistryResp{
   string token=1;//token
   string user_name=2;//用户名
   string user_img=3;//用户头像
+}
+//角色请求
+message  RoleReq{
+  int64 id=1;//id,有则修改，无则添加
+  string role_name=2;//角色名称
+  string role_explain=3;//角色说明
 }

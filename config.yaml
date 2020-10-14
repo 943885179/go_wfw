@@ -58,49 +58,49 @@
     "services":{
         "userSrv":{
             "etcd":"",
-            "name":"com.weixiao.userSrv",
+            "name":"com.weixiao.api.user",
             "version":"latest",
             "ip":"",
             "port":0
         },
         "userCli":{
             "etcd":"",
-            "name":"com.weixiao.userCli",
+            "name":"com.weixiao.web.user",
             "version":"latest",
             "ip":"",
             "port":8701
         },
         "sendSrv":{
             "etcd":"",
-            "name":"com.weixiao.sendSrv",
+            "name":"com.weixiao.api.send",
             "version":"latest",
             "ip":"",
             "port":8702
         },
         "sendCli":{
             "etcd":"",
-            "name":"com.weixiao.sendCli",
+            "name":"com.weixiao.web.send",
             "version":"latest",
             "ip":"",
             "port":8703
         },
         "fileSrv":{
             "etcd":"",
-            "name":"com.weixiao.fileSrv",
+            "name":"com.weixiao.api.file",
             "version":"latest",
             "ip":"",
             "port":8704
         },
         "fileCli":{
             "etcd":"",
-            "name":"com.weixiao.fileCli",
+            "name":"com.weixiao.web.file",
             "version":"latest",
             "ip":"",
             "port":8705
         },
         "midCli":{
             "etcd":"",
-            "name":"com.weixiao.midCli",#中间服务调用micro接口
+            "name":"com.weixiao.web.mid",#中间服务调用micro接口
             "version":"latest",
         }
     }

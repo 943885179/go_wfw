@@ -9,7 +9,6 @@ import (
 	"io"
 	"io/ioutil"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"path"
 	"qshapi/models"
@@ -112,7 +111,7 @@ func fileById(c *gin.Context){
 func showFile(c *gin.Context){
 	//http://localhost:8705/img?url=321988436372230144.png
 	//["jpg","png","jpeg","bmp"]
-	for _, ext := range AllowedTypes {
+	/*for _, ext := range AllowedTypes {
 	haystack := strings.ToLower(ImgFilename)
 	needle := strings.ToLower("." + ext)
 	if strings.HasSuffix(haystack, needle) {
@@ -123,9 +122,9 @@ func showFile(c *gin.Context){
 	}
 	}
 	if !allowed {
-		c.Redirect(http.StatusMovedPermanently,)
+		c.Redirect()
 		return
-	}
+	}*/
 	url := c.Query("url")
 	c.File(path.Join(conf.FilePath,url))
 }

@@ -57,6 +57,7 @@ func (*Registry) Registry(req *sysuser.RegistryReq, resp *sysuser.RegistryResp) 
 	u:=models.SysUser{
 		ID: mzjuuid.WorkerDefault(),
 		UserName: req.UserName,
+		UserType:req.UserType,
 		UserPassword: mzjmd5.MD5(req.UserPassword),
 		UserPhone: req.UserPhone,
 
