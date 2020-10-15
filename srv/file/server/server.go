@@ -32,7 +32,6 @@ type fileSrv struct {
 
 func (*fileSrv) UploadFile(req *file.FileInfo, resp *file.FileId) error {
 	db := conf.DbConfig.New()
-	defer db.Close()
 	if req.Id == 0 {
 		req.Id = mzjuuid.WorkerDefault()
 	}
@@ -50,7 +49,6 @@ func (*fileSrv) UploadFile(req *file.FileInfo, resp *file.FileId) error {
 }
 func (*fileSrv) GetFile(req *file.FileId, resp *file.FileInfo) error { //获取图片基本信息
 	db := conf.DbConfig.New()
-	defer db.Close()
 	sf := &models.SysFile{}
 	if err := db.First(sf, req.Id).Error; err != nil {
 		return err

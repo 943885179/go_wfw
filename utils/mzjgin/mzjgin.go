@@ -14,16 +14,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 var (
 	conf models.APIConfig
 )
-func init(){
-	if err:=mzjinit.Default(&conf);err != nil {
+
+func init() {
+	if err := mzjinit.Default(&conf); err != nil {
 		log.Fatal(err)
 	}
 }
+
 //RespCode 返回代码
 type RespCode int
+
 const (
 	//APIOK 自定义返回状态（成功，登录成功等前端显示#67C23A）
 	APIOK RespCode = 10000
@@ -61,8 +65,8 @@ type Resp struct {
 }
 
 type gomicroErrResp struct {
-	ID string `json:"id"`
-	Code int `json:"code"`
+	ID     string `json:"id"`
+	Code   int    `json:"code"`
 	Detail string `json:"detail"`
 	Status string `json:"status"`
 }
@@ -108,13 +112,13 @@ func (r Resp) APIError(c *gin.Context, errMsg string) {
 	r.APIResult(c, int(APIError), errMsg)
 }
 
-func (r Resp)MicroResp(c *gin.Context,result interface{},err error)  {
+func (r Resp) MicroResp(c *gin.Context, result interface{}, err error) {
 	if err != nil {
-		er:=gomicroErrResp{}
-		json.Unmarshal([]byte(err.Error()),&er)
-		r.APIError(c,er.Detail)
-	}else {
-		r.APIOK(c,result)
+		er := gomicroErrResp{}
+		json.Unmarshal([]byte(err.Error()), &er)
+		r.APIError(c, er.Detail)
+	} else {
+		r.APIOK(c, result)
 	}
 }
 
@@ -127,25 +131,27 @@ func (r Resp) APIInfo(c *gin.Context, errMsg string) {
 func (r Resp) APIWary(c *gin.Context, errMsg string) {
 	r.APIResult(c, int(APIWary), errMsg)
 }
+
 var (
-  notoken=[]string{"/user/login", "/user/addUser","/static","/swagger","/favicon.ico","/login","/registry","/codeVerify","/sendCode" }
-  apiresp= Resp{}
+	notoken = []string{"/user/login", "/user/addUser", "/static", "/swagger", "/favicon.ico", "/login", "/registry", "/codeVerify", "/sendCode"}
+	apiresp = Resp{}
 )
+
 //APIGin 自定义gin
 type APIGin struct {
 }
 
 func NewGin() *APIGin {
-	result:=APIGin{}
+	result := APIGin{}
 	return &result
 }
-func(api *APIGin) Default() *gin.Engine{
+func (api *APIGin) Default() *gin.Engine {
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f)
-	fe,_:=os.Create("gin_error.log")
-	gin.DefaultErrorWriter=io.MultiWriter(fe)
-	g:=gin.Default()
-	g.Use(api.cors())//支持跨域
+	//fe, _ := os.Create("gin_error.log")
+	//gin.DefaultErrorWriter = io.MultiWriter(fe)
+	g := gin.Default()
+	g.Use(api.cors()) //支持跨域
 	g.NoMethod(handleNotFound)
 	g.NoRoute(handleNotFound)
 	g.Use(gzip.Gzip(gzip.DefaultCompression)) //使用gzip压缩
@@ -158,19 +164,19 @@ func(api *APIGin) Default() *gin.Engine{
 	//g.engine.LoadHTMLGlob("template/*")
 	//g.Static("/assets", "/var/www/tizi365/assets")// /assets/images/1.jpg 这个url文件，存储在/var/www/tizi365/assets/images/1.jpg
 	// 静态资源加载
-	 g.StaticFS("static", http.Dir("./static"))
+	g.StaticFS("static", http.Dir("./static"))
 	//g.StaticFS("/", http.Dir("./static/upload"))
 	//g.StaticFS("/public", http.Dir("D:/goproject/src/github.com/ffhelicopter/tmm/website/static"))
 	//g.StaticFile("/favicon.ico", "./resources/favicon.ico")
 	return g
 }
-func (api *APIGin)Run(addr string) {
+func (api *APIGin) Run(addr string) {
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f)
-	fe,_:=os.Create("gin_error.log")
-	gin.DefaultErrorWriter=io.MultiWriter(fe)
-	g:=gin.Default()
-	g.Use(api.cors())//支持跨域
+	fe, _ := os.Create("gin_error.log")
+	gin.DefaultErrorWriter = io.MultiWriter(fe)
+	g := gin.Default()
+	g.Use(api.cors()) //支持跨域
 	g.NoMethod(handleNotFound)
 	g.NoRoute(handleNotFound)
 	//添加Token中间件
@@ -186,8 +192,9 @@ func (api *APIGin)Run(addr string) {
 	//router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	g.Run(addr)
 }
+
 //跨域
-func (g *APIGin)cors() gin.HandlerFunc {
+func (g *APIGin) cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
 		c.Header("Access-Control-Allow-Origin", "*")
@@ -203,25 +210,26 @@ func (g *APIGin)cors() gin.HandlerFunc {
 }
 
 func handleNotFound(c *gin.Context) {
-	apiresp.APIResult(c, http.StatusNotFound,  "Not Found")
+	apiresp.APIResult(c, http.StatusNotFound, "Not Found")
 }
+
 //TokenAuthMiddleware token验证中间件(方法一)
 func TokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		for _, r := range notoken {
-			if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(r))  {
+			if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(r)) {
 				c.Next()
 				return
 			}
 		}
 		conf.Jwt.Token = c.Request.Header.Get("api_token")
-		if conf.Jwt.Token  == "" {
-			apiresp.APIResult(c, http.StatusForbidden,  "Not token")
+		if conf.Jwt.Token == "" {
+			apiresp.APIResult(c, http.StatusForbidden, "Not token")
 			return
 		}
 		user := &models.SysUser{}
 		if err := conf.Jwt.ParseToken(user); err != nil {
-			apiresp.APIResult(c, http.StatusBadRequest,  fmt.Sprintf("Token is Bad:%s", err.Error()))
+			apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
 			return
 		}
 		c.Next()
@@ -231,18 +239,18 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 //APITokenMiddleware token验证中间件(方法二)
 func APITokenMiddleware(c *gin.Context) {
 	for _, r := range notoken {
-		if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(r))  {
+		if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(r)) {
 			c.Next()
 			return
 		}
 	}
 	conf.Jwt.Token = c.Request.Header.Get("api_token")
 	if conf.Jwt.Token == "" {
-		apiresp.APIResult(c, http.StatusForbidden,  "权限不足")
+		apiresp.APIResult(c, http.StatusForbidden, "权限不足")
 		return
 	}
 	user := &models.SysUser{}
-	if err :=conf.Jwt.ParseToken(user); err != nil {
+	if err := conf.Jwt.ParseToken(user); err != nil {
 		apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
 		return
 	}
@@ -253,8 +261,8 @@ func APITokenMiddleware(c *gin.Context) {
 func main() {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
-		resp:=Resp{}
-		resp.APIOK(c,nil)
+		resp := Resp{}
+		resp.APIOK(c, nil)
 	})
 	r.Run(":8080")
 }

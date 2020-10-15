@@ -207,3 +207,20 @@
 ##启动micro网关
 1. 指定服务的命名空间为自己的命名空间`micro web --namespace com.weixiao.web `特别注意：web程序必须要以xxx.xxx.web.xxx命名，否则虽然注册到服务中但是不能直接调用
 2. 使用micro api 启动api同样如初，命名规范必须是[xxx...].api.xxx
+```cmd
+# 启动服务
+set MICRO_REGISTRY=etcd
+set MICRO_REGISTRY_ADDRESS=localhost:2379
+go run srv/sysuser/main.go --server_address :9090
+# web管理界面启动
+set MICRO_REGISTRY=etcd
+set MICRO_REGISTRY_ADDRESS=localhost:2379
+micro web
+# api网关启动
+set MICRO_REGISTRY=etcd
+set MICRO_REGISTRY_ADDRESS=localhost:2379
+set MICRO_API_NAMESPACE=xxx.xxx.api.xxx
+set MICRO_CLIENT=grpc
+set MICRO_SERVER=grpc
+micro api --handler=rpc
+```

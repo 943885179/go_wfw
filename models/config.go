@@ -11,38 +11,40 @@ import (
 
 //APIConfig erp基础配置
 type APIConfig struct {
-	FilePath    string      `json:"filePath"`    //文件基础路径
-	DbConfig   mzjgorm.DbConfig    `json:"dbConfig"`    //数据库配置
-	RedisConfig mzjredis.RedisConfig `json:"redisConfig"` //redis配置
-	EmailConfig mzjemail.EmailConfig `json:"emailConfig"`
-	TxOcrAPI    TxOcrAPI    `json:"txOcrApi"`    //腾讯Orcapi
-	WxPayConfig WxPayConfig `json:"wxPayConfig"` //微信支付config
-	Jwt mzjjwt.Jwt `json:"jwt"` //jwt
-	Services map[string]v2.Service `json:"services"`
-	Yzm Yzm `json:"yzm"`
+	FilePath    string                `json:"filePath"`    //文件基础路径
+	DbConfig    mzjgorm.DbConfig      `json:"dbConfig"`    //数据库配置
+	RedisConfig mzjredis.RedisConfig  `json:"redisConfig"` //redis配置
+	EmailConfig mzjemail.EmailConfig  `json:"emailConfig"`
+	TxOcrAPI    TxOcrAPI              `json:"txOcrApi"`    //腾讯Orcapi
+	WxPayConfig WxPayConfig           `json:"wxPayConfig"` //微信支付config
+	Jwt         mzjjwt.Jwt            `json:"jwt"`         //jwt
+	Services    map[string]v2.Service `json:"services"`
+	Yzm         Yzm                   `json:"yzm"`
 }
+
 //TxOcrAPI 腾讯文字OrC
 type TxOcrAPI struct {
 	Region    string `json:"region"`
 	SecretID  string `json:"secretId"`
 	SecretKey string `json:"secretKey"`
 	Endpoint  string `json:"endpoint"`
-	IsDebug    bool     `json:"isDebug"`    //是否为调试模式
+	IsDebug   bool   `json:"isDebug"` //是否为调试模式
 }
 
 //WxPayConfig 微信支付基础配置
 type WxPayConfig struct {
-	AppID  string `json:"appId"`  //应用id
-	MchID  string `json:"mchId"`  //商户id
-	APIKey string `json:"apikey"` //API密钥
-	IsProd bool   `json:"isProd"` //是否是正式环境
-	IsDebug    bool     `json:"isDebug"`    //是否为调试模式
+	AppID   string `json:"appId"`   //应用id
+	MchID   string `json:"mchId"`   //商户id
+	APIKey  string `json:"apikey"`  //API密钥
+	IsProd  bool   `json:"isProd"`  //是否是正式环境
+	IsDebug bool   `json:"isDebug"` //是否为调试模式
 }
 
-type Yzm struct {//验证码
-	Width int `json:"width"`//长度
-	TimeOut    time.Duration `json:"timeOut"`    //过期时长
+type Yzm struct { //验证码
+	Width   int           `json:"width"`   //长度
+	TimeOut time.Duration `json:"timeOut"` //过期时长
 }
+
 /*
 type Jwt struct {
 	Secret string `json:"secret"`//jwt加密字段

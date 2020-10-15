@@ -1,13 +1,25 @@
 syntax ="proto3";
 package sysuser;
 option go_package = "proto/sysuser";
+import "google/protobuf/empty.proto";
 service UserSrv{
   rpc Login(LoginReq)returns(LoginResp){} //登录
-  rpc Registry(RegistryReq)returns(RegistryResp){} //注册
+  rpc Registry(RegistryReq)returns(google.protobuf.Empty){} //注册
+
+  rpc EditRole(RoleReq)returns(google.protobuf.Empty){}//编辑角色
+  rpc DelRole(DelReq)returns(google.protobuf.Empty){}
+  rpc EditUserGroup(UserGroupReq)returns(google.protobuf.Empty){}//编辑用户组
+  rpc DelUserGroup(DelReq)returns(google.protobuf.Empty){}
+  rpc EditMenu(MenuReq)returns(google.protobuf.Empty){}//编辑菜单
+  rpc DelMenu(DelReq)returns(google.protobuf.Empty){}
+  rpc EditApi(ApiReq)returns(google.protobuf.Empty){}//编辑api
+  rpc DelApi(DelReq)returns(google.protobuf.Empty){}
+  rpc EditSrv(SrvReq)returns(google.protobuf.Empty){}//编辑服务
+  rpc DelSrv(DelReq)returns(google.protobuf.Empty){}
+  rpc EditTree(TreeReq)returns(google.protobuf.Empty){}//编辑服务
+  rpc DelTree(DelReq)returns(google.protobuf.Empty){}
 
 }
-
-
 enum LoginType{
   NAME=0;//用户名登陆
   PHONE=1;//手机登录
@@ -41,16 +53,65 @@ message RegistryReq{
   string user_phone=4;//电话
   string user_phone_code=5;//验证码
 }
-
-//用户注册返回
-message RegistryResp{
-  string token=1;//token
-  string user_name=2;//用户名
-  string user_img=3;//用户头像
-}
 //角色请求
 message  RoleReq{
   int64 id=1;//id,有则修改，无则添加
   string role_name=2;//角色名称
   string role_explain=3;//角色说明
+  repeated int64 men_id=4;//菜单id
+  repeated int64  srv_id=5;//服务id
+  repeated int64 api_id=6;//apiid
+}
+//用户组请求
+message  UserGroupReq{
+  int64 id=1;//id,有则修改，无则添加
+  string group_name=2;//用户组名称
+  string  group_explain=3;//用户组说明
+  repeated int64 role_id=4;//角色id
+}
+message  MenuReq{
+  int64 id=1;
+  string key=2;
+  string text=3;//树名称
+  string i18n=4;//i18n主键
+  string link=5;//'路由，link、externalLink 二选其一
+  string external_link=6;//外部链接
+  string target=7;//链接类型
+  string  sort=8;//排序
+  int32  badge=9;//标签数量
+  string  badge_doc=10;//标签文字
+  string badge_status =11;//徽标 Badge 颜色
+  string acl =12;//徽标 Badge 颜色
+  bool hide=13;
+  bool disabled=14;
+  bool hideInBreadcrumb=15;
+  bool shortcut=16;
+  bool shortcut_root=17;
+  bool reuse=18;
+  string  icon=19;
+  int64 pid=20;
+}
+
+message ApiReq{
+  int64 id=1;//id,有则修改，无则添加
+  string service=2;//服务名
+  string method=3;//方法
+  string api_explain=4;//描述
+}
+message SrvReq{
+  int64 id=1;//id,有则修改，无则添加
+  string service=2;//服务名
+  string method=3;//方法
+  string srv_explain=4;//描述
+}
+message TreeReq{
+  int64 id=1;//id,有则修改，无则添加
+  string Code=2;//服务名
+  int32 Text=3;
+  string Sort=4;
+  int64 Pid=5;
+  repeated TreeReq Children=6;//
+}
+message DelReq{
+  int64 id=1;
 }

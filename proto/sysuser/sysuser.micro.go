@@ -6,6 +6,7 @@ package sysuser
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	math "math"
 )
 
@@ -35,7 +36,19 @@ var _ server.Option
 
 type UserSrvService interface {
 	Login(ctx context.Context, in *LoginReq, opts ...client.CallOption) (*LoginResp, error)
-	Registry(ctx context.Context, in *RegistryReq, opts ...client.CallOption) (*RegistryResp, error)
+	Registry(ctx context.Context, in *RegistryReq, opts ...client.CallOption) (*empty.Empty, error)
+	EditRole(ctx context.Context, in *RoleReq, opts ...client.CallOption) (*empty.Empty, error)
+	DelRole(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error)
+	EditUserGroup(ctx context.Context, in *UserGroupReq, opts ...client.CallOption) (*empty.Empty, error)
+	DelUserGroup(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error)
+	EditMenu(ctx context.Context, in *MenuReq, opts ...client.CallOption) (*empty.Empty, error)
+	DelMenu(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error)
+	EditApi(ctx context.Context, in *ApiReq, opts ...client.CallOption) (*empty.Empty, error)
+	DelApi(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error)
+	EditSrv(ctx context.Context, in *SrvReq, opts ...client.CallOption) (*empty.Empty, error)
+	DelSrv(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error)
+	EditTree(ctx context.Context, in *TreeReq, opts ...client.CallOption) (*empty.Empty, error)
+	DelTree(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error)
 }
 
 type userSrvService struct {
@@ -66,9 +79,129 @@ func (c *userSrvService) Login(ctx context.Context, in *LoginReq, opts ...client
 	return out, nil
 }
 
-func (c *userSrvService) Registry(ctx context.Context, in *RegistryReq, opts ...client.CallOption) (*RegistryResp, error) {
+func (c *userSrvService) Registry(ctx context.Context, in *RegistryReq, opts ...client.CallOption) (*empty.Empty, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.Registry", in)
-	out := new(RegistryResp)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditRole(ctx context.Context, in *RoleReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.EditRole", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) DelRole(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.DelRole", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditUserGroup(ctx context.Context, in *UserGroupReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.EditUserGroup", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) DelUserGroup(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.DelUserGroup", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditMenu(ctx context.Context, in *MenuReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.EditMenu", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) DelMenu(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.DelMenu", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditApi(ctx context.Context, in *ApiReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.EditApi", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) DelApi(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.DelApi", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditSrv(ctx context.Context, in *SrvReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.EditSrv", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) DelSrv(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.DelSrv", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditTree(ctx context.Context, in *TreeReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.EditTree", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) DelTree(ctx context.Context, in *DelReq, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.DelTree", in)
+	out := new(empty.Empty)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -80,13 +213,37 @@ func (c *userSrvService) Registry(ctx context.Context, in *RegistryReq, opts ...
 
 type UserSrvHandler interface {
 	Login(context.Context, *LoginReq, *LoginResp) error
-	Registry(context.Context, *RegistryReq, *RegistryResp) error
+	Registry(context.Context, *RegistryReq, *empty.Empty) error
+	EditRole(context.Context, *RoleReq, *empty.Empty) error
+	DelRole(context.Context, *DelReq, *empty.Empty) error
+	EditUserGroup(context.Context, *UserGroupReq, *empty.Empty) error
+	DelUserGroup(context.Context, *DelReq, *empty.Empty) error
+	EditMenu(context.Context, *MenuReq, *empty.Empty) error
+	DelMenu(context.Context, *DelReq, *empty.Empty) error
+	EditApi(context.Context, *ApiReq, *empty.Empty) error
+	DelApi(context.Context, *DelReq, *empty.Empty) error
+	EditSrv(context.Context, *SrvReq, *empty.Empty) error
+	DelSrv(context.Context, *DelReq, *empty.Empty) error
+	EditTree(context.Context, *TreeReq, *empty.Empty) error
+	DelTree(context.Context, *DelReq, *empty.Empty) error
 }
 
 func RegisterUserSrvHandler(s server.Server, hdlr UserSrvHandler, opts ...server.HandlerOption) error {
 	type userSrv interface {
 		Login(ctx context.Context, in *LoginReq, out *LoginResp) error
-		Registry(ctx context.Context, in *RegistryReq, out *RegistryResp) error
+		Registry(ctx context.Context, in *RegistryReq, out *empty.Empty) error
+		EditRole(ctx context.Context, in *RoleReq, out *empty.Empty) error
+		DelRole(ctx context.Context, in *DelReq, out *empty.Empty) error
+		EditUserGroup(ctx context.Context, in *UserGroupReq, out *empty.Empty) error
+		DelUserGroup(ctx context.Context, in *DelReq, out *empty.Empty) error
+		EditMenu(ctx context.Context, in *MenuReq, out *empty.Empty) error
+		DelMenu(ctx context.Context, in *DelReq, out *empty.Empty) error
+		EditApi(ctx context.Context, in *ApiReq, out *empty.Empty) error
+		DelApi(ctx context.Context, in *DelReq, out *empty.Empty) error
+		EditSrv(ctx context.Context, in *SrvReq, out *empty.Empty) error
+		DelSrv(ctx context.Context, in *DelReq, out *empty.Empty) error
+		EditTree(ctx context.Context, in *TreeReq, out *empty.Empty) error
+		DelTree(ctx context.Context, in *DelReq, out *empty.Empty) error
 	}
 	type UserSrv struct {
 		userSrv
@@ -103,6 +260,54 @@ func (h *userSrvHandler) Login(ctx context.Context, in *LoginReq, out *LoginResp
 	return h.UserSrvHandler.Login(ctx, in, out)
 }
 
-func (h *userSrvHandler) Registry(ctx context.Context, in *RegistryReq, out *RegistryResp) error {
+func (h *userSrvHandler) Registry(ctx context.Context, in *RegistryReq, out *empty.Empty) error {
 	return h.UserSrvHandler.Registry(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditRole(ctx context.Context, in *RoleReq, out *empty.Empty) error {
+	return h.UserSrvHandler.EditRole(ctx, in, out)
+}
+
+func (h *userSrvHandler) DelRole(ctx context.Context, in *DelReq, out *empty.Empty) error {
+	return h.UserSrvHandler.DelRole(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditUserGroup(ctx context.Context, in *UserGroupReq, out *empty.Empty) error {
+	return h.UserSrvHandler.EditUserGroup(ctx, in, out)
+}
+
+func (h *userSrvHandler) DelUserGroup(ctx context.Context, in *DelReq, out *empty.Empty) error {
+	return h.UserSrvHandler.DelUserGroup(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditMenu(ctx context.Context, in *MenuReq, out *empty.Empty) error {
+	return h.UserSrvHandler.EditMenu(ctx, in, out)
+}
+
+func (h *userSrvHandler) DelMenu(ctx context.Context, in *DelReq, out *empty.Empty) error {
+	return h.UserSrvHandler.DelMenu(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditApi(ctx context.Context, in *ApiReq, out *empty.Empty) error {
+	return h.UserSrvHandler.EditApi(ctx, in, out)
+}
+
+func (h *userSrvHandler) DelApi(ctx context.Context, in *DelReq, out *empty.Empty) error {
+	return h.UserSrvHandler.DelApi(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditSrv(ctx context.Context, in *SrvReq, out *empty.Empty) error {
+	return h.UserSrvHandler.EditSrv(ctx, in, out)
+}
+
+func (h *userSrvHandler) DelSrv(ctx context.Context, in *DelReq, out *empty.Empty) error {
+	return h.UserSrvHandler.DelSrv(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditTree(ctx context.Context, in *TreeReq, out *empty.Empty) error {
+	return h.UserSrvHandler.EditTree(ctx, in, out)
+}
+
+func (h *userSrvHandler) DelTree(ctx context.Context, in *DelReq, out *empty.Empty) error {
+	return h.UserSrvHandler.DelTree(ctx, in, out)
 }

@@ -8,7 +8,7 @@ require (
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/blevesearch/bleve v1.0.10 // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc
-	github.com/chai2010/webp v1.1.0
+	github.com/chai2010/webp v1.1.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200910202707-1e08a3fab204 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
@@ -35,9 +35,11 @@ require (
 	github.com/lestrrat/go-strftime v0.0.0-20180220042222-ba3bf9c1d042 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
+	github.com/mattn/go-sqlite3 v1.14.4 // indirect
 	github.com/micro/cli/v2 v2.1.2
 	github.com/micro/go-micro v1.16.0
 	github.com/micro/go-micro/v2 v2.9.1
+	github.com/micro/grpc-go v0.0.0-20190130160115-549af9fb4bf2 // indirect
 	github.com/micro/protoc-gen-micro v1.0.0 // indirect
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/onsi/ginkgo v1.10.1 // indirect
@@ -56,10 +58,13 @@ require (
 	github.com/vladoatanasov/logrus_amqp v0.0.0-20181023103017-b21faf6f8ae3
 	github.com/wangbin/jiebago v0.3.2 // indirect
 	github.com/willf/bitset v1.1.11 // indirect
+	github.com/xyproto/permissions2 v0.0.0-20200902135438-05029d08c3f2
 	github.com/yanyiwu/gojieba v1.1.2
+	golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee // indirect
 	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/grpc v1.32.0
-	google.golang.org/protobuf v1.23.0
+	google.golang.org/protobuf v1.23.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
@@ -67,6 +72,14 @@ require (
 	gopkg.in/olivere/elastic.v5 v5.0.84
 	gopkg.in/sohlich/elogrus.v2 v2.0.2
 	gopkg.in/yaml.v2 v2.2.8 // indirect
+	gorm.io/driver/clickhouse v0.0.0-20201012085455-facfac3584cc
+	gorm.io/driver/mysql v1.0.2
+	gorm.io/driver/postgres v1.0.2
+	gorm.io/driver/sqlite v1.1.3
+	gorm.io/driver/sqlserver v1.0.4
+	gorm.io/gorm v1.20.2
+	gorm.io/hints v0.0.0-20201009065012-5a8ac6261297 // indirect
+	gorm.io/plugin/dbresolver v1.0.0
 )
 
 // 替换为v1.26.0版本的gRPC库
