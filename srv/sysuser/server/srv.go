@@ -9,8 +9,8 @@ import (
 )
 
 type ISrv interface {
-	EditSrv(req *sysuser.SrvReq) error
-	DelSrv(req *sysuser.DelReq) error
+	EditSrv(req *sysuser.SrvReq, resp *sysuser.EditResp) error
+	DelSrv(req *sysuser.DelReq, resp *sysuser.EditResp) error
 }
 
 func NewSrv() ISrv {
@@ -19,12 +19,13 @@ func NewSrv() ISrv {
 
 type Srv struct{}
 
-func (*Srv) DelSrv(req *sysuser.DelReq) error {
+func (*Srv) DelSrv(req *sysuser.DelReq, resp *sysuser.EditResp) error {
 	db := Conf.DbConfig.New()
+	resp.Id = req.Id
 	return db.Delete(models.SysSrv{}, req.Id).Error
 }
 
-func (*Srv) EditSrv(req *sysuser.SrvReq) error {
+func (*Srv) EditSrv(req *sysuser.SrvReq, resp *sysuser.EditResp) error {
 	db := Conf.DbConfig.New()
 	Srv := &models.SysSrv{}
 	if req.Id > 0 { //修改0
@@ -35,10 +36,12 @@ func (*Srv) EditSrv(req *sysuser.SrvReq) error {
 			return err
 		}
 		mzjstruct.CopyStruct(req, Srv)
+		resp.Id = Srv.Id
 		return db.Updates(Srv).Error
 	} else { //添加
-		Srv.ID = mzjuuid.WorkerDefault()
 		mzjstruct.CopyStruct(req, Srv)
+		Srv.Id = mzjuuid.WorkerDefault()
+		resp.Id = Srv.Id
 		return db.Create(Srv).Error
 	}
 }

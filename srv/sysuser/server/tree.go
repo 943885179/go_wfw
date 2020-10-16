@@ -9,8 +9,8 @@ import (
 )
 
 type ITree interface {
-	EditTree(req *sysuser.TreeReq) error
-	DelTree(req *sysuser.DelReq) error
+	EditTree(req *sysuser.TreeReq, resp *sysuser.EditResp) error
+	DelTree(req *sysuser.DelReq, resp *sysuser.EditResp) error
 }
 
 func NewTree() ITree {
@@ -19,12 +19,13 @@ func NewTree() ITree {
 
 type Tree struct{}
 
-func (*Tree) DelTree(req *sysuser.DelReq) error {
+func (*Tree) DelTree(req *sysuser.DelReq, resp *sysuser.EditResp) error {
 	db := Conf.DbConfig.New()
+	resp.Id = req.Id
 	return db.Delete(models.SysTree{}, req.Id).Error
 }
 
-func (*Tree) EditTree(req *sysuser.TreeReq) error {
+func (*Tree) EditTree(req *sysuser.TreeReq, resp *sysuser.EditResp) error {
 	db := Conf.DbConfig.New()
 	Tree := &models.SysTree{}
 	if req.Id > 0 { //修改0
@@ -35,10 +36,12 @@ func (*Tree) EditTree(req *sysuser.TreeReq) error {
 			return err
 		}
 		mzjstruct.CopyStruct(req, Tree)
+		resp.Id = Tree.Id
 		return db.Updates(Tree).Error
 	} else { //添加
-		Tree.ID = mzjuuid.WorkerDefault()
 		mzjstruct.CopyStruct(req, Tree)
+		Tree.Id = mzjuuid.WorkerDefault()
+		resp.Id = Tree.Id
 		return db.Create(Tree).Error
 	}
 }

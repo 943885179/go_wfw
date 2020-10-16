@@ -10,8 +10,8 @@ import (
 )
 
 type IApi interface {
-	EditApi(req *sysuser.ApiReq) error
-	DelApi(req *sysuser.DelReq) error
+	EditApi(req *sysuser.ApiReq, resp *sysuser.EditResp) error
+	DelApi(req *sysuser.DelReq, resp *sysuser.EditResp) error
 }
 
 func NewAPI() IApi {
@@ -20,11 +20,12 @@ func NewAPI() IApi {
 
 type Api struct{}
 
-func (*Api) DelApi(req *sysuser.DelReq) error {
+func (*Api) DelApi(req *sysuser.DelReq, resp *sysuser.EditResp) error {
 	db := Conf.DbConfig.New()
+	resp.Id = req.Id
 	return db.Delete(models.SysAPI{}, req.Id).Error
 }
-func (*Api) EditApi(req *sysuser.ApiReq) error {
+func (*Api) EditApi(req *sysuser.ApiReq, resp *sysuser.EditResp) error {
 	fmt.Println(req)
 	db := Conf.DbConfig.New()
 	//defer db.Close()
@@ -38,11 +39,12 @@ func (*Api) EditApi(req *sysuser.ApiReq) error {
 			return err
 		}
 		mzjstruct.CopyStruct(req, api)
+		resp.Id = api.Id
 		return db.Updates(api).Error
 	} else { //添加
-		api.ID = mzjuuid.WorkerDefault()
 		mzjstruct.CopyStruct(req, api)
-		fmt.Println(api)
+		api.Id = mzjuuid.WorkerDefault()
+		resp.Id = api.Id
 		return db.Create(api).Error
 	}
 }

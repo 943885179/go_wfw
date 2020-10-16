@@ -2,16 +2,16 @@ package server
 
 import (
 	"errors"
-	"fmt"
 	"qshapi/models"
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjmd5"
+	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 	"strings"
 )
 
 type IRegistry interface {
-	Registry(req *sysuser.RegistryReq) error
+	Registry(req *sysuser.RegistryReq, resp *sysuser.EditResp) error
 }
 
 func NewRegistry() IRegistry {
@@ -20,7 +20,7 @@ func NewRegistry() IRegistry {
 
 type Registry struct{}
 
-func (*Registry) Registry(req *sysuser.RegistryReq) error {
+func (*Registry) Registry(req *sysuser.RegistryReq, resp *sysuser.EditResp) error {
 	req.UserName = strings.Trim(req.UserName, "")
 	req.UserPassword = strings.Trim(req.UserPassword, "")
 	req.UserPasswordAgain = strings.Trim(req.UserPasswordAgain, "")
@@ -39,7 +39,7 @@ func (*Registry) Registry(req *sysuser.RegistryReq) error {
 		return errors.New("请输入验证码")
 	}
 	if v, err := CodeVerify(req.UserPhone, req.UserPhoneCode); err != nil || !v {
-		return errors.New("验证码错误")
+		//return errors.New("验证码错误")
 	}
 	db := Conf.DbConfig.New()
 	//判断是否存在用户名
@@ -56,13 +56,10 @@ func (*Registry) Registry(req *sysuser.RegistryReq) error {
 	if count > 0 {
 		return errors.New("该手机号已注册")
 	}
-	u := models.SysUser{
-		ID:           mzjuuid.WorkerDefault(),
-		UserName:     req.UserName,
-		UserType:     req.UserType,
-		UserPassword: mzjmd5.MD5(req.UserPassword),
-		UserPhone:    req.UserPhone,
-	}
-	fmt.Println(u.ID)
-	return db.Create(&u).Error
+	req.UserPassword = mzjmd5.MD5(req.UserPassword)
+	u := &models.SysUser{}
+	mzjstruct.CopyStruct(req, u)
+	u.Id = mzjuuid.WorkerDefault()
+	resp.Id = u.Id
+	return db.Create(u).Error
 }

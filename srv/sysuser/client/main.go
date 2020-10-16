@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/v2/util/log"
@@ -47,6 +48,7 @@ func SrvGin() *gin.Engine {
 		})
 		r.POST("Login", Login)
 		r.POST("Registry", Registry)
+		r.POST("UserInfoList", UserInfoList)
 
 		r.POST("EditApi", EditApi)
 		r.POST("DelApi", DelApi)
@@ -118,6 +120,7 @@ func EditRole(c *gin.Context) {
 	result, err := client.EditRole(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
+
 func DelTree(c *gin.Context) {
 	req := sysuser.DelReq{}
 	c.Bind(&req)
@@ -153,4 +156,17 @@ func DelRole(c *gin.Context) {
 	c.Bind(&req)
 	result, err := client.DelRole(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
+}
+
+func UserInfoList(c *gin.Context) {
+	req := sysuser.UserInfoListReq{}
+	c.Bind(&req)
+	result, err := client.UserInfoList(context.TODO(), &req)
+	if err != nil {
+		resp.MicroResp(c, result, err)
+		return
+	}
+	var users models.SysUser
+	json.Unmarshal(result.Data.Value, &users)
+	resp.MicroResp(c, users, err)
 }

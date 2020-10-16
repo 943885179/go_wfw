@@ -1,23 +1,32 @@
 syntax ="proto3";
 package sysuser;
 option go_package = "proto/sysuser";
-import "google/protobuf/empty.proto";
+//import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
 service UserSrv{
   rpc Login(LoginReq)returns(LoginResp){} //登录
-  rpc Registry(RegistryReq)returns(google.protobuf.Empty){} //注册
+  rpc Registry(RegistryReq)returns(EditResp){} //注册
+  rpc ChangePassword(ChangePasswordReq)returns(EditResp){}//修改密码
+  rpc UserInfoList(UserInfoListReq)returns(UserInfoListResp){}//分页查询用户
 
-  rpc EditRole(RoleReq)returns(google.protobuf.Empty){}//编辑角色
-  rpc DelRole(DelReq)returns(google.protobuf.Empty){}
-  rpc EditUserGroup(UserGroupReq)returns(google.protobuf.Empty){}//编辑用户组
-  rpc DelUserGroup(DelReq)returns(google.protobuf.Empty){}
-  rpc EditMenu(MenuReq)returns(google.protobuf.Empty){}//编辑菜单
-  rpc DelMenu(DelReq)returns(google.protobuf.Empty){}
-  rpc EditApi(ApiReq)returns(google.protobuf.Empty){}//编辑api
-  rpc DelApi(DelReq)returns(google.protobuf.Empty){}
-  rpc EditSrv(SrvReq)returns(google.protobuf.Empty){}//编辑服务
-  rpc DelSrv(DelReq)returns(google.protobuf.Empty){}
-  rpc EditTree(TreeReq)returns(google.protobuf.Empty){}//编辑服务
-  rpc DelTree(DelReq)returns(google.protobuf.Empty){}
+  rpc EditRole(RoleReq)returns(EditResp){}//编辑角色
+  rpc DelRole(DelReq)returns(EditResp){}
+
+  rpc EditUserGroup(UserGroupReq)returns(EditResp){}//编辑用户组
+  rpc DelUserGroup(DelReq)returns(EditResp){}
+
+  rpc EditMenu(MenuReq)returns(EditResp){}//编辑菜单
+  rpc DelMenu(DelReq)returns(EditResp){}
+
+  rpc EditApi(ApiReq)returns(EditResp){}//编辑api
+  rpc DelApi(DelReq)returns(EditResp){}
+
+  rpc EditSrv(SrvReq)returns(EditResp){}//编辑服务
+  rpc DelSrv(DelReq)returns(EditResp){}
+
+  rpc EditTree(TreeReq)returns(EditResp){}//编辑服务
+  rpc DelTree(DelReq)returns(EditResp){}
+
 
 }
 enum LoginType{
@@ -53,6 +62,24 @@ message RegistryReq{
   string user_phone=4;//电话
   string user_phone_code=5;//验证码
 }
+//修改密码
+message ChangePasswordReq{
+  int64 id=1;
+  string user_password=2;//密码
+  string user_password_again=3;//确认密码
+}
+message UserInfoListReq{
+  int32 page=1;//页码
+  int32 row=2;//每页显示行数
+  string user_name=3;//用户名(查询条件)
+  string user_phone=4;//电话(查询条件)
+  string user_email=5;//邮箱(查询条件)
+}
+message UserInfoListResp{
+  int64 total=1;//数量
+ google.protobuf.Any   data=2;//每页显示行数
+}
+
 //角色请求
 message  RoleReq{
   int64 id=1;//id,有则修改，无则添加
@@ -61,6 +88,7 @@ message  RoleReq{
   repeated int64 men_id=4;//菜单id
   repeated int64  srv_id=5;//服务id
   repeated int64 api_id=6;//apiid
+  int64 p_id=7;//父级id
 }
 //用户组请求
 message  UserGroupReq{
@@ -106,12 +134,15 @@ message SrvReq{
 }
 message TreeReq{
   int64 id=1;//id,有则修改，无则添加
-  string Code=2;//服务名
-  int32 Text=3;
-  string Sort=4;
-  int64 Pid=5;
-  repeated TreeReq Children=6;//
+  string Code=2;//编码
+  string Text=3;
+  int32 Sort=4;
+  int64 p_id=5;
+  repeated TreeReq Children=6;
 }
 message DelReq{
+  int64 id=1;
+}
+message EditResp{
   int64 id=1;
 }
