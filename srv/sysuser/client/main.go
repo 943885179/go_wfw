@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
 	"qshapi/proto/sysuser"
@@ -48,7 +48,6 @@ func SrvGin() *gin.Engine {
 		})
 		r.POST("Login", Login)
 		r.POST("Registry", Registry)
-		r.POST("UserInfoList", UserInfoList)
 
 		r.POST("EditApi", EditApi)
 		r.POST("DelApi", DelApi)
@@ -62,6 +61,14 @@ func SrvGin() *gin.Engine {
 		r.POST("DelMenu", DelMenu)
 		r.POST("EditTree", EditTree)
 		r.POST("DelTree", DelTree)
+
+		r.POST("UserInfoList", UserInfoList)
+		r.POST("RoleList", RoleList)
+		r.POST("TreeList", TreeList)
+		r.POST("ApiList", ApiList)
+		r.POST("SrvList", SrvList)
+		r.POST("MenuList", MenuList)
+		r.POST("UserGroupList", UserGroupList)
 	}
 	return g
 }
@@ -84,38 +91,38 @@ func Registry(c *gin.Context) {
 }
 
 func EditApi(c *gin.Context) {
-	req := sysuser.ApiReq{} //😩 sysuser.ApiReq{}直接定义成这个然后使用中文会转化报错，还是麻烦点吧
+	req := sysuser.SysApi{} //😩 sysuser.Api{}直接定义成这个然后使用中文会转化报错，还是麻烦点吧
 	c.Bind(&req)
 	fmt.Println("参数", &req)
 	result, err := client.EditApi(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditSrv(c *gin.Context) {
-	req := sysuser.SrvReq{}
+	req := sysuser.SysSrv{}
 	c.Bind(&req)
 	result, err := client.EditSrv(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditTree(c *gin.Context) {
-	req := sysuser.TreeReq{}
+	req := sysuser.SysTree{}
 	c.Bind(&req)
 	result, err := client.EditTree(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditMenu(c *gin.Context) {
-	req := sysuser.MenuReq{}
+	req := sysuser.SysMenu{}
 	c.Bind(&req)
 	result, err := client.EditMenu(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditUserGroup(c *gin.Context) {
-	req := sysuser.UserGroupReq{}
+	req := sysuser.SysGroup{}
 	c.Bind(&req)
 	result, err := client.EditUserGroup(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditRole(c *gin.Context) {
-	req := sysuser.RoleReq{}
+	req := sysuser.SysRole{}
 	c.Bind(&req)
 	result, err := client.EditRole(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
@@ -157,16 +164,102 @@ func DelRole(c *gin.Context) {
 	result, err := client.DelRole(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
+func ApiList(c *gin.Context) {
+	req := sysuser.PageReq{}
+	c.Bind(&req)
+	result, err := client.ApiList(context.TODO(), &req)
+	var rs []sysuser.SysRole
+	for _, any := range result.Data {
+		var r sysuser.SysRole
+		ptypes.UnmarshalAny(any, &r)
+		rs = append(rs, r)
+	}
+	resp.MicroTotalResp(c, result.Total, rs, err)
+	//resp.MicroResp(c, result, err)
+}
+func SrvList(c *gin.Context) {
+	req := sysuser.PageReq{}
+	c.Bind(&req)
+	result, err := client.SrvList(context.TODO(), &req)
+	var rs []sysuser.SysRole
+	for _, any := range result.Data {
+		var r sysuser.SysRole
+		ptypes.UnmarshalAny(any, &r)
+		rs = append(rs, r)
+	}
+	resp.MicroTotalResp(c, result.Total, rs, err)
+	//resp.MicroResp(c, result, err)
+}
+func UserGroupList(c *gin.Context) {
+	req := sysuser.PageReq{}
+	c.Bind(&req)
+	result, err := client.UserGroupList(context.TODO(), &req)
+	var rs []sysuser.SysRole
+	for _, any := range result.Data {
+		var r sysuser.SysRole
+		ptypes.UnmarshalAny(any, &r)
+		rs = append(rs, r)
+	}
+	resp.MicroTotalResp(c, result.Total, rs, err)
+	//resp.MicroResp(c, result, err)
+}
+func TreeList(c *gin.Context) {
+	req := sysuser.PageReq{}
+	c.Bind(&req)
+	result, err := client.TreeList(context.TODO(), &req)
+	var rs []sysuser.SysRole
+	for _, any := range result.Data {
+		var r sysuser.SysRole
+		ptypes.UnmarshalAny(any, &r)
+		rs = append(rs, r)
+	}
+	resp.MicroTotalResp(c, result.Total, rs, err)
+	//resp.MicroResp(c, result, err)
+}
+func MenuList(c *gin.Context) {
+	req := sysuser.PageReq{}
+	c.Bind(&req)
+	result, err := client.MenuList(context.TODO(), &req)
+	var rs []sysuser.SysRole
+	for _, any := range result.Data {
+		var r sysuser.SysRole
+		ptypes.UnmarshalAny(any, &r)
+		rs = append(rs, r)
+	}
+	resp.MicroTotalResp(c, result.Total, rs, err)
+	//resp.MicroResp(c, result, err)
+}
+func RoleList(c *gin.Context) {
+	req := sysuser.PageReq{}
+	c.Bind(&req)
+	result, err := client.RoleList(context.TODO(), &req)
+	var rs []sysuser.SysRole
+	for _, any := range result.Data {
+		var r sysuser.SysRole
+		ptypes.UnmarshalAny(any, &r)
+		rs = append(rs, r)
+	}
+	resp.MicroTotalResp(c, result.Total, rs, err)
+	//resp.MicroResp(c, result, err)
+}
 
 func UserInfoList(c *gin.Context) {
 	req := sysuser.UserInfoListReq{}
 	c.Bind(&req)
 	result, err := client.UserInfoList(context.TODO(), &req)
-	if err != nil {
+	var us []sysuser.SysUser
+	for _, any := range result.Data {
+		var u sysuser.SysUser
+		ptypes.UnmarshalAny(any, &u)
+		us = append(us, u)
+	}
+	resp.MicroTotalResp(c, result.Total, us, err)
+	/*if err != nil {
 		resp.MicroResp(c, result, err)
 		return
 	}
-	var users models.SysUser
+	var users []models.SysUser
+	fmt.Println(string(result.Data.Value))
 	json.Unmarshal(result.Data.Value, &users)
-	resp.MicroResp(c, users, err)
+	resp.MicroTotalResp(c, result.Total, users, err)*/
 }

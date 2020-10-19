@@ -38,7 +38,7 @@ func dbInit() {
 	db.Save(&menus)*/
 	db.AutoMigrate(
 		&models.SysMenu{},
-		&models.SysAPI{},
+		&models.SysApi{},
 		&models.SysSrv{},
 		&models.SysRole{},
 		&models.SysGroup{},

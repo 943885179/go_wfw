@@ -121,6 +121,19 @@ func (r Resp) MicroResp(c *gin.Context, result interface{}, err error) {
 		r.APIOK(c, result)
 	}
 }
+func (r Resp) MicroTotalResp(c *gin.Context, total int64, result interface{}, err error) {
+	if err != nil {
+		er := gomicroErrResp{}
+		json.Unmarshal([]byte(err.Error()), &er)
+		r.APIError(c, er.Detail)
+	} else {
+		res := gin.H{
+			"total": total,
+			"data":  result,
+		}
+		r.APIOK(c, res)
+	}
+}
 
 //APIInfo 提示返回
 func (r Resp) APIInfo(c *gin.Context, errMsg string) {

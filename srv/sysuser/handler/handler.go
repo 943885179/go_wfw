@@ -9,11 +9,34 @@ import (
 type Handler struct {
 }
 
+func (h Handler) UserGroupList(ctx context.Context, req *sysuser.PageReq, resp *sysuser.PageResp) error {
+	return server.NewUserGroup().UserGroupList(req, resp)
+}
+func (h Handler) MenuList(ctx context.Context, req *sysuser.PageReq, resp *sysuser.PageResp) error {
+	return server.NewMenu().MenuList(req, resp)
+}
+
+func (h Handler) ApiList(ctx context.Context, req *sysuser.PageReq, resp *sysuser.PageResp) error {
+	return server.NewAPI().ApiList(req, resp)
+}
+
+func (h Handler) SrvList(ctx context.Context, req *sysuser.PageReq, resp *sysuser.PageResp) error {
+	return server.NewSrv().SrvList(req, resp)
+}
+
+func (h Handler) TreeList(ctx context.Context, req *sysuser.PageReq, resp *sysuser.PageResp) error {
+	return server.NewTree().TreeList(req, resp)
+}
+
+func (h Handler) RoleList(ctx context.Context, req *sysuser.PageReq, resp *sysuser.PageResp) error {
+	return server.NewRole().RoleList(req, resp)
+}
+
 func (h Handler) ChangePassword(ctx context.Context, req *sysuser.ChangePasswordReq, resp *sysuser.EditResp) error {
 	return server.NewUser().ChangePassword(req, resp)
 }
 
-func (h Handler) UserInfoList(ctx context.Context, req *sysuser.UserInfoListReq, resp *sysuser.UserInfoListResp) error {
+func (h Handler) UserInfoList(ctx context.Context, req *sysuser.UserInfoListReq, resp *sysuser.PageResp) error {
 	return server.NewUser().UserInfoList(req, resp)
 }
 
@@ -41,27 +64,27 @@ func (h Handler) DelTree(ctx context.Context, req *sysuser.DelReq, resp *sysuser
 	return server.NewTree().DelTree(req, resp)
 }
 
-func (h Handler) EditRole(ctx context.Context, req *sysuser.RoleReq, resp *sysuser.EditResp) error {
+func (h Handler) EditRole(ctx context.Context, req *sysuser.SysRole, resp *sysuser.EditResp) error {
 	return server.NewRole().EditRole(req, resp)
 }
 
-func (h Handler) EditUserGroup(ctx context.Context, req *sysuser.UserGroupReq, resp *sysuser.EditResp) error {
+func (h Handler) EditUserGroup(ctx context.Context, req *sysuser.SysGroup, resp *sysuser.EditResp) error {
 	return server.NewUserGroup().EditUserGroup(req, resp)
 }
 
-func (h Handler) EditMenu(ctx context.Context, req *sysuser.MenuReq, resp *sysuser.EditResp) error {
+func (h Handler) EditMenu(ctx context.Context, req *sysuser.SysMenu, resp *sysuser.EditResp) error {
 	return server.NewMenu().EditMenu(req, resp)
 }
 
-func (h Handler) EditApi(ctx context.Context, req *sysuser.ApiReq, resp *sysuser.EditResp) error {
+func (h Handler) EditApi(ctx context.Context, req *sysuser.SysApi, resp *sysuser.EditResp) error {
 	return server.NewAPI().EditApi(req, resp)
 }
 
-func (h Handler) EditSrv(ctx context.Context, req *sysuser.SrvReq, resp *sysuser.EditResp) error {
+func (h Handler) EditSrv(ctx context.Context, req *sysuser.SysSrv, resp *sysuser.EditResp) error {
 	return server.NewSrv().EditSrv(req, resp)
 }
 
-func (h Handler) EditTree(ctx context.Context, req *sysuser.TreeReq, resp *sysuser.EditResp) error {
+func (h Handler) EditTree(ctx context.Context, req *sysuser.SysTree, resp *sysuser.EditResp) error {
 	return server.NewTree().EditTree(req, resp)
 }
 

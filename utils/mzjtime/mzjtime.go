@@ -2,6 +2,8 @@ package mzjtime
 
 import (
 	"fmt"
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"time"
 )
 
@@ -31,6 +33,36 @@ func (t TimeFormat) String() string {
 	default:
 		return "时间格式未定义"
 	}
+}
+
+//Proto时间戳转时间
+func TimestampFormatOld(timeProto *timestamp.Timestamp, f TimeFormat) string {
+	str := ptypes.TimestampString(timeProto)
+	return str
+}
+
+//Proto时间戳转时间
+func TimestampFormat(timeProto *timestamp.Timestamp, f TimeFormat) string {
+	tm, _ := ptypes.Timestamp(timeProto)
+	return Format(tm, f)
+}
+
+//Timestamp2Time Proto时间戳转时间
+func Timestamp2Time(timeProto *timestamp.Timestamp, f TimeFormat) time.Time {
+	tm, _ := ptypes.Timestamp(timeProto)
+	return tm
+}
+
+/**
+ * @Author mzj
+ * @Description Time2Timestamp时间转Proto时间戳
+ * @Date 下午 3:06 2020/10/19 0019
+ * @Param
+ * @return
+ **/
+func Time2Timestamp(t time.Time) *timestamp.Timestamp {
+	timeProto, _ := ptypes.TimestampProto(t)
+	return timeProto
 }
 
 //Format 时间转字符串

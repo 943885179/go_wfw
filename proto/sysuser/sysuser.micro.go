@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	_ "github.com/golang/protobuf/ptypes/any"
+	_ "github.com/golang/protobuf/ptypes/timestamp"
 	math "math"
 )
 
@@ -38,19 +39,25 @@ type UserSrvService interface {
 	Login(ctx context.Context, in *LoginReq, opts ...client.CallOption) (*LoginResp, error)
 	Registry(ctx context.Context, in *RegistryReq, opts ...client.CallOption) (*EditResp, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordReq, opts ...client.CallOption) (*EditResp, error)
-	UserInfoList(ctx context.Context, in *UserInfoListReq, opts ...client.CallOption) (*UserInfoListResp, error)
-	EditRole(ctx context.Context, in *RoleReq, opts ...client.CallOption) (*EditResp, error)
+	UserInfoList(ctx context.Context, in *UserInfoListReq, opts ...client.CallOption) (*PageResp, error)
+	EditRole(ctx context.Context, in *SysRole, opts ...client.CallOption) (*EditResp, error)
 	DelRole(ctx context.Context, in *DelReq, opts ...client.CallOption) (*EditResp, error)
-	EditUserGroup(ctx context.Context, in *UserGroupReq, opts ...client.CallOption) (*EditResp, error)
+	RoleList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error)
+	EditUserGroup(ctx context.Context, in *SysGroup, opts ...client.CallOption) (*EditResp, error)
 	DelUserGroup(ctx context.Context, in *DelReq, opts ...client.CallOption) (*EditResp, error)
-	EditMenu(ctx context.Context, in *MenuReq, opts ...client.CallOption) (*EditResp, error)
+	UserGroupList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error)
+	EditMenu(ctx context.Context, in *SysMenu, opts ...client.CallOption) (*EditResp, error)
 	DelMenu(ctx context.Context, in *DelReq, opts ...client.CallOption) (*EditResp, error)
-	EditApi(ctx context.Context, in *ApiReq, opts ...client.CallOption) (*EditResp, error)
+	MenuList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error)
+	EditApi(ctx context.Context, in *SysApi, opts ...client.CallOption) (*EditResp, error)
 	DelApi(ctx context.Context, in *DelReq, opts ...client.CallOption) (*EditResp, error)
-	EditSrv(ctx context.Context, in *SrvReq, opts ...client.CallOption) (*EditResp, error)
+	ApiList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error)
+	EditSrv(ctx context.Context, in *SysSrv, opts ...client.CallOption) (*EditResp, error)
 	DelSrv(ctx context.Context, in *DelReq, opts ...client.CallOption) (*EditResp, error)
-	EditTree(ctx context.Context, in *TreeReq, opts ...client.CallOption) (*EditResp, error)
+	SrvList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error)
+	EditTree(ctx context.Context, in *SysTree, opts ...client.CallOption) (*EditResp, error)
 	DelTree(ctx context.Context, in *DelReq, opts ...client.CallOption) (*EditResp, error)
+	TreeList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error)
 }
 
 type userSrvService struct {
@@ -101,9 +108,9 @@ func (c *userSrvService) ChangePassword(ctx context.Context, in *ChangePasswordR
 	return out, nil
 }
 
-func (c *userSrvService) UserInfoList(ctx context.Context, in *UserInfoListReq, opts ...client.CallOption) (*UserInfoListResp, error) {
+func (c *userSrvService) UserInfoList(ctx context.Context, in *UserInfoListReq, opts ...client.CallOption) (*PageResp, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.UserInfoList", in)
-	out := new(UserInfoListResp)
+	out := new(PageResp)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -111,7 +118,7 @@ func (c *userSrvService) UserInfoList(ctx context.Context, in *UserInfoListReq, 
 	return out, nil
 }
 
-func (c *userSrvService) EditRole(ctx context.Context, in *RoleReq, opts ...client.CallOption) (*EditResp, error) {
+func (c *userSrvService) EditRole(ctx context.Context, in *SysRole, opts ...client.CallOption) (*EditResp, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.EditRole", in)
 	out := new(EditResp)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -131,7 +138,17 @@ func (c *userSrvService) DelRole(ctx context.Context, in *DelReq, opts ...client
 	return out, nil
 }
 
-func (c *userSrvService) EditUserGroup(ctx context.Context, in *UserGroupReq, opts ...client.CallOption) (*EditResp, error) {
+func (c *userSrvService) RoleList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.RoleList", in)
+	out := new(PageResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditUserGroup(ctx context.Context, in *SysGroup, opts ...client.CallOption) (*EditResp, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.EditUserGroup", in)
 	out := new(EditResp)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -151,7 +168,17 @@ func (c *userSrvService) DelUserGroup(ctx context.Context, in *DelReq, opts ...c
 	return out, nil
 }
 
-func (c *userSrvService) EditMenu(ctx context.Context, in *MenuReq, opts ...client.CallOption) (*EditResp, error) {
+func (c *userSrvService) UserGroupList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.UserGroupList", in)
+	out := new(PageResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditMenu(ctx context.Context, in *SysMenu, opts ...client.CallOption) (*EditResp, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.EditMenu", in)
 	out := new(EditResp)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -171,7 +198,17 @@ func (c *userSrvService) DelMenu(ctx context.Context, in *DelReq, opts ...client
 	return out, nil
 }
 
-func (c *userSrvService) EditApi(ctx context.Context, in *ApiReq, opts ...client.CallOption) (*EditResp, error) {
+func (c *userSrvService) MenuList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.MenuList", in)
+	out := new(PageResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditApi(ctx context.Context, in *SysApi, opts ...client.CallOption) (*EditResp, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.EditApi", in)
 	out := new(EditResp)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -191,7 +228,17 @@ func (c *userSrvService) DelApi(ctx context.Context, in *DelReq, opts ...client.
 	return out, nil
 }
 
-func (c *userSrvService) EditSrv(ctx context.Context, in *SrvReq, opts ...client.CallOption) (*EditResp, error) {
+func (c *userSrvService) ApiList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.ApiList", in)
+	out := new(PageResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditSrv(ctx context.Context, in *SysSrv, opts ...client.CallOption) (*EditResp, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.EditSrv", in)
 	out := new(EditResp)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -211,7 +258,17 @@ func (c *userSrvService) DelSrv(ctx context.Context, in *DelReq, opts ...client.
 	return out, nil
 }
 
-func (c *userSrvService) EditTree(ctx context.Context, in *TreeReq, opts ...client.CallOption) (*EditResp, error) {
+func (c *userSrvService) SrvList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.SrvList", in)
+	out := new(PageResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditTree(ctx context.Context, in *SysTree, opts ...client.CallOption) (*EditResp, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.EditTree", in)
 	out := new(EditResp)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -231,25 +288,41 @@ func (c *userSrvService) DelTree(ctx context.Context, in *DelReq, opts ...client
 	return out, nil
 }
 
+func (c *userSrvService) TreeList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.TreeList", in)
+	out := new(PageResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for UserSrv service
 
 type UserSrvHandler interface {
 	Login(context.Context, *LoginReq, *LoginResp) error
 	Registry(context.Context, *RegistryReq, *EditResp) error
 	ChangePassword(context.Context, *ChangePasswordReq, *EditResp) error
-	UserInfoList(context.Context, *UserInfoListReq, *UserInfoListResp) error
-	EditRole(context.Context, *RoleReq, *EditResp) error
+	UserInfoList(context.Context, *UserInfoListReq, *PageResp) error
+	EditRole(context.Context, *SysRole, *EditResp) error
 	DelRole(context.Context, *DelReq, *EditResp) error
-	EditUserGroup(context.Context, *UserGroupReq, *EditResp) error
+	RoleList(context.Context, *PageReq, *PageResp) error
+	EditUserGroup(context.Context, *SysGroup, *EditResp) error
 	DelUserGroup(context.Context, *DelReq, *EditResp) error
-	EditMenu(context.Context, *MenuReq, *EditResp) error
+	UserGroupList(context.Context, *PageReq, *PageResp) error
+	EditMenu(context.Context, *SysMenu, *EditResp) error
 	DelMenu(context.Context, *DelReq, *EditResp) error
-	EditApi(context.Context, *ApiReq, *EditResp) error
+	MenuList(context.Context, *PageReq, *PageResp) error
+	EditApi(context.Context, *SysApi, *EditResp) error
 	DelApi(context.Context, *DelReq, *EditResp) error
-	EditSrv(context.Context, *SrvReq, *EditResp) error
+	ApiList(context.Context, *PageReq, *PageResp) error
+	EditSrv(context.Context, *SysSrv, *EditResp) error
 	DelSrv(context.Context, *DelReq, *EditResp) error
-	EditTree(context.Context, *TreeReq, *EditResp) error
+	SrvList(context.Context, *PageReq, *PageResp) error
+	EditTree(context.Context, *SysTree, *EditResp) error
 	DelTree(context.Context, *DelReq, *EditResp) error
+	TreeList(context.Context, *PageReq, *PageResp) error
 }
 
 func RegisterUserSrvHandler(s server.Server, hdlr UserSrvHandler, opts ...server.HandlerOption) error {
@@ -257,19 +330,25 @@ func RegisterUserSrvHandler(s server.Server, hdlr UserSrvHandler, opts ...server
 		Login(ctx context.Context, in *LoginReq, out *LoginResp) error
 		Registry(ctx context.Context, in *RegistryReq, out *EditResp) error
 		ChangePassword(ctx context.Context, in *ChangePasswordReq, out *EditResp) error
-		UserInfoList(ctx context.Context, in *UserInfoListReq, out *UserInfoListResp) error
-		EditRole(ctx context.Context, in *RoleReq, out *EditResp) error
+		UserInfoList(ctx context.Context, in *UserInfoListReq, out *PageResp) error
+		EditRole(ctx context.Context, in *SysRole, out *EditResp) error
 		DelRole(ctx context.Context, in *DelReq, out *EditResp) error
-		EditUserGroup(ctx context.Context, in *UserGroupReq, out *EditResp) error
+		RoleList(ctx context.Context, in *PageReq, out *PageResp) error
+		EditUserGroup(ctx context.Context, in *SysGroup, out *EditResp) error
 		DelUserGroup(ctx context.Context, in *DelReq, out *EditResp) error
-		EditMenu(ctx context.Context, in *MenuReq, out *EditResp) error
+		UserGroupList(ctx context.Context, in *PageReq, out *PageResp) error
+		EditMenu(ctx context.Context, in *SysMenu, out *EditResp) error
 		DelMenu(ctx context.Context, in *DelReq, out *EditResp) error
-		EditApi(ctx context.Context, in *ApiReq, out *EditResp) error
+		MenuList(ctx context.Context, in *PageReq, out *PageResp) error
+		EditApi(ctx context.Context, in *SysApi, out *EditResp) error
 		DelApi(ctx context.Context, in *DelReq, out *EditResp) error
-		EditSrv(ctx context.Context, in *SrvReq, out *EditResp) error
+		ApiList(ctx context.Context, in *PageReq, out *PageResp) error
+		EditSrv(ctx context.Context, in *SysSrv, out *EditResp) error
 		DelSrv(ctx context.Context, in *DelReq, out *EditResp) error
-		EditTree(ctx context.Context, in *TreeReq, out *EditResp) error
+		SrvList(ctx context.Context, in *PageReq, out *PageResp) error
+		EditTree(ctx context.Context, in *SysTree, out *EditResp) error
 		DelTree(ctx context.Context, in *DelReq, out *EditResp) error
+		TreeList(ctx context.Context, in *PageReq, out *PageResp) error
 	}
 	type UserSrv struct {
 		userSrv
@@ -294,11 +373,11 @@ func (h *userSrvHandler) ChangePassword(ctx context.Context, in *ChangePasswordR
 	return h.UserSrvHandler.ChangePassword(ctx, in, out)
 }
 
-func (h *userSrvHandler) UserInfoList(ctx context.Context, in *UserInfoListReq, out *UserInfoListResp) error {
+func (h *userSrvHandler) UserInfoList(ctx context.Context, in *UserInfoListReq, out *PageResp) error {
 	return h.UserSrvHandler.UserInfoList(ctx, in, out)
 }
 
-func (h *userSrvHandler) EditRole(ctx context.Context, in *RoleReq, out *EditResp) error {
+func (h *userSrvHandler) EditRole(ctx context.Context, in *SysRole, out *EditResp) error {
 	return h.UserSrvHandler.EditRole(ctx, in, out)
 }
 
@@ -306,7 +385,11 @@ func (h *userSrvHandler) DelRole(ctx context.Context, in *DelReq, out *EditResp)
 	return h.UserSrvHandler.DelRole(ctx, in, out)
 }
 
-func (h *userSrvHandler) EditUserGroup(ctx context.Context, in *UserGroupReq, out *EditResp) error {
+func (h *userSrvHandler) RoleList(ctx context.Context, in *PageReq, out *PageResp) error {
+	return h.UserSrvHandler.RoleList(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditUserGroup(ctx context.Context, in *SysGroup, out *EditResp) error {
 	return h.UserSrvHandler.EditUserGroup(ctx, in, out)
 }
 
@@ -314,7 +397,11 @@ func (h *userSrvHandler) DelUserGroup(ctx context.Context, in *DelReq, out *Edit
 	return h.UserSrvHandler.DelUserGroup(ctx, in, out)
 }
 
-func (h *userSrvHandler) EditMenu(ctx context.Context, in *MenuReq, out *EditResp) error {
+func (h *userSrvHandler) UserGroupList(ctx context.Context, in *PageReq, out *PageResp) error {
+	return h.UserSrvHandler.UserGroupList(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditMenu(ctx context.Context, in *SysMenu, out *EditResp) error {
 	return h.UserSrvHandler.EditMenu(ctx, in, out)
 }
 
@@ -322,7 +409,11 @@ func (h *userSrvHandler) DelMenu(ctx context.Context, in *DelReq, out *EditResp)
 	return h.UserSrvHandler.DelMenu(ctx, in, out)
 }
 
-func (h *userSrvHandler) EditApi(ctx context.Context, in *ApiReq, out *EditResp) error {
+func (h *userSrvHandler) MenuList(ctx context.Context, in *PageReq, out *PageResp) error {
+	return h.UserSrvHandler.MenuList(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditApi(ctx context.Context, in *SysApi, out *EditResp) error {
 	return h.UserSrvHandler.EditApi(ctx, in, out)
 }
 
@@ -330,7 +421,11 @@ func (h *userSrvHandler) DelApi(ctx context.Context, in *DelReq, out *EditResp) 
 	return h.UserSrvHandler.DelApi(ctx, in, out)
 }
 
-func (h *userSrvHandler) EditSrv(ctx context.Context, in *SrvReq, out *EditResp) error {
+func (h *userSrvHandler) ApiList(ctx context.Context, in *PageReq, out *PageResp) error {
+	return h.UserSrvHandler.ApiList(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditSrv(ctx context.Context, in *SysSrv, out *EditResp) error {
 	return h.UserSrvHandler.EditSrv(ctx, in, out)
 }
 
@@ -338,10 +433,18 @@ func (h *userSrvHandler) DelSrv(ctx context.Context, in *DelReq, out *EditResp) 
 	return h.UserSrvHandler.DelSrv(ctx, in, out)
 }
 
-func (h *userSrvHandler) EditTree(ctx context.Context, in *TreeReq, out *EditResp) error {
+func (h *userSrvHandler) SrvList(ctx context.Context, in *PageReq, out *PageResp) error {
+	return h.UserSrvHandler.SrvList(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditTree(ctx context.Context, in *SysTree, out *EditResp) error {
 	return h.UserSrvHandler.EditTree(ctx, in, out)
 }
 
 func (h *userSrvHandler) DelTree(ctx context.Context, in *DelReq, out *EditResp) error {
 	return h.UserSrvHandler.DelTree(ctx, in, out)
+}
+
+func (h *userSrvHandler) TreeList(ctx context.Context, in *PageReq, out *PageResp) error {
+	return h.UserSrvHandler.TreeList(ctx, in, out)
 }
