@@ -1,6 +1,6 @@
 syntax = "proto3";
 package dbmodel;
-import "google/protobuf/timestamp.proto";
+import public "google/protobuf/timestamp.proto";
 
 enum LoginType{
   NAME=0;//用户名登陆
@@ -13,7 +13,6 @@ enum UserType{
   SHOP=2;//平台入驻商家（商家，批发商）
   CUSTOMER=3;//平台客户（客户，采购商）
 }
-
 enum FileType{
   USERLOG=0;//用户头像
   SHOPLOG=1;//店铺头像

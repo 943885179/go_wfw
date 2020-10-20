@@ -109,14 +109,34 @@
 ```
 ## 微服务划分
 
+### 特别注意：proto改为依赖后使用powershell命名行去构建
+
+## 基础试题构建
+
+`Get-ChildItem proto/dbmodel/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=.}`
+
 ### 用户服务（sysuser）
 
 ~~protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/*.proto~~
 
 `protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/sysuser.proto`
 
-请在powershell模式下执行命令`Get-ChildItem *.proto |Resolve-Path -Relative | %{protoc $_ --go_out=. --micro_out=.}`这样就可以使用*.proto了
+请在powershell模式下执行命令
 
+`Get-ChildItem proto/sysuser/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
+
+这样就可以使用*.proto了,
+
+生成成后需要修改下"xxx.micro.go"和“xxx.pb.go”的import，因为使用的是proto/dbmodel命名空间是错的，使用go mod 的话需要添加mod name，既改为`import "qshapi/proto/dbmodel"`
+
+修改"xxx.micro.go"的 import 的micro版本，因为protoc生成的是v1,我使用的是v2,所以改掉命名空间
+```go
+	import (
+	    client "github.com/micro/go-micro/v2/client"
+	    server "github.com/micro/go-micro/v2/server"
+	)
+	
+```
 
 ## 消息服务（send）
 `protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/send/send.proto`

@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"qshapi/models"
+	"qshapi/proto/dbmodel"
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjmd5"
 	"qshapi/utils/mzjstruct"
@@ -11,7 +12,7 @@ import (
 )
 
 type IRegistry interface {
-	Registry(req *sysuser.RegistryReq, resp *sysuser.EditResp) error
+	Registry(req *sysuser.RegistryReq, resp *dbmodel.Id) error
 }
 
 func NewRegistry() IRegistry {
@@ -20,7 +21,7 @@ func NewRegistry() IRegistry {
 
 type Registry struct{}
 
-func (*Registry) Registry(req *sysuser.RegistryReq, resp *sysuser.EditResp) error {
+func (*Registry) Registry(req *sysuser.RegistryReq, resp *dbmodel.Id) error {
 	req.UserName = strings.Trim(req.UserName, "")
 	req.UserPassword = strings.Trim(req.UserPassword, "")
 	req.UserPasswordAgain = strings.Trim(req.UserPasswordAgain, "")

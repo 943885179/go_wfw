@@ -1,10 +1,11 @@
 package models
 
 import (
-	"gorm.io/gorm"
+	"qshapi/proto/dbmodel"
 	"qshapi/proto/file"
-	"qshapi/proto/sysuser"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Model struct {
@@ -77,7 +78,7 @@ type SysUser struct {
 	Groups            []SysGroup         `gorm:"many2many:sys_user_group" json:"groups"`
 	LogisticsAddresss []LogisticsAddress `gorm:"foreignKey:user_id" json:"logistics_addresss"` //地址管理
 	Qualifications    []Qualification    `gorm:"foreignKey:user_id" json:"qualifications"`
-	UserType          sysuser.UserType   `gorm:"column:user_type;comment:'用户类型'" json:"user_type"`
+	UserType          dbmodel.UserType   `gorm:"column:user_type;comment:'用户类型'" json:"user_type"`
 	Model
 }
 

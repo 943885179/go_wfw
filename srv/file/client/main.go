@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"qshapi/models"
+	"qshapi/proto/dbmodel"
 	"qshapi/proto/file"
 	"qshapi/utils/mzjgin"
 	"qshapi/utils/mzjimg"
@@ -83,7 +84,7 @@ func SrvGin() *gin.Engine {
 
 func fileById(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	req := &file.FileId{
+	req := &dbmodel.Id{
 		Id: int64(id),
 	} //c.Bind(req)
 	//c.BindQuery(req)
@@ -157,7 +158,7 @@ func ImgWH(c *gin.Context) {
 	imgstr := c.Param("img")
 	s := strings.Split(imgstr, "_")
 	id, _ := strconv.Atoi(s[0])
-	req := &file.FileId{
+	req := &dbmodel.Id{
 		Id: int64(id),
 	}
 	result, err := client.GetFile(context.Background(), req)
@@ -202,8 +203,8 @@ func upload(c *gin.Context) {
  * @Param
  * @return
  **/
-func fileAttribute(c *gin.Context, f *multipart.FileHeader, sort int) *file.FileInfo {
-	req := &file.FileInfo{}
+func fileAttribute(c *gin.Context, f *multipart.FileHeader, sort int) *dbmodel.SysFile {
+	req := &dbmodel.SysFile{}
 	c.Bind(req) //这里可以得到path(文件存放路径),file_type(文件业务类型)，file_explain（文件描述）
 	req.FileSuffix = path.Ext(f.Filename)
 	req.Id = mzjuuid.WorkerDefault()
@@ -230,7 +231,7 @@ func webPImg() {
  * @Param
  * @return
  **/
-func uploadFile(c *gin.Context, file *multipart.FileHeader, req *file.FileInfo) error {
+func uploadFile(c *gin.Context, file *multipart.FileHeader, req *dbmodel.SysFile) error {
 	if _, err := os.Stat(req.Path); os.IsNotExist(err) { // 必须分成两步创建文件夹
 		//os.Mkdir(Config.FilePath, 0777)//创建单级目录
 		os.MkdirAll(req.Path, os.ModePerm) // 先创建文件夹

@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
-	"qshapi/proto/sysuser"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 )
 
 type ITree interface {
-	EditTree(req *sysuser.SysTree, resp *sysuser.EditResp) error
-	DelTree(req *sysuser.DelReq, resp *sysuser.EditResp) error
-	TreeList(req *sysuser.PageReq, resp *sysuser.PageResp) error
+	EditTree(req *dbmodel.SysTree, resp *dbmodel.Id) error
+	DelTree(req *dbmodel.Id, resp *dbmodel.Id) error
+	TreeList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 }
 
 func NewTree() ITree {
@@ -21,7 +21,7 @@ func NewTree() ITree {
 
 type Tree struct{}
 
-func (t *Tree) TreeList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
+func (t *Tree) TreeList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysTree
 	db := Conf.DbConfig.New().Model(&models.SysTree{}).Where("p_id=0")
 	db.Count(&resp.Total)
@@ -35,7 +35,7 @@ func (t *Tree) TreeList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	db = db.Preload("Children.Children.Children.Children")
 	db.Limit(int(req.Row)).Offset(int(req.Page * req.Row)).Find(&ts)
 	for _, role := range ts {
-		var r sysuser.SysTree
+		var r dbmodel.SysTree
 		mzjstruct.CopyStruct(&role, &r)
 		any, _ := ptypes.MarshalAny(&r)
 		resp.Data = append(resp.Data, any)
@@ -43,13 +43,13 @@ func (t *Tree) TreeList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	return nil
 }
 
-func (*Tree) DelTree(req *sysuser.DelReq, resp *sysuser.EditResp) error {
+func (*Tree) DelTree(req *dbmodel.Id, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	resp.Id = req.Id
 	return db.Delete(models.SysTree{}, req.Id).Error
 }
 
-func (*Tree) EditTree(req *sysuser.SysTree, resp *sysuser.EditResp) error {
+func (*Tree) EditTree(req *dbmodel.SysTree, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	Tree := &models.SysTree{}
 	if req.Id > 0 { //修改0

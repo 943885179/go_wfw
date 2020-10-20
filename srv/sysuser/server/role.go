@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
-	"qshapi/proto/sysuser"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 )
 
 type IRole interface {
-	EditRole(req *sysuser.SysRole, resp *sysuser.EditResp) error
-	DelRole(req *sysuser.DelReq, resp *sysuser.EditResp) error
-	RoleList(req *sysuser.PageReq, resp *sysuser.PageResp) error
+	EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error
+	DelRole(req *dbmodel.Id, resp *dbmodel.Id) error
+	RoleList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 }
 
 func NewRole() IRole {
@@ -21,7 +21,7 @@ func NewRole() IRole {
 
 type Role struct{}
 
-func (r *Role) RoleList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
+func (r *Role) RoleList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var roles []models.SysRole
 	db := Conf.DbConfig.New().Model(&models.SysRole{}).Where("p_id=0")
 	db.Count(&resp.Total)
@@ -52,7 +52,7 @@ func (r *Role) RoleList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	resp.Data = append(resp.Data, item)
 	*/
 	for _, role := range roles {
-		var r sysuser.SysRole
+		var r dbmodel.SysRole
 		mzjstruct.CopyStruct(&role, &r)
 		any, _ := ptypes.MarshalAny(&r)
 		resp.Data = append(resp.Data, any)
@@ -60,13 +60,13 @@ func (r *Role) RoleList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	return nil
 }
 
-func (*Role) DelRole(req *sysuser.DelReq, resp *sysuser.EditResp) error {
+func (*Role) DelRole(req *dbmodel.Id, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	resp.Id = req.Id
 	return db.Delete(models.SysRole{}, req.Id).Error
 }
 
-func (*Role) EditRole(req *sysuser.SysRole, resp *sysuser.EditResp) error {
+func (*Role) EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	Role := &models.SysRole{}
 	if req.Id > 0 { //修改0

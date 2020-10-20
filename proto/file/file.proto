@@ -1,28 +1,10 @@
 syntax="proto3";
 package file;
 option go_package="file";
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
+
 service FileSrv{
-  rpc UploadFile(FileInfo)returns(FileId){}
-  rpc GetFile(FileId)returns(FileInfo){}
-}
-message FileInfo{
-  int64 id=1;//文件id
-  string name=2;//上传文件名称，一般设置为id+后缀
-  string path=3;//路径
-  int64 size=4;//大小
-  string  file_explain=5;//描述
-  int32 sort=6;//排序
-  FileType file_type=7;//图片类型
-  string file_suffix=8;//图片后缀
-}
-enum FileType{
-  USERLOG=0;//用户头像
-  SHOPLOG=1;//店铺头像
-  PLATFORMIMG=2;//平台图片
-  INDEXLBTIMG=3;//首页轮播图
-  PRODUCTIMG=4;//商品图片
-  OTHERIMG=5;//其他图片
-}
-message FileId{
-  int64 id=1;//唯一Id
+  rpc UploadFile(dbmodel.SysFile)returns(dbmodel.Id){}
+  rpc GetFile(dbmodel.Id)returns(dbmodel.SysFile){}
 }

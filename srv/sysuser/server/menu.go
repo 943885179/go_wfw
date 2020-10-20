@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
-	"qshapi/proto/sysuser"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 )
 
 type IMenu interface {
-	EditMenu(req *sysuser.SysMenu, resp *sysuser.EditResp) error
-	DelMenu(req *sysuser.DelReq, resp *sysuser.EditResp) error
-	MenuList(req *sysuser.PageReq, resp *sysuser.PageResp) error
+	EditMenu(req *dbmodel.SysMenu, resp *dbmodel.Id) error
+	DelMenu(req *dbmodel.Id, resp *dbmodel.Id) error
+	MenuList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 }
 
 func NewMenu() IMenu {
@@ -21,7 +21,7 @@ func NewMenu() IMenu {
 
 type Menu struct{}
 
-func (m *Menu) MenuList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
+func (m *Menu) MenuList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.SysMenu
 	db := Conf.DbConfig.New().Model(&models.SysMenu{}).Where("p_id=0")
 	db.Count(&resp.Total)
@@ -35,7 +35,7 @@ func (m *Menu) MenuList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	db = db.Preload("Children.Children.Children.Children")
 	db.Limit(int(req.Row)).Offset(int(req.Page * req.Row)).Find(&t)
 	for _, role := range t {
-		var r sysuser.SysMenu
+		var r dbmodel.SysMenu
 		mzjstruct.CopyStruct(&role, &r)
 		any, _ := ptypes.MarshalAny(&r)
 		resp.Data = append(resp.Data, any)
@@ -43,13 +43,13 @@ func (m *Menu) MenuList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	return nil
 }
 
-func (*Menu) DelMenu(req *sysuser.DelReq, resp *sysuser.EditResp) error {
+func (*Menu) DelMenu(req *dbmodel.Id, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	resp.Id = req.Id
 	return db.Delete(models.SysMenu{}, req.Id).Error
 }
 
-func (*Menu) EditMenu(req *sysuser.SysMenu, resp *sysuser.EditResp) error {
+func (*Menu) EditMenu(req *dbmodel.SysMenu, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	menu := &models.SysMenu{}
 	if req.Id > 0 { //修改0

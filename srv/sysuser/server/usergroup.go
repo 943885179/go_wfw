@@ -3,15 +3,15 @@ package server
 import (
 	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
-	"qshapi/proto/sysuser"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 )
 
 type IUserGroup interface {
-	EditUserGroup(req *sysuser.SysGroup, resp *sysuser.EditResp) error
-	DelUserGroup(req *sysuser.DelReq, resp *sysuser.EditResp) error
-	UserGroupList(req *sysuser.PageReq, resp *sysuser.PageResp) error
+	EditUserGroup(req *dbmodel.SysGroup, resp *dbmodel.Id) error
+	DelUserGroup(req *dbmodel.Id, resp *dbmodel.Id) error
+	UserGroupList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 }
 
 func NewUserGroup() IUserGroup {
@@ -20,7 +20,7 @@ func NewUserGroup() IUserGroup {
 
 type UserGroup struct{}
 
-func (g *UserGroup) UserGroupList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
+func (g *UserGroup) UserGroupList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysGroup
 	db := Conf.DbConfig.New().Model(&models.SysGroup{})
 	db.Count(&resp.Total)
@@ -30,7 +30,7 @@ func (g *UserGroup) UserGroupList(req *sysuser.PageReq, resp *sysuser.PageResp) 
 	}
 	db.Limit(int(req.Row)).Offset(int(req.Page * req.Row)).Find(&ts)
 	for _, role := range ts {
-		var r sysuser.SysGroup
+		var r dbmodel.SysGroup
 		mzjstruct.CopyStruct(&role, &r)
 		any, _ := ptypes.MarshalAny(&r)
 		resp.Data = append(resp.Data, any)
@@ -38,14 +38,14 @@ func (g *UserGroup) UserGroupList(req *sysuser.PageReq, resp *sysuser.PageResp) 
 	return nil
 }
 
-func (*UserGroup) DelUserGroup(req *sysuser.DelReq, resp *sysuser.EditResp) error {
+func (*UserGroup) DelUserGroup(req *dbmodel.Id, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	resp.Id = req.Id
 	//defer db.Close()
 	return db.Delete(models.SysGroup{}, req.Id).Error
 }
 
-func (*UserGroup) EditUserGroup(req *sysuser.SysGroup, resp *sysuser.EditResp) error {
+func (*UserGroup) EditUserGroup(req *dbmodel.SysGroup, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	//defer db.Close()
 	UserGroup := &models.SysGroup{}

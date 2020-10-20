@@ -1,47 +1,45 @@
 syntax ="proto3";
 package sysuser;
 option go_package = "proto/sysuser";
-//import "google/protobuf/empty.proto";
-import "google/protobuf/any.proto";
-//import "google/protobuf/struct.proto";
-import "google/protobuf/timestamp.proto";
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
 service UserSrv{
   rpc Login(LoginReq)returns(LoginResp){} //登录
-  rpc Registry(RegistryReq)returns(EditResp){} //注册
-  rpc ChangePassword(ChangePasswordReq)returns(EditResp){}//修改密码
-  rpc UserInfoList(UserInfoListReq)returns(PageResp){}//分页查询用户
-  rpc EditUser(SysUser)returns(EditResp){}//编辑用户
+  rpc Registry(RegistryReq)returns(dbmodel.Id){} //注册
+  rpc ChangePassword(ChangePasswordReq)returns(dbmodel.Id){}//修改密码
+  rpc UserInfoList(UserInfoListReq)returns(dbmodel.PageResp){}//分页查询用户
+  rpc EditUser(dbmodel.SysUser)returns(dbmodel.Id){}//编辑用户
 
-  rpc EditRole(SysRole)returns(EditResp){}//编辑角色
-  rpc DelRole(DelReq)returns(EditResp){}
-  rpc RoleList(PageReq)returns(PageResp){}
+  rpc EditRole(dbmodel.SysRole)returns(dbmodel.Id){}//编辑角色
+  rpc DelRole(dbmodel.Id)returns(dbmodel.Id){}
+  rpc RoleList(dbmodel.PageReq)returns(dbmodel.PageResp){}
 
 
-  rpc EditUserGroup(SysGroup)returns(EditResp){}//编辑用户组
-  rpc DelUserGroup(DelReq)returns(EditResp){}
-  rpc UserGroupList(PageReq)returns(PageResp){}
+  rpc EditUserGroup(dbmodel.SysGroup)returns(dbmodel.Id){}//编辑用户组
+  rpc DelUserGroup(dbmodel.Id)returns(dbmodel.Id){}
+  rpc UserGroupList(dbmodel.PageReq)returns(dbmodel.PageResp){}
 
-  rpc EditMenu(SysMenu)returns(EditResp){}//编辑菜单
-  rpc DelMenu(DelReq)returns(EditResp){}
-  rpc MenuList(PageReq)returns(PageResp){}
+  rpc EditMenu(dbmodel.SysMenu)returns(dbmodel.Id){}//编辑菜单
+  rpc DelMenu(dbmodel.Id)returns(dbmodel.Id){}
+  rpc MenuList(dbmodel.PageReq)returns(dbmodel.PageResp){}
 
-  rpc EditApi(SysApi)returns(EditResp){}//编辑SysApi
-  rpc DelApi(DelReq)returns(EditResp){}
-  rpc ApiList(PageReq)returns(PageResp){}
+  rpc EditApi(dbmodel.SysApi)returns(dbmodel.Id){}//编辑SysApi
+  rpc DelApi(dbmodel.Id)returns(dbmodel.Id){}
+  rpc ApiList(dbmodel.PageReq)returns(dbmodel.PageResp){}
 
-  rpc EditSrv(SysSrv)returns(EditResp){}//编辑服务
-  rpc DelSrv(DelReq)returns(EditResp){}
-  rpc SrvList(PageReq)returns(PageResp){}
+  rpc EditSrv(dbmodel.SysSrv)returns(dbmodel.Id){}//编辑服务
+  rpc DelSrv(dbmodel.Id)returns(dbmodel.Id){}
+  rpc SrvList(dbmodel.PageReq)returns(dbmodel.PageResp){}
 
-  rpc EditTree(SysTree)returns(EditResp){}//编辑服务
-  rpc DelTree(DelReq)returns(EditResp){}
-  rpc TreeList(PageReq)returns(PageResp){}
+  rpc EditTree(dbmodel.SysTree)returns(dbmodel.Id){}//编辑服务
+  rpc DelTree(dbmodel.Id)returns(dbmodel.Id){}
+  rpc TreeList(dbmodel.PageReq)returns(dbmodel.PageResp){}
 
 }
 
 //用户登录
 message LoginReq{
-  LoginType login_type=1;
+  dbmodel.LoginType login_type=1;
   string  user_name_or_phone_or_email=2;//用户名
   string user_password_or_code=3;//密码
 }
@@ -53,7 +51,7 @@ message LoginResp{
 }
 //用户注册请求
 message RegistryReq{
-  UserType user_type=6;//用户类型（注册通道）
+  dbmodel.UserType user_type=6;//用户类型（注册通道）
   string user_name=1;//用户名
   string user_password=2;//密码
   string user_password_again=3;//确认密码
@@ -66,224 +64,10 @@ message ChangePasswordReq{
   string user_password=2;//密码
   string user_password_again=3;//确认密码
 }
-message PageReq{
-  int32 page=1;//页码
-  int32 row=2;//每页显示行数
-}
-message PageResp{
-  int64 total=1;//数量
-  repeated google.protobuf.Any data=2;
-}
-
-
 
 message UserInfoListReq{
-  PageReq page_req=1;
+  dbmodel.PageReq page_req=1;
   string user_name=3;//用户名(查询条件)
   string user_phone=4;//电话(查询条件)
   string user_email=5;//邮箱(查询条件)
-}
-
-message DelReq{
-  int64 id=1;
-}
-message EditResp{
-  int64 id=1;
-}
-
-enum LoginType{
-  NAME=0;//用户名登陆
-  PHONE=1;//手机登录
-  EMAIL=2;//邮箱登录
-}
-enum UserType{
-  ADMIN =0; //超级管理员
-  PLATFORM=1;//平台用户（业务员）
-  SHOP=2;//平台入驻商家（商家，批发商）
-  CUSTOMER=3;//平台客户（客户，采购商）
-}
-
-enum FileType{
-  USERLOG=0;//用户头像
-  SHOPLOG=1;//店铺头像
-  PLATFORMIMG=2;//平台图片
-  INDEXLBTIMG=3;//首页轮播图
-  PRODUCTIMG=4;//商品图片
-  OTHERIMG=5;//其他图片
-}
-
-message SysUser {//用户表
-  int64 id = 1;
-  string user_name = 2;
-  string true_name = 3;
-  string user_phone = 4;
-  //string user_password=22;
-  //string wx_open_id=23;
-  string user_wx = 5;
-  string user_email = 6;
-  string user_qq = 7;
-  string user_tel = 8;
-  string balance = 9;//账户余额
-  string id_card = 10;//身份证号码
-  int64 point=11;//积分
-  int64 province_id=12;
-  SysTree province=13;
-  int64 city_id = 14;
-  SysTree city=15;
-  int64 area_id = 16;
-  SysTree area=17;
-  string address = 18;
-  int32 vip = 19;//vip等级
-
-  string bank_name=20;//银行名称
-  string branch_name = 21;//银行分行名称
-  string bankcard = 22;//银行卡号
-  string bank_card_name = 23;//持卡人/单位
-
-  int64 user_icon = 24;
-  SysFile icon=25;
-
-  repeated SysRole roles=26;
-  repeated SysGroup groups=27;
-  repeated LogisticsAddress logistics_addresss=28;// 发收货地址管理
-  repeated Qualification qualifications=29;
-  UserType user_type=30;
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-
-message SysFile{//SysFile文件
-  int64 id=1;//文件id
-  string name=2;//上传文件名称，一般设置为id+后缀
-  string path=3;//路径
-  int64 size=4;//大小
-  string  file_explain=5;//描述
-  int32 sort=6;//排序
-  FileType file_type=7;//图片类型
-  string file_suffix=8;//图片后缀
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-message SysTree{
-  int64 id=1;//id,有则修改，无则添加
-  string code=2;//编码
-  string text=3;
-  int32 sort=4;
-  int64 p_id=5;
-  repeated SysTree children=6;
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-
-
-//用户组请求
-message  SysGroup{
-  int64 id=1;//id,有则修改，无则添加
-  string group_name=2;//用户组名称
-  string  group_explain=3;//用户组说明
-  repeated SysRole roles=4;//角色
-  repeated SysRole users=5;//角色
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-
-//角色请求
-message  SysRole{
-  int64 id=1;//id,有则修改，无则添加
-  string role_name=2;//角色名称
-  string role_explain=3;//角色说明
-  repeated SysMenu menus=4;
-  repeated SysSrv srvs=5;
-  repeated SysApi apis=6;
-  repeated SysUser users=7;
-  int64 p_id=8;//父级id
-  repeated SysRole children=9;
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-message  SysMenu{
-  int64 id=1;
-  string key=2;
-  string text=3;//树名称
-  string i18n=4;//i18n主键
-  string link=5;//'路由，link、externalLink 二选其一
-  string external_link=6;//外部链接
-  string target=7;//链接类型
-  string  sort=8;//排序
-  int32  badge=9;//标签数量
-  string  badge_doc=10;//标签文字
-  string badge_status =11;//徽标 Badge 颜色
-  string acl =12;//徽标 Badge 颜色
-  bool hide=13;
-  bool disabled=14;
-  bool hideInBreadcrumb=15;
-  bool shortcut=16;
-  bool shortcut_root=17;
-  bool reuse=18;
-  string  icon=19;
-  int64 p_id=20;
-  repeated SysMenu children=21;
-  bool group=22;
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-message SysApi{
-  int64 id=1;//id,有则修改，无则添加
-  string service=2;//服务名
-  string method=3;//方法
-  string api_explain=4;//描述
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-message SysSrv{
-  int64 id=1;//id,有则修改，无则添加
-  string service=2;//服务名
-  string method=3;//方法
-  string srv_explain=4;//描述
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-message LogisticsAddress {
-  int64 id=1;//id,有则修改，无则添加
-  bool is_default = 2;
-  int64 user_id = 3;
-  SysUser user=4;
-
-  int64 province_id=12;
-  SysTree province=13;
-  int64 city_id = 14;
-  SysTree city=15;
-  int64 area_id = 16;
-  SysTree area=17;
-  string address = 18;
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
-}
-message Qualification {
-
-  int64 id=1;//id,有则修改，无则添加
-  bool is_default = 2;
-  int64 user_id = 3;
-  SysUser user=4;
-  int64 qua_type_id = 5;
-  SysTree qua_type=6;
-  int64 qua_file_id = 7;
-  SysTree qua_file=8;
-
-  string qua_explain = 9;
-  string qua_number = 10;
-
-  google.protobuf.Timestamp start_times=11;
-  google.protobuf.Timestamp end_times=12;
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
 }

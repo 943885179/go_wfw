@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
-	"qshapi/proto/sysuser"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 )
 
 type ISrv interface {
-	EditSrv(req *sysuser.SysSrv, resp *sysuser.EditResp) error
-	DelSrv(req *sysuser.DelReq, resp *sysuser.EditResp) error
-	SrvList(req *sysuser.PageReq, resp *sysuser.PageResp) error
+	EditSrv(req *dbmodel.SysSrv, resp *dbmodel.Id) error
+	DelSrv(req *dbmodel.Id, resp *dbmodel.Id) error
+	SrvList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 }
 
 func NewSrv() ISrv {
@@ -21,7 +21,7 @@ func NewSrv() ISrv {
 
 type Srv struct{}
 
-func (s *Srv) SrvList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
+func (s *Srv) SrvList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.SysSrv
 	db := Conf.DbConfig.New().Model(&models.SysSrv{})
 	db.Count(&resp.Total)
@@ -31,7 +31,7 @@ func (s *Srv) SrvList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	}
 	db.Limit(int(req.Row)).Offset(int(req.Page * req.Row)).Find(&t)
 	for _, role := range t {
-		var r sysuser.SysSrv
+		var r dbmodel.SysSrv
 		mzjstruct.CopyStruct(&role, &r)
 		any, _ := ptypes.MarshalAny(&r)
 		resp.Data = append(resp.Data, any)
@@ -39,13 +39,13 @@ func (s *Srv) SrvList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	return nil
 }
 
-func (*Srv) DelSrv(req *sysuser.DelReq, resp *sysuser.EditResp) error {
+func (*Srv) DelSrv(req *dbmodel.Id, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	resp.Id = req.Id
 	return db.Delete(models.SysSrv{}, req.Id).Error
 }
 
-func (*Srv) EditSrv(req *sysuser.SysSrv, resp *sysuser.EditResp) error {
+func (*Srv) EditSrv(req *dbmodel.SysSrv, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	Srv := &models.SysSrv{}
 	if req.Id > 0 { //修改0

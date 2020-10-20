@@ -3,8 +3,9 @@ package server
 import (
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
-	"qshapi/proto/file"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjinit"
+	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 )
 
@@ -19,8 +20,8 @@ func init() {
 }
 
 type IFile interface {
-	UploadFile(req *file.FileInfo, resp *file.FileId) error
-	GetFile(req *file.FileId, resp *file.FileInfo) error
+	UploadFile(req *dbmodel.SysFile, resp *dbmodel.Id) error
+	GetFile(req *dbmodel.Id, resp *dbmodel.SysFile) error
 }
 
 func NewFile() IFile {
@@ -30,35 +31,20 @@ func NewFile() IFile {
 type fileSrv struct {
 }
 
-func (*fileSrv) UploadFile(req *file.FileInfo, resp *file.FileId) error {
+func (*fileSrv) UploadFile(req *dbmodel.SysFile, resp *dbmodel.Id) error {
 	db := conf.DbConfig.New()
+	file := &models.SysFile{}
+	mzjstruct.CopyStruct(req, file)
 	if req.Id == 0 {
 		req.Id = mzjuuid.WorkerDefault()
 	}
-	file := models.SysFile{
-		ID:         req.Id,
-		Name:       req.Name,
-		Path:       req.Path,
-		Size:       req.Size,
-		Sort:       req.Sort,
-		FileType:   req.FileType,
-		FileSuffix: req.FileSuffix,
-	}
-	resp.Id = file.ID
-	return db.Create(&file).Error
+	resp.Id = file.Id
+	return db.Create(file).Error
 }
-func (*fileSrv) GetFile(req *file.FileId, resp *file.FileInfo) error { //获取图片基本信息
-	db := conf.DbConfig.New()
-	sf := &models.SysFile{}
-	if err := db.First(sf, req.Id).Error; err != nil {
+func (*fileSrv) GetFile(req *dbmodel.Id, resp *dbmodel.SysFile) error { //获取图片基本信息
+	db := conf.DbConfig.New().Find(&models.SysFile{})
+	if err := db.First(resp, req.Id).Error; err != nil {
 		return err
 	}
-	resp.Id = sf.ID
-	resp.Name = sf.Name
-	resp.Path = sf.Path
-	resp.Size = sf.Size
-	resp.Sort = sf.Sort
-	resp.FileSuffix = sf.FileSuffix
-	resp.FileType = sf.FileType
 	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
+	"qshapi/proto/dbmodel"
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjgin"
 	"qshapi/utils/mzjinit"
@@ -96,92 +97,92 @@ func Registry(c *gin.Context) {
 	resp.MicroResp(c, result, err)
 }
 func EditUser(c *gin.Context) {
-	req := sysuser.SysUser{}
+	req := dbmodel.SysUser{}
 	c.Bind(&req)
 	result, err := client.EditUser(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditApi(c *gin.Context) {
-	req := sysuser.SysApi{} //😩 sysuser.Api{}直接定义成这个然后使用中文会转化报错，还是麻烦点吧
+	req := dbmodel.SysApi{} //😩 sysuser.Api{}直接定义成这个然后使用中文会转化报错，还是麻烦点吧
 	c.Bind(&req)
 	fmt.Println("参数", &req)
 	result, err := client.EditApi(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditSrv(c *gin.Context) {
-	req := sysuser.SysSrv{}
+	req := dbmodel.SysSrv{}
 	c.Bind(&req)
 	result, err := client.EditSrv(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditTree(c *gin.Context) {
-	req := sysuser.SysTree{}
+	req := dbmodel.SysTree{}
 	c.Bind(&req)
 	result, err := client.EditTree(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditMenu(c *gin.Context) {
-	req := sysuser.SysMenu{}
+	req := dbmodel.SysMenu{}
 	c.Bind(&req)
 	result, err := client.EditMenu(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditUserGroup(c *gin.Context) {
-	req := sysuser.SysGroup{}
+	req := dbmodel.SysGroup{}
 	c.Bind(&req)
 	result, err := client.EditUserGroup(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func EditRole(c *gin.Context) {
-	req := sysuser.SysRole{}
+	req := dbmodel.SysRole{}
 	c.Bind(&req)
 	result, err := client.EditRole(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 
 func DelTree(c *gin.Context) {
-	req := sysuser.DelReq{}
+	req := dbmodel.Id{}
 	c.Bind(&req)
 	result, err := client.DelTree(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func DelSrv(c *gin.Context) {
-	req := sysuser.DelReq{}
+	req := dbmodel.Id{}
 	c.Bind(&req)
 	result, err := client.DelSrv(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func DelApi(c *gin.Context) {
-	req := sysuser.DelReq{}
+	req := dbmodel.Id{}
 	c.Bind(&req)
 	result, err := client.DelApi(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func DelMenu(c *gin.Context) {
-	req := sysuser.DelReq{}
+	req := dbmodel.Id{}
 	c.Bind(&req)
 	result, err := client.DelMenu(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func DelUserGroup(c *gin.Context) {
-	req := sysuser.DelReq{}
+	req := dbmodel.Id{}
 	c.Bind(&req)
 	result, err := client.DelUserGroup(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func DelRole(c *gin.Context) {
-	req := sysuser.DelReq{}
+	req := dbmodel.Id{}
 	c.Bind(&req)
 	result, err := client.DelRole(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func ApiList(c *gin.Context) {
-	req := sysuser.PageReq{}
+	req := dbmodel.PageReq{}
 	c.Bind(&req)
 	result, err := client.ApiList(context.TODO(), &req)
-	var rs []sysuser.SysApi
+	var rs []dbmodel.SysApi
 	for _, any := range result.Data {
-		var r sysuser.SysApi
+		var r dbmodel.SysApi
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -189,12 +190,12 @@ func ApiList(c *gin.Context) {
 	//resp.MicroResp(c, result, err)
 }
 func SrvList(c *gin.Context) {
-	req := sysuser.PageReq{}
+	req := dbmodel.PageReq{}
 	c.Bind(&req)
 	result, err := client.SrvList(context.TODO(), &req)
-	var rs []sysuser.SysSrv
+	var rs []dbmodel.SysSrv
 	for _, any := range result.Data {
-		var r sysuser.SysSrv
+		var r dbmodel.SysSrv
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -202,12 +203,12 @@ func SrvList(c *gin.Context) {
 	//resp.MicroResp(c, result, err)
 }
 func UserGroupList(c *gin.Context) {
-	req := sysuser.PageReq{}
+	req := dbmodel.PageReq{}
 	c.Bind(&req)
 	result, err := client.UserGroupList(context.TODO(), &req)
-	var rs []sysuser.SysGroup
+	var rs []dbmodel.SysGroup
 	for _, any := range result.Data {
-		var r sysuser.SysGroup
+		var r dbmodel.SysGroup
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -215,12 +216,12 @@ func UserGroupList(c *gin.Context) {
 	//resp.MicroResp(c, result, err)
 }
 func TreeList(c *gin.Context) {
-	req := sysuser.PageReq{}
+	req := dbmodel.PageReq{}
 	c.Bind(&req)
 	result, err := client.TreeList(context.TODO(), &req)
-	var rs []sysuser.SysTree
+	var rs []dbmodel.SysTree
 	for _, any := range result.Data {
-		var r sysuser.SysTree
+		var r dbmodel.SysTree
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -228,12 +229,12 @@ func TreeList(c *gin.Context) {
 	//resp.MicroResp(c, result, err)
 }
 func MenuList(c *gin.Context) {
-	req := sysuser.PageReq{}
+	req := dbmodel.PageReq{}
 	c.Bind(&req)
 	result, err := client.MenuList(context.TODO(), &req)
-	var rs []sysuser.SysMenu
+	var rs []dbmodel.SysMenu
 	for _, any := range result.Data {
-		var r sysuser.SysMenu
+		var r dbmodel.SysMenu
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -241,12 +242,12 @@ func MenuList(c *gin.Context) {
 	//resp.MicroResp(c, result, err)
 }
 func RoleList(c *gin.Context) {
-	req := sysuser.PageReq{}
+	req := dbmodel.PageReq{}
 	c.Bind(&req)
 	result, err := client.RoleList(context.TODO(), &req)
-	var rs []sysuser.SysRole
+	var rs []dbmodel.SysRole
 	for _, any := range result.Data {
-		var r sysuser.SysRole
+		var r dbmodel.SysRole
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -258,9 +259,9 @@ func UserInfoList(c *gin.Context) {
 	req := sysuser.UserInfoListReq{}
 	c.Bind(&req)
 	result, err := client.UserInfoList(context.TODO(), &req)
-	var us []sysuser.SysUser
+	var us []dbmodel.SysUser
 	for _, any := range result.Data {
-		var u sysuser.SysUser
+		var u dbmodel.SysUser
 		ptypes.UnmarshalAny(any, &u)
 		us = append(us, u)
 	}

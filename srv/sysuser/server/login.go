@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"qshapi/models"
+	"qshapi/proto/dbmodel"
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjmd5"
 	"strings"
@@ -14,13 +15,13 @@ type ILogin interface {
 	Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error
 }
 
-func NewLogin(tp sysuser.LoginType) ILogin {
+func NewLogin(tp dbmodel.LoginType) ILogin {
 	switch tp {
-	case sysuser.LoginType_NAME: //通过用户名登录
+	case dbmodel.LoginType_NAME: //通过用户名登录
 		return &loginByName{}
-	case sysuser.LoginType_PHONE: //手机登录
+	case dbmodel.LoginType_PHONE: //手机登录
 		return &loginByPhone{}
-	case sysuser.LoginType_EMAIL: //邮箱登录
+	case dbmodel.LoginType_EMAIL: //邮箱登录
 		return &loginByEmail{}
 	default:
 		panic("不支持该登录方式")

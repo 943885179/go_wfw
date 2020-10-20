@@ -4,15 +4,16 @@ import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
+	"qshapi/proto/dbmodel"
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjmd5"
 	"qshapi/utils/mzjstruct"
 )
 
 type IUser interface {
-	ChangePassword(req *sysuser.ChangePasswordReq, resp *sysuser.EditResp) error
-	UserInfoList(req *sysuser.UserInfoListReq, resp *sysuser.PageResp) error
-	EditUser(user *sysuser.SysUser, resp *sysuser.EditResp) error
+	ChangePassword(req *sysuser.ChangePasswordReq, resp *dbmodel.Id) error
+	UserInfoList(req *sysuser.UserInfoListReq, resp *dbmodel.PageResp) error
+	EditUser(user *dbmodel.SysUser, resp *dbmodel.Id) error
 }
 
 func NewUser() IUser {
@@ -21,7 +22,7 @@ func NewUser() IUser {
 
 type User struct{}
 
-func (u User) EditUser(req *sysuser.SysUser, resp *sysuser.EditResp) error {
+func (u User) EditUser(req *dbmodel.SysUser, resp *dbmodel.Id) error {
 	if req.Id == 0 {
 		return errors.New("不存在该客户")
 	}
@@ -38,7 +39,7 @@ func (u User) EditUser(req *sysuser.SysUser, resp *sysuser.EditResp) error {
 	return db.Updates(api).Error
 }
 
-func (u User) ChangePassword(req *sysuser.ChangePasswordReq, resp *sysuser.EditResp) error {
+func (u User) ChangePassword(req *sysuser.ChangePasswordReq, resp *dbmodel.Id) error {
 	if req.UserPassword != req.UserPasswordAgain {
 		return errors.New("密码不一致")
 	}
@@ -52,7 +53,7 @@ func (u User) ChangePassword(req *sysuser.ChangePasswordReq, resp *sysuser.EditR
 	return db.Updates(user).Error
 }
 
-func (u User) UserInfoList(req *sysuser.UserInfoListReq, resp *sysuser.PageResp) error {
+func (u User) UserInfoList(req *sysuser.UserInfoListReq, resp *dbmodel.PageResp) error {
 
 	db := Conf.DbConfig.New().Model(&models.SysUser{})
 	if len(req.UserName) != 0 {
@@ -80,19 +81,10 @@ func (u User) UserInfoList(req *sysuser.UserInfoListReq, resp *sysuser.PageResp)
 		return err
 	}
 	for _, user := range us {
-		var r sysuser.SysUser
+		var r dbmodel.SysUser
 		mzjstruct.CopyStruct(&user, &r)
 		any, _ := ptypes.MarshalAny(&r)
 		resp.Data = append(resp.Data, any)
 	}
-	//bt, _ := json.Marshal(users)
-	/*xd, _ := json.MarshalIndent(users, "", "    ")
-	fmt.Println(string(xd))*/
-	//resp.Data = &any.Any{Value: bt}
-	//google.protobuf.ListValue=
-	/*resp.Data, _ = ptypes.MarshalAny(&any.Any{
-		//TypeUrl: users,
-		Value: users,
-	})*/
 	return nil
 }

@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
-	"qshapi/proto/sysuser"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 )
 
 type IApi interface {
-	EditApi(req *sysuser.SysApi, resp *sysuser.EditResp) error
-	DelApi(req *sysuser.DelReq, resp *sysuser.EditResp) error
-	ApiList(req *sysuser.PageReq, resp *sysuser.PageResp) error
+	EditApi(req *dbmodel.SysApi, resp *dbmodel.Id) error
+	DelApi(req *dbmodel.Id, resp *dbmodel.Id) error
+	ApiList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 }
 
 func NewAPI() IApi {
@@ -21,7 +21,7 @@ func NewAPI() IApi {
 
 type Api struct{}
 
-func (a *Api) ApiList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
+func (a *Api) ApiList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.SysApi
 	db := Conf.DbConfig.New().Model(&models.SysApi{})
 	db.Count(&resp.Total)
@@ -31,7 +31,7 @@ func (a *Api) ApiList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	}
 	db.Limit(int(req.Row)).Offset(int(req.Page * req.Row)).Find(&t)
 	for _, role := range t {
-		var r sysuser.SysApi
+		var r dbmodel.SysApi
 		mzjstruct.CopyStruct(&role, &r)
 		any, _ := ptypes.MarshalAny(&r)
 		resp.Data = append(resp.Data, any)
@@ -39,12 +39,12 @@ func (a *Api) ApiList(req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	return nil
 }
 
-func (*Api) DelApi(req *sysuser.DelReq, resp *sysuser.EditResp) error {
+func (*Api) DelApi(req *dbmodel.Id, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	resp.Id = req.Id
 	return db.Delete(models.SysApi{}, req.Id).Error
 }
-func (*Api) EditApi(req *sysuser.SysApi, resp *sysuser.EditResp) error {
+func (*Api) EditApi(req *dbmodel.SysApi, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	//defer db.Close()
 	api := &models.SysApi{}
