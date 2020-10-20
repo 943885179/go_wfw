@@ -182,7 +182,7 @@ type SysFile struct {
 //SysShop 商家店铺基础信息表
 type SysShop struct {
 	Id          int64  `gorm:"primary_key"`
-	ShopName    string `gorm:"column:shop_name;not null;comment:'店铺名称'" json:"shop_name"`
+	ShopName    string `gorm:"column:shop_name;not null;comment:'店铺名称';unique" json:"shop_name"`
 	ShopExplain string `gorm:"column:shop_explain;size:800;comment:'公告描述'" json:"shop_explain"`
 	IsSht       bool   `gorm:"column:is_sht;not null;default:0;comment:'四海通认证状态'" json:"is_sht"`
 	ShtExplain  string `gorm:"column:sht_explain;comment:'四海通认证返回'" json:"sht_explain"`

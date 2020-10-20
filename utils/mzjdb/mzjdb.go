@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"qshapi/models"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -53,7 +52,7 @@ func (d DriverType) String() string {
 type DbConfig struct {
 	DriverType DriverType `json:"driverType"` //驱动类型（这个是我自定义的）
 	Server     string     `json:"server"`     //服务器
-	Port       int     `json:"port"`       //端口
+	Port       int        `json:"port"`       //端口
 	User       string     `json:"user"`       //用户名
 	Password   string     `json:"password"`   //密码
 	Database   string     `json:"database"`   //数据库
@@ -94,16 +93,16 @@ func (c *DbConfig) init() {
 		log.Fatal("暂时没有设置该驱动")
 	}
 }
-func NewDbConfig(config models.DbConfig) *DbConfig {
-	c:=DbConfig{
+func NewDbConfig(config DbConfig) *DbConfig {
+	c := DbConfig{
 		DriverType: DriverType(config.DriverType),
-		Server: config.Server,
-		Port: config.Port,
-		User: config.User,
-		Password: config.Password,
-		Database: config.Database,
-		Source: config.Source,
-		IsDebug: config.IsDebug,
+		Server:     config.Server,
+		Port:       config.Port,
+		User:       config.User,
+		Password:   config.Password,
+		Database:   config.Database,
+		Source:     config.Source,
+		IsDebug:    config.IsDebug,
 	}
 	return &c
 }

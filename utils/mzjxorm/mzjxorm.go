@@ -1,13 +1,13 @@
 package mzjxorm
-import
-(
-"fmt"
-	"log"
-	"qshapi/models"
 
-_ "github.com/go-sql-driver/mysql" //mysql 数据库连接
-"github.com/go-xorm/xorm"
+import (
+	"fmt"
+	"log"
+
+	_ "github.com/go-sql-driver/mysql" //mysql 数据库连接
+	"github.com/go-xorm/xorm"
 )
+
 //DriverType 数据库驱动
 type DriverType int
 
@@ -52,12 +52,12 @@ func (d DriverType) String() string {
 type DbConfig struct {
 	DriverType DriverType `json:"driverType"` //驱动类型（这个是我自定义的）
 	Server     string     `json:"server"`     //服务器
-	Port       int     `json:"port"`       //端口
+	Port       int        `json:"port"`       //端口
 	User       string     `json:"user"`       //用户名
 	Password   string     `json:"password"`   //密码
 	Database   string     `json:"database"`   //数据库
 	Source     string     `json:"source"`     //完整连接（优先读取）
-	Sources     []string     `json:"sources"`     //完整连接（优先读取）多个，读写分离
+	Sources    []string   `json:"sources"`    //完整连接（优先读取）多个，读写分离
 	IsDebug    bool       `json:"isDebug"`    //是否为调试模式
 	//DB         *sql.DB    `json:"-"`          //db
 }
@@ -94,34 +94,34 @@ func (c *DbConfig) init() {
 		log.Fatal("暂时没有设置该驱动")
 	}
 }
-func NewDbConfig(config models.DbConfig) *DbConfig {
-	c:=DbConfig{
+func NewDbConfig(config DbConfig) *DbConfig {
+	c := DbConfig{
 		DriverType: DriverType(config.DriverType),
-		Server: config.Server,
-		Port: config.Port,
-		User: config.User,
-		Password: config.Password,
-		Database: config.Database,
-		Source: config.Source,
-		IsDebug: config.IsDebug,
+		Server:     config.Server,
+		Port:       config.Port,
+		User:       config.User,
+		Password:   config.Password,
+		Database:   config.Database,
+		Source:     config.Source,
+		IsDebug:    config.IsDebug,
 	}
 	return &c
 }
-func NewDbConfigs(configs []models.DbConfig) *DbConfig {
-	result:=DbConfig{}
+func NewDbConfigs(configs []DbConfig) *DbConfig {
+	result := DbConfig{}
 	for _, config := range configs {
-		c:=DbConfig{
+		c := DbConfig{
 			DriverType: DriverType(config.DriverType),
-			Server: config.Server,
-			Port: config.Port,
-			User: config.User,
-			Password: config.Password,
-			Database: config.Database,
-			Source: config.Source,
-			IsDebug: config.IsDebug,
+			Server:     config.Server,
+			Port:       config.Port,
+			User:       config.User,
+			Password:   config.Password,
+			Database:   config.Database,
+			Source:     config.Source,
+			IsDebug:    config.IsDebug,
 		}
 		c.init()
-		result.IsDebug=config.IsDebug
+		result.IsDebug = config.IsDebug
 		result.Sources = append(result.Sources, c.Source)
 	}
 	return &result
@@ -143,9 +143,9 @@ func QshXormNew(driverName, dataSourceName string) (engine *xorm.Engine, err err
 }
 
 //QshXormNewEngine 新的engine
-func (c *DbConfig)QshXormNewEngine() (engine *xorm.Engine, err error) {
+func (c *DbConfig) QshXormNewEngine() (engine *xorm.Engine, err error) {
 	c.init()
-	engine, err = xorm.NewEngine(c.DriverType.String(),c.Source)
+	engine, err = xorm.NewEngine(c.DriverType.String(), c.Source)
 	if err != nil {
 		return engine, err
 	}
@@ -161,7 +161,7 @@ func (c *DbConfig)QshXormNewEngine() (engine *xorm.Engine, err error) {
 }
 
 //QshXormNewGroup 初始化一个新的Engine
-func (c *DbConfig)QshXormNewGroup() (eg *xorm.EngineGroup, err error) {
+func (c *DbConfig) QshXormNewGroup() (eg *xorm.EngineGroup, err error) {
 	//默认随机策略
 	//eg, err = xorm.NewEngineGroup(driverName, dataSourceNames)
 	//随机策略

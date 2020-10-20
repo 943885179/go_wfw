@@ -198,7 +198,7 @@ message Qualification {
   int64 updated = 99;//修改时间，
 }
 message SysShop {//店铺
-  int64 id = 99;
+  int64 id = 100;
   string shop_name = 1;
   string shop_explain = 2;
   bool is_sht = 3;
@@ -219,4 +219,7 @@ message SysShop {//店铺
   repeated SysFile classify=17;//商家分类
   repeated SysUser user=18;
   repeated SysFile imgs=19;
+
+  int64 created = 98;//创建时间，时间戳秒
+  int64 updated = 99;//修改时间，
 }

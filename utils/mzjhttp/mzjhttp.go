@@ -3,15 +3,16 @@ package mzjhttp
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 //Request post请求，返回string
-func Request(method,url string, data interface{},hearders map[string]string) (string, int, error) {
+func Request(method, url string, data interface{}, hearders map[string]string) (string, int, error) {
 	var body *strings.Reader
 	if data != nil {
 		bt, _ := json.Marshal(data)
@@ -23,9 +24,9 @@ func Request(method,url string, data interface{},hearders map[string]string) (st
 		return "", 500, err
 	}
 	for hk, hv := range hearders {
-		req.Header.Add(hk,hv)
+		req.Header.Add(hk, hv)
 	}
-	resp,err:=(&http.Client{}).Do(req)
+	resp, err := (&http.Client{}).Do(req)
 	if err != nil {
 		//dbUtil.Exec(entity.EntityToAddSQL(HTTPLog, ""))
 		return "", 500, err
@@ -39,7 +40,6 @@ func Request(method,url string, data interface{},hearders map[string]string) (st
 		}
 		//fmt.Printf("返回内容：%s\n", string(content)) //返回内容
 		//dbUtil.Exec(entity.EntityToAddSQL(HTTPLog, ""))
-		log.Info(fmt.Sprintf("请求地址：%s\n请求参数：%s\n返回参数:%s\n", url, string(bt), string(content)))
 		return string(content), resp.StatusCode, nil
 	} else if resp.StatusCode == 504 { //超时
 		return "", resp.StatusCode, nil
@@ -100,14 +100,14 @@ func Get(url string) (string, int, error) {
 }
 
 //PostEntity post请求返回实体
-func PostEntity(url string, reqData interface{}, resp interface{},hearders map[string]string) error {
-	content, code, err := Request("Post",url, reqData,hearders)
+func PostEntity(url string, reqData interface{}, resp interface{}, hearders map[string]string) error {
+	content, code, err := Request("Post", url, reqData, hearders)
 	if err != nil || code == 504 { //超时重试
 		fmt.Printf("请求失败，开始重试")
 		for i := 0; i < 4; i++ {
 			fmt.Printf("正在重试%d...", i)
 			time.Sleep(time.Second * 5)
-			content, code, err = Request("Post",url, reqData,hearders)
+			content, code, err = Request("Post", url, reqData, hearders)
 			if err == nil {
 				break
 			}
@@ -121,14 +121,14 @@ func PostEntity(url string, reqData interface{}, resp interface{},hearders map[s
 }
 
 //GetEntity get请求返回实体
-func GetEntity(url string, resp interface{},hearders map[string]string) error {
-	content, code, err := Request("Get",url, nil,hearders)
+func GetEntity(url string, resp interface{}, hearders map[string]string) error {
+	content, code, err := Request("Get", url, nil, hearders)
 	if err != nil || code == 504 {
 		fmt.Printf("请求失败，开始重试")
 		for i := 0; i < 4; i++ {
 			fmt.Printf("正在重试%d...", i)
 			time.Sleep(time.Second * 3)
-			content, code, err =Request("Get",url, nil,hearders)
+			content, code, err = Request("Get", url, nil, hearders)
 			if err == nil {
 				break
 			}
@@ -140,4 +140,3 @@ func GetEntity(url string, resp interface{},hearders map[string]string) error {
 	}
 	return json.Unmarshal([]byte(string(content)), resp)
 }
-
