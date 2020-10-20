@@ -2,7 +2,6 @@ package models
 
 import (
 	"qshapi/proto/dbmodel"
-	"qshapi/proto/file"
 	"time"
 
 	"gorm.io/gorm"
@@ -169,14 +168,14 @@ type SysMenu struct {
 
 //SysFile 资源表
 type SysFile struct {
-	Id          int64         `gorm:"primary_key"`
-	Path        string        `gorm:"column:path;not null;comment:'路径'" json:"path"`
-	Name        string        `gorm:"column:name;not null;comment:'文件名称（一般是id+后缀）'" json:"name"`
-	Size        int64         `gorm:"column:size;comment:'大小'" json:"size"`
-	FileExplain string        `gorm:"column:file_explain;comment:'描述'" json:"file_explain"`
-	FileType    file.FileType `gorm:"index;column:file_type;not null;comment:'商业用途（头像，店铺logo，商品图片等）'"json:"file_type"`
-	FileSuffix  string        `gorm:"index;column:file_suffix;not null;comment:'文件后缀（.img,.png等）'" json:"file_suffix"`
-	Sort        int32         `gorm:"column:sort;coment:'排序'" json:"sort"`
+	Id          int64            `gorm:"primary_key"`
+	Path        string           `gorm:"column:path;not null;comment:'路径'" json:"path"`
+	Name        string           `gorm:"column:name;not null;comment:'文件名称（一般是id+后缀）'" json:"name"`
+	Size        int64            `gorm:"column:size;comment:'大小'" json:"size"`
+	FileExplain string           `gorm:"column:file_explain;comment:'描述'" json:"file_explain"`
+	FileType    dbmodel.FileType `gorm:"index;column:file_type;not null;comment:'商业用途（头像，店铺logo，商品图片等）'"json:"file_type"`
+	FileSuffix  string           `gorm:"index;column:file_suffix;not null;comment:'文件后缀（.img,.png等）'" json:"file_suffix"`
+	Sort        int32            `gorm:"column:sort;coment:'排序'" json:"sort"`
 	Model
 }
 

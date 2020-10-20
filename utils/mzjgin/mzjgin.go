@@ -172,7 +172,7 @@ func (api *APIGin) Default(service string) *gin.Engine {
 	//添加Token中间件
 	//g.Use(APITokenMiddleware)
 	//或者使用下面的方法
-	g.Use(TokenAuthMiddleware(service))
+	//g.Use(TokenAuthMiddleware(service)) //权限认证先暂时关闭
 	// 加载html文件，即template包下所有文件
 	//g.engine.LoadHTMLGlob("wwwroot/*")
 	//g.engine.LoadHTMLGlob("template/*")

@@ -109,9 +109,9 @@
 ```
 ## 微服务划分
 
-### 特别注意：proto改为依赖后使用powershell命名行去构建
+#### 特别注意：proto改为依赖后使用powershell命名行去构建
 
-## 基础试题构建
+### 基础试题构建
 
 `Get-ChildItem proto/dbmodel/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=.}`
 
@@ -138,14 +138,19 @@
 	
 ```
 
-## 消息服务（send）
+### 消息服务（send）
 `protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/send/send.proto`
 
-## 文件服务（file）
-`protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/file/file.proto`
-## 图片webp服务（第三方服务，将图片转成webp压缩）
+`Get-ChildItem proto/send/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
 
-###本项目中我直接下载了源码，然后build,下面介绍docker中如何部署
+### 文件服务（file）
+`protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/file/file.proto`
+或
+`Get-ChildItem proto/file/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
+
+### 图片webp服务（第三方服务，将图片转成webp压缩）
+
+####本项目中我直接下载了源码，然后build,下面介绍docker中如何部署
 1. `docker pull webpsh/webps`
 
 2. 找到图片资源的文件夹 
@@ -153,7 +158,7 @@
 3. 创建容器`docker run -d -p 3333:3333 -v /path/to/pics:/opt/pics --name webps webpsh/webps` 
 4. 我的是window.`docker run -d -p 3333:3333 -v E/go/qshapi/static/upload:/opt/pics --name webps webpsh/webps` 挂在文件夹
 5. 测试：`docke ps` 查看是否有容器webps,然后在浏览器中输入图片地址`http://localhost:3333/no.gif`查看
-### 创建nginx反向代理,处理图片
+#### 创建nginx反向代理,处理图片
 1. [安装nginx](https://github.com/943885179/dockerStu/blob/master/docker_nginx.md)
     1. `docker pull nginx`
     2. `docker run --name dockernginx -d -p 8080:80 -v e/docker/nginx/conf/nginx.conf:/etc/nginx/nginx.conf -v e/docker/nginx/www:/usr/share/nginx/html -v e/docker/nginx/logs:/var/log/nginx nginx` 
@@ -227,6 +232,11 @@
 6. 备注(如果使用etcd的话需要先指定使用etcd才能注册到etcd中)
     1. `set micro_registry=etcd`
     2. `set micro_registry_address=127.0.0.1:6379`
+
+### 店铺微服务(shop)
+
+`Get-ChildItem proto/shop/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
+   
 ##启动micro网关
 1. 指定服务的命名空间为自己的命名空间`micro web --namespace com.weixiao.web `特别注意：web程序必须要以xxx.xxx.web.xxx命名，否则虽然注册到服务中但是不能直接调用
 2. 使用micro api 启动api同样如初，命名规范必须是[xxx...].api.xxx

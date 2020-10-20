@@ -98,6 +98,20 @@
             "ip":"",
             "port":8705
         },
+        "shopSrv":{
+            "etcd":"",
+            "name":"com.weixiao.api.shop",
+            "version":"latest",
+            "ip":"",
+            "port":8706
+        },
+        "shopCli":{
+            "etcd":"",
+            "name":"com.weixiao.web.shop",
+            "version":"latest",
+            "ip":"",
+            "port":8707
+        },
         "midCli":{
             "etcd":"",
             "name":"com.weixiao.web.mid",#中间服务调用micro接口

@@ -109,9 +109,13 @@ func initSrv() {
 		{Id: 25, Service: "com.weixiao.api.file", Method: "GetFile", SrvExplain: ""},
 
 		{Id: 27, Service: "com.weixiao.api.send", Method: "sendCode", SrvExplain: ""},
-		{Id: 27, Service: "com.weixiao.api.send", Method: "send", SrvExplain: ""},
-		{Id: 27, Service: "com.weixiao.api.send", Method: "sendAll", SrvExplain: ""},
-		{Id: 27, Service: "com.weixiao.api.send", Method: "codeVerify", SrvExplain: ""},
+		{Id: 28, Service: "com.weixiao.api.send", Method: "send", SrvExplain: ""},
+		{Id: 29, Service: "com.weixiao.api.send", Method: "sendAll", SrvExplain: ""},
+		{Id: 30, Service: "com.weixiao.api.send", Method: "codeVerify", SrvExplain: ""},
+
+		{Id: 31, Service: "com.weixiao.api.shop", Method: "Editshop", SrvExplain: ""},
+		{Id: 32, Service: "com.weixiao.api.shop", Method: "Delshop", SrvExplain: ""},
+		{Id: 33, Service: "com.weixiao.api.shop", Method: "shopList", SrvExplain: ""},
 	}
 	db.Create(srv)
 }
@@ -153,10 +157,14 @@ func initApi() {
 		{Id: 26, Service: "com.weixiao.web.file", Method: "showFile", ApiExplain: ""},
 		{Id: 27, Service: "com.weixiao.web.file", Method: "fileById", ApiExplain: ""},
 
-		{Id: 27, Service: "com.weixiao.web.send", Method: "sendCode", ApiExplain: ""},
-		{Id: 27, Service: "com.weixiao.web.send", Method: "send", ApiExplain: ""},
-		{Id: 27, Service: "com.weixiao.web.send", Method: "sendAll", ApiExplain: ""},
-		{Id: 27, Service: "com.weixiao.web.send", Method: "codeVerify", ApiExplain: ""},
+		{Id: 28, Service: "com.weixiao.web.send", Method: "sendCode", ApiExplain: ""},
+		{Id: 29, Service: "com.weixiao.web.send", Method: "send", ApiExplain: ""},
+		{Id: 30, Service: "com.weixiao.web.send", Method: "sendAll", ApiExplain: ""},
+		{Id: 31, Service: "com.weixiao.web.send", Method: "codeVerify", ApiExplain: ""},
+
+		{Id: 32, Service: "com.weixiao.web.shop", Method: "Editshop", ApiExplain: ""},
+		{Id: 33, Service: "com.weixiao.web.shop", Method: "Delshop", ApiExplain: ""},
+		{Id: 34, Service: "com.weixiao.web.shop", Method: "shopList", ApiExplain: ""},
 	}
 	db.Create(srv)
 }
