@@ -1,6 +1,8 @@
 syntax = "proto3";
-package dbmodel;
+package shop;
 import "google/protobuf/timestamp.proto";
+
+
 
 enum LoginType{
   NAME=0;//用户名登陆

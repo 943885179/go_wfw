@@ -115,6 +115,9 @@
 
 `protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/sysuser.proto`
 
+请在powershell模式下执行命令`Get-ChildItem *.proto |Resolve-Path -Relative | %{protoc $_ --go_out=. --micro_out=.}`这样就可以使用*.proto了
+
+
 ## 消息服务（send）
 `protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/send/send.proto`
 

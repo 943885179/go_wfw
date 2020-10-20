@@ -190,10 +190,10 @@ type SysShop struct {
 	AppId     string `gorm:"column:app_id;" json:"app_id"`
 	Appsecret string `gorm:"column:appsecret;" json:"appsecret"`
 
-	Grade    float64 `gorm:"index;column:grade;comment:'评分总数'" json:"grade"`
-	GradeWl  float64 `gorm:"index;column:grade_wl;comment:'物流评分总数'" json:"grade_wl"`
-	GradeFw  float64 `gorm:"index;column:grade_fw;comment:'服务评分总数'" json:"grade_fw"`
-	GradeMs  float64 `gorm:"index;column:grade_ms;comment:'描述评分总数'" json:"grade_ms"`
+	Grade    float64 `gorm:"index;column:grade;default:5;comment:'评分总数'" json:"grade"`
+	GradeWl  float64 `gorm:"index;column:grade_wl;default:5;comment:'物流评分总数'" json:"grade_wl"`
+	GradeFw  float64 `gorm:"index;column:grade_fw;default:5;comment:'服务评分总数'" json:"grade_fw"`
+	GradeMs  float64 `gorm:"index;column:grade_ms;default:5;comment:'描述评分总数'" json:"grade_ms"`
 	Cash     int     `gorm:"index;column:cash;comment:'保证金'" json:"cash"`
 	Sort     int     `gorm:"index;column:sort;comment:'排序'" json:"sort"`
 	Comments int     `gorm:"index;column:comments;comment:'评价次数'" json:"comments"`
@@ -201,11 +201,11 @@ type SysShop struct {
 	Vip      int     `gorm:"index;column:vip;comment:'vip等级'" json:"vip"`
 
 	LogoId int64   `gorm:"index;column:logo_id;comment:'店铺logo'" json:"logo_id"`
-	Logo   SysFile `gorm:"foreignKey:logo_id"`
+	Logo   SysFile `gorm:"foreignKey:logo_id" json:"logo"`
 
-	Classify []SysTree `gorm:"many2many:sys_shop_classify"` //商家分类
-	User     []SysUser `gorm:"many2many:sys_shop_user"`
-	Imgs     []SysFile `gorm:"many2many:sys_shop_imgs"`
+	Classify []SysTree `gorm:"many2many:sys_shop_classify" json:"classify"` //商家分类
+	User     []SysUser `gorm:"many2many:sys_shop_user" json:"user"`
+	Imgs     []SysFile `gorm:"many2many:sys_shop_imgs" json:"imgs"`
 	Model
 }
 

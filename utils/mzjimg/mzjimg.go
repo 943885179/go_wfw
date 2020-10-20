@@ -211,32 +211,32 @@ func ImageResizeImg(imgPath string, width, height, ts int) (image image.Image, e
 /**
  *图片转base64
  * @Author Administrator
- * @Description //TODO 
- * @Date  
+ * @Description
+ * @Date
  * @Param
- * @return 
+ * @return
  **/
-func Img2Base64(m image.Image) string{
-	buf:=bytes.NewBuffer(nil)
-	jpeg.Encode(buf,m,nil)
-	dist:=make([]byte,10)
-	base64.StdEncoding.Encode(dist,buf.Bytes())
+func Img2Base64(m image.Image) string {
+	buf := bytes.NewBuffer(nil)
+	jpeg.Encode(buf, m, nil)
+	dist := make([]byte, 10)
+	base64.StdEncoding.Encode(dist, buf.Bytes())
 	return string(dist)
 }
 
 /**
  *base64转byte
  * @Author Administrator
- * @Description //TODO
+ * @Description
  * @Date
  * @Param
  * @return
  **/
 func Base642Byte(base64Str string) []byte {
-	b,_:=base64.StdEncoding.DecodeString(base64Str)
+	b, _ := base64.StdEncoding.DecodeString(base64Str)
 	return b
 }
 func Base642Buff(base64Str string) *bytes.Buffer {
-	b,_:=base64.StdEncoding.DecodeString(base64Str)
+	b, _ := base64.StdEncoding.DecodeString(base64Str)
 	return bytes.NewBuffer(b)
 }

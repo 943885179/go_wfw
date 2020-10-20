@@ -22,26 +22,30 @@ import (
 )
 
 var (
-	cliName="fileCli"
-	svName="fileSrv"
-	conf models.APIConfig
-	client file.FileSrvService
-	resp =mzjgin.Resp{}
+	cliName = "fileCli"
+	svName  = "fileSrv"
+	conf    models.APIConfig
+	client  file.FileSrvService
+	resp    = mzjgin.Resp{}
 )
-func init(){
-	if err:=mzjinit.Default(&conf);err != nil {
+
+func init() {
+	if err := mzjinit.Default(&conf); err != nil {
 		log.Fatal(err)
 	}
 }
 func main() {
 	//http://localhost:8705/static/upload/321988436372230144.png 访问图片
 	service := conf.Services[cliName]
-	client=file.NewFileSrvService(conf.Services[svName].Name,service.NewRoundSrv().Options().Client)
-	s:= service.NewGinWeb(SrvGin())
-	if err:=s.Run();err!= nil {
+	cliName = service.Name
+	svName = conf.Services[svName].Name
+	client = file.NewFileSrvService(conf.Services[svName].Name, service.NewRoundSrv().Options().Client)
+	s := service.NewGinWeb(SrvGin())
+	if err := s.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
+
 //图像显示：https://github.com/webp-sh/webp_server_go/releases，直接使用改程序然后做部署先、后续在此基础上做修改
 
 /**
@@ -52,44 +56,44 @@ func main() {
  * @return
  **/
 func SrvGin() *gin.Engine {
-	g:=mzjgin.NewGin().Default()
+	g := mzjgin.NewGin().Default(cliName)
 	g.MaxMultipartMemory = 100
 	r := g.Group("/")
 	{
 		r.GET("/", func(c *gin.Context) {
-			resp.APIOK(c,"文件webapi")
+			resp.APIOK(c, "文件webapi")
 		})
 		r.POST("/", func(c *gin.Context) {
-			resp.APIOK(c,gin.H{
-				"webconfig":conf.Services[cliName],
-				"service":conf.Services[svName].Name,
+			resp.APIOK(c, gin.H{
+				"webconfig": conf.Services[cliName],
+				"service":   conf.Services[svName].Name,
 			})
 		})
 		r.POST("upload", upload)
 		r.POST("uploadMutiple", uploadMultiple)
-		r.GET("showFile",showFile)
-		r.GET("/fileById/:id",fileById)
+		r.GET("showFile", showFile)
+		r.GET("/fileById/:id", fileById)
 		//r.GET("/fileDownload",fileDownload)
-		r.GET("/ImgWH/:img",ImgWH)
+		r.GET("/ImgWH/:img", ImgWH)
 		//file.GET("getCaptcha", getCaptcha)
 		//file.GET("verifyCaptcha", verifyCaptcha)
 	}
 	return g
 }
 
-func fileById(c *gin.Context){
-	id,_:=  strconv.Atoi(c.Param("id"))
-	 req := &file.FileId{
+func fileById(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	req := &file.FileId{
 		Id: int64(id),
 	} //c.Bind(req)
 	//c.BindQuery(req)
-	result, err := client.GetFile(context.Background(),req)
-	if err!=nil{
-		resp.APIError(c,err.Error())
+	result, err := client.GetFile(context.Background(), req)
+	if err != nil {
+		resp.APIError(c, err.Error())
 		return
 	}
-	c.Request.RequestURI=c.Request.RequestURI+result.FileSuffix
-	c.File(result.Path+"/"+result.Name) //因为id和name一致所以随便用一个就可以，如果是有后缀文件只能用name
+	c.Request.RequestURI = c.Request.RequestURI + result.FileSuffix
+	c.File(result.Path + "/" + result.Name) //因为id和name一致所以随便用一个就可以，如果是有后缀文件只能用name
 	/*copyFile(result.Path+"/"+result.Name,result.FileSuffix)
 	f, _ := ioutil.TempFile(result.Path, result.Name+result.FileSuffix)
 	defer f.Close()
@@ -98,8 +102,7 @@ func fileById(c *gin.Context){
 	os.Remove(result.Path+"/"+result.Name+result.FileSuffix)*/
 	//c.Redirect(http.StatusMovedPermanently,"../"+result.Path+"/"+result.Name+result.FileSuffix)
 
-
- }
+}
 
 /**
  * @Author mzj
@@ -108,7 +111,7 @@ func fileById(c *gin.Context){
  * @Param
  * @return
  **/
-func showFile(c *gin.Context){
+func showFile(c *gin.Context) {
 	//http://localhost:8705/img?url=321988436372230144.png
 	//["jpg","png","jpeg","bmp"]
 	/*for _, ext := range AllowedTypes {
@@ -126,7 +129,7 @@ func showFile(c *gin.Context){
 		return
 	}*/
 	url := c.Query("url")
-	c.File(path.Join(conf.FilePath,url))
+	c.File(path.Join(conf.FilePath, url))
 }
 
 /**
@@ -136,9 +139,9 @@ func showFile(c *gin.Context){
  * @Param
  * @return
  **/
-func getImage(c *gin.Context){
+func getImage(c *gin.Context) {
 	url := c.Query("url")
-	file, _ := ioutil.ReadFile(path.Join(conf.FilePath,url))
+	file, _ := ioutil.ReadFile(path.Join(conf.FilePath, url))
 	c.Writer.WriteString(string(file))
 }
 
@@ -149,24 +152,24 @@ func getImage(c *gin.Context){
  * @Param
  * @return
  **/
-func ImgWH(c * gin.Context)  {
+func ImgWH(c *gin.Context) {
 	//http://localhost:8705/ImgWH/321988436372230144_100*100
-	imgstr:=c.Param("img")
-	s:=strings.Split(imgstr,"_")
-	id,_:=  strconv.Atoi(s[0])
+	imgstr := c.Param("img")
+	s := strings.Split(imgstr, "_")
+	id, _ := strconv.Atoi(s[0])
 	req := &file.FileId{
 		Id: int64(id),
 	}
-	result, err := client.GetFile(context.Background(),req)
-	if err!=nil{
-		resp.APIError(c,err.Error())
+	result, err := client.GetFile(context.Background(), req)
+	if err != nil {
+		resp.APIError(c, err.Error())
 		return
 	}
-	wh:=strings.Split(s[1],"*")
-	w,_:=strconv.Atoi(wh[0])
-	h,_:=strconv.Atoi(wh[1])
+	wh := strings.Split(s[1], "*")
+	w, _ := strconv.Atoi(wh[0])
+	h, _ := strconv.Atoi(wh[1])
 	img, _ := mzjimg.ImageResizeImg(result.Name, w, h, 0)
-	png.Encode(c.Writer,img)
+	png.Encode(c.Writer, img)
 	//c.Writer.WriteString(string(img))
 }
 
@@ -180,16 +183,16 @@ func ImgWH(c * gin.Context)  {
 func upload(c *gin.Context) {
 	f, err := c.FormFile("file")
 	if err != nil {
-		resp.APIError(c,"请选择上传文件")
+		resp.APIError(c, "请选择上传文件")
 		return
 	}
-	req:= fileAttribute(c,f,0)
-	if err:=uploadFile(c,f,req);err != nil {
+	req := fileAttribute(c, f, 0)
+	if err := uploadFile(c, f, req); err != nil {
 		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
 		return
 	}
-	result, err := client.UploadFile(context.Background(),req)
-	resp.MicroResp(c,result,err)
+	result, err := client.UploadFile(context.Background(), req)
+	resp.MicroResp(c, result, err)
 }
 
 /**
@@ -199,24 +202,23 @@ func upload(c *gin.Context) {
  * @Param
  * @return
  **/
-func fileAttribute(c *gin.Context,f *multipart.FileHeader,sort int) *file.FileInfo {
-	req:=&file.FileInfo{
-	}
+func fileAttribute(c *gin.Context, f *multipart.FileHeader, sort int) *file.FileInfo {
+	req := &file.FileInfo{}
 	c.Bind(req) //这里可以得到path(文件存放路径),file_type(文件业务类型)，file_explain（文件描述）
-	req.FileSuffix=path.Ext(f.Filename)
-	req.Id=mzjuuid.WorkerDefault()
-	req.Name=strconv.Itoa(int(req.Id)) +path.Ext(f.Filename) //这个后缀看情况吧，需要先解决下载doc，excel等问题
-	req.Size= f.Size
-	req.Path=path.Join(conf.FilePath,req.Path)//文件夹前面加上文件系统路径
-	req.Sort= int32(sort + 1)
+	req.FileSuffix = path.Ext(f.Filename)
+	req.Id = mzjuuid.WorkerDefault()
+	req.Name = strconv.Itoa(int(req.Id)) + path.Ext(f.Filename) //这个后缀看情况吧，需要先解决下载doc，excel等问题
+	req.Size = f.Size
+	req.Path = path.Join(conf.FilePath, req.Path) //文件夹前面加上文件系统路径
+	req.Sort = int32(sort + 1)
 	return req
 }
 
-func webPImg(){
-	webpPath:="webp" //压缩图存放路径
-	if _,err:=os.Stat(webpPath);os.IsNotExist(err) {
-		os.MkdirAll(webpPath, os.ModePerm)// 先创建文件夹
-		os.Chmod(webpPath, 0777) // 再修改权限
+func webPImg() {
+	webpPath := "webp" //压缩图存放路径
+	if _, err := os.Stat(webpPath); os.IsNotExist(err) {
+		os.MkdirAll(webpPath, os.ModePerm) // 先创建文件夹
+		os.Chmod(webpPath, 0777)           // 再修改权限
 	}
 
 }
@@ -228,13 +230,13 @@ func webPImg(){
  * @Param
  * @return
  **/
-func uploadFile(c *gin.Context, file *multipart.FileHeader,req *file.FileInfo)error  {
+func uploadFile(c *gin.Context, file *multipart.FileHeader, req *file.FileInfo) error {
 	if _, err := os.Stat(req.Path); os.IsNotExist(err) { // 必须分成两步创建文件夹
 		//os.Mkdir(Config.FilePath, 0777)//创建单级目录
-		os.MkdirAll(req.Path, os.ModePerm)// 先创建文件夹
-		os.Chmod(req.Path, 0777) // 再修改权限
+		os.MkdirAll(req.Path, os.ModePerm) // 先创建文件夹
+		os.Chmod(req.Path, 0777)           // 再修改权限
 	}
-	return c.SaveUploadedFile(file, path.Join(req.Path,req.Name))
+	return c.SaveUploadedFile(file, path.Join(req.Path, req.Name))
 }
 
 /**
@@ -251,25 +253,25 @@ func uploadMultiple(c *gin.Context) {
 		return
 	}
 	files := form.File["file"]
-	if len(files) ==0 {
+	if len(files) == 0 {
 		resp.APIError(c, "请选择上传文件")
 		return
 	}
 	var result []interface{}
 	for i, f := range files {
-		req:= fileAttribute(c,f,i)
-		if err:=uploadFile(c,f,req);err != nil {
+		req := fileAttribute(c, f, i)
+		if err := uploadFile(c, f, req); err != nil {
 			resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
 			return
 		}
 		r, err := client.UploadFile(context.Background(), req)
 		if err != nil {
-			resp.APIError(c,err.Error())
+			resp.APIError(c, err.Error())
 			return
 		}
 		result = append(result, r)
 	}
-	resp.APIOK(c,result)
+	resp.APIOK(c, result)
 }
 
 /**
@@ -279,8 +281,8 @@ func uploadMultiple(c *gin.Context) {
  * @Param
  * @return
  **/
-func fileDownload(c *gin.Context){
-	url:= c.Query("url")
+func fileDownload(c *gin.Context) {
+	url := c.Query("url")
 	//适用了gzip压缩，下面的设置不生效
 	//c.Writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=%s", url))//fmt.Sprintf("attachment; filename=%s", filename)对下载的文件重命名
 	//c.Writer.Header().Add("Content-Type", "application/octet-stream")
@@ -289,13 +291,14 @@ func fileDownload(c *gin.Context){
 	//c.File(url+".ini")
 	//os.Remove(url+".ini")
 }
-func copyFile(url,suffix string)  {
-	srcFile,_:=os.Open(url)
+func copyFile(url, suffix string) {
+	srcFile, _ := os.Open(url)
 	defer srcFile.Close()
-	dstFile,_:=os.Create(url+suffix)
+	dstFile, _ := os.Create(url + suffix)
 	defer dstFile.Close()
-	io.Copy(dstFile,srcFile)
+	io.Copy(dstFile, srcFile)
 }
+
 /*
 //生成验证码
 func getCaptcha(c *gin.Context) {

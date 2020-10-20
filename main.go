@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
 	"qshapi/utils/mzjinit"
 	"qshapi/utils/mzjmd5"
-	"qshapi/utils/mzjuuid"
-
-	"github.com/micro/go-micro/v2/util/log"
 )
 
 var (
@@ -106,6 +104,14 @@ func initSrv() {
 		{Id: 21, Service: "com.weixiao.api.user", Method: "EditTree", SrvExplain: ""},
 		{Id: 22, Service: "com.weixiao.api.user", Method: "DelTree", SrvExplain: ""},
 		{Id: 23, Service: "com.weixiao.api.user", Method: "TreeList", SrvExplain: ""},
+
+		{Id: 24, Service: "com.weixiao.api.file", Method: "UploadFile", SrvExplain: ""},
+		{Id: 25, Service: "com.weixiao.api.file", Method: "GetFile", SrvExplain: ""},
+
+		{Id: 27, Service: "com.weixiao.api.send", Method: "sendCode", SrvExplain: ""},
+		{Id: 27, Service: "com.weixiao.api.send", Method: "send", SrvExplain: ""},
+		{Id: 27, Service: "com.weixiao.api.send", Method: "sendAll", SrvExplain: ""},
+		{Id: 27, Service: "com.weixiao.api.send", Method: "codeVerify", SrvExplain: ""},
 	}
 	db.Create(srv)
 }
@@ -141,6 +147,16 @@ func initApi() {
 		{Id: 21, Service: "com.weixiao.web.user", Method: "EditTree", ApiExplain: ""},
 		{Id: 22, Service: "com.weixiao.web.user", Method: "DelTree", ApiExplain: ""},
 		{Id: 23, Service: "com.weixiao.web.user", Method: "TreeList", ApiExplain: ""},
+
+		{Id: 24, Service: "com.weixiao.web.file", Method: "upload", ApiExplain: ""},
+		{Id: 25, Service: "com.weixiao.web.file", Method: "uploadMutiple", ApiExplain: ""},
+		{Id: 26, Service: "com.weixiao.web.file", Method: "showFile", ApiExplain: ""},
+		{Id: 27, Service: "com.weixiao.web.file", Method: "fileById", ApiExplain: ""},
+
+		{Id: 27, Service: "com.weixiao.web.send", Method: "sendCode", ApiExplain: ""},
+		{Id: 27, Service: "com.weixiao.web.send", Method: "send", ApiExplain: ""},
+		{Id: 27, Service: "com.weixiao.web.send", Method: "sendAll", ApiExplain: ""},
+		{Id: 27, Service: "com.weixiao.web.send", Method: "codeVerify", ApiExplain: ""},
 	}
 	db.Create(srv)
 }
@@ -160,18 +176,18 @@ func initAdmin() { //超级管理员
 		Menus:       m,
 		Apis:        a,
 		Srvs:        s,
-		Id:          mzjuuid.WorkerDefault(),
+		Id:          1, //mzjuuid.WorkerDefault(),
 	}
 	//db.Create(r)
 	//创建一个用户组
 	gr := models.SysGroup{
 		GroupName:    "超级用户组",
 		GroupExplain: "超级用户组",
-		Id:           mzjuuid.WorkerDefault(),
+		Id:           1, // mzjuuid.WorkerDefault(),
 	}
 	gr.Roles = append(gr.Roles, r)
 	u := models.SysUser{
-		Id:           mzjuuid.WorkerDefault(),
+		Id:           1, // mzjuuid.WorkerDefault(),
 		UserName:     "admin",
 		UserPhone:    "18206840781",
 		UserEmail:    "943885179@qq.com",
