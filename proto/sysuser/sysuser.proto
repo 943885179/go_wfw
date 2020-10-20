@@ -10,6 +10,7 @@ service UserSrv{
   rpc Registry(RegistryReq)returns(EditResp){} //注册
   rpc ChangePassword(ChangePasswordReq)returns(EditResp){}//修改密码
   rpc UserInfoList(UserInfoListReq)returns(PageResp){}//分页查询用户
+  rpc EditUser(SysUser)returns(EditResp){}//编辑用户
 
   rpc EditRole(SysRole)returns(EditResp){}//编辑角色
   rpc DelRole(DelReq)returns(EditResp){}
@@ -225,7 +226,7 @@ message  SysMenu{
   bool shortcut_root=17;
   bool reuse=18;
   string  icon=19;
-  int64 pid=20;
+  int64 p_id=20;
   repeated SysMenu children=21;
   bool group=22;
   int64 created = 98;//创建时间，时间戳秒

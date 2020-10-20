@@ -6,11 +6,13 @@ import (
 	"qshapi/models"
 	"qshapi/proto/sysuser"
 	"qshapi/utils/mzjmd5"
+	"qshapi/utils/mzjstruct"
 )
 
 type IUser interface {
 	ChangePassword(req *sysuser.ChangePasswordReq, resp *sysuser.EditResp) error
 	UserInfoList(req *sysuser.UserInfoListReq, resp *sysuser.PageResp) error
+	EditUser(user *sysuser.SysUser, resp *sysuser.EditResp) error
 }
 
 func NewUser() IUser {
@@ -18,6 +20,23 @@ func NewUser() IUser {
 }
 
 type User struct{}
+
+func (u User) EditUser(req *sysuser.SysUser, resp *sysuser.EditResp) error {
+	if req.Id == 0 {
+		return errors.New("不存在该客户")
+	}
+	db := Conf.DbConfig.New()
+	api := &models.SysUser{}
+	if err := db.First(api, req.Id).Error; err != nil {
+		if Conf.DbConfig.IsErrRecordNotFound(err) {
+			return errors.New("修改失败,数据不存在")
+		}
+		return err
+	}
+	mzjstruct.CopyStruct(req, api)
+	resp.Id = api.Id
+	return db.Updates(api).Error
+}
 
 func (u User) ChangePassword(req *sysuser.ChangePasswordReq, resp *sysuser.EditResp) error {
 	if req.UserPassword != req.UserPasswordAgain {
@@ -49,14 +68,21 @@ func (u User) UserInfoList(req *sysuser.UserInfoListReq, resp *sysuser.PageResp)
 	if resp.Total == 0 {
 		return nil
 	}
-	req.PageReq.Page -= 1 //分页查询页码减1
+	req.PageReq.Page -= 1                                              //分页查询页码减1
+	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles") //注意大小写
+	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
+	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")
 	db = db.Limit(int(req.PageReq.Row)).Offset(int(req.PageReq.Page * req.PageReq.Row))
-	var us []sysuser.SysUser
+	db = db.Preload("Province").Preload("City").Preload("Area") //地址
+	db = db.Preload("Icon")                                     //头像
+	var us []models.SysUser
 	if err := db.Find(&us).Error; err != nil {
 		return err
 	}
 	for _, user := range us {
-		any, _ := ptypes.MarshalAny(&user)
+		var r sysuser.SysUser
+		mzjstruct.CopyStruct(&user, &r)
+		any, _ := ptypes.MarshalAny(&r)
 		resp.Data = append(resp.Data, any)
 	}
 	//bt, _ := json.Marshal(users)

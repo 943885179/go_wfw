@@ -27,14 +27,16 @@ func init() {
 }
 func main() {
 	service := conf.Services[cliName]
-	client = sysuser.NewUserSrvService(conf.Services[svName].Name, service.NewRoundSrv().Options().Client)
+	cliName = service.Name
+	svName = conf.Services[svName].Name
+	client = sysuser.NewUserSrvService(svName, service.NewRoundSrv().Options().Client)
 	s := service.NewGinWeb(SrvGin())
 	if err := s.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
 func SrvGin() *gin.Engine {
-	g := mzjgin.NewGin().Default()
+	g := mzjgin.NewGin().Default(cliName)
 	r := g.Group("/")
 	{
 		r.GET("/", func(c *gin.Context) {
@@ -49,18 +51,21 @@ func SrvGin() *gin.Engine {
 		r.POST("Login", Login)
 		r.POST("Registry", Registry)
 
+		r.POST("EditUser", EditUser)
 		r.POST("EditApi", EditApi)
-		r.POST("DelApi", DelApi)
 		r.POST("EditSrv", EditSrv)
-		r.POST("DelSrv", DelSrv)
 		r.POST("EditRole", EditRole)
-		r.POST("DelRole", DelRole)
 		r.POST("EditUserGroup", EditUserGroup)
-		r.POST("DelUserGroup", DelUserGroup)
 		r.POST("EditMenu", EditMenu)
-		r.POST("DelMenu", DelMenu)
 		r.POST("EditTree", EditTree)
+
+		r.POST("DelApi", DelApi)
+		r.POST("DelSrv", DelSrv)
+		r.POST("DelRole", DelRole)
+		r.POST("DelUserGroup", DelUserGroup)
+		r.POST("DelMenu", DelMenu)
 		r.POST("DelTree", DelTree)
+		r.POST("ChangePassword", ChangePassword)
 
 		r.POST("UserInfoList", UserInfoList)
 		r.POST("RoleList", RoleList)
@@ -73,6 +78,7 @@ func SrvGin() *gin.Engine {
 	return g
 }
 func Login(c *gin.Context) {
+	//mzjgin.SrvRole(c, svName, "Login") //服务权限判断
 	req := sysuser.LoginReq{}
 	c.Bind(&req)
 	result, err := client.Login(context.TODO(), &req)
@@ -89,7 +95,12 @@ func Registry(c *gin.Context) {
 	result, err := client.Registry(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
-
+func EditUser(c *gin.Context) {
+	req := sysuser.SysUser{}
+	c.Bind(&req)
+	result, err := client.EditUser(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
 func EditApi(c *gin.Context) {
 	req := sysuser.SysApi{} //😩 sysuser.Api{}直接定义成这个然后使用中文会转化报错，还是麻烦点吧
 	c.Bind(&req)
@@ -168,9 +179,9 @@ func ApiList(c *gin.Context) {
 	req := sysuser.PageReq{}
 	c.Bind(&req)
 	result, err := client.ApiList(context.TODO(), &req)
-	var rs []sysuser.SysRole
+	var rs []sysuser.SysApi
 	for _, any := range result.Data {
-		var r sysuser.SysRole
+		var r sysuser.SysApi
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -181,9 +192,9 @@ func SrvList(c *gin.Context) {
 	req := sysuser.PageReq{}
 	c.Bind(&req)
 	result, err := client.SrvList(context.TODO(), &req)
-	var rs []sysuser.SysRole
+	var rs []sysuser.SysSrv
 	for _, any := range result.Data {
-		var r sysuser.SysRole
+		var r sysuser.SysSrv
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -194,9 +205,9 @@ func UserGroupList(c *gin.Context) {
 	req := sysuser.PageReq{}
 	c.Bind(&req)
 	result, err := client.UserGroupList(context.TODO(), &req)
-	var rs []sysuser.SysRole
+	var rs []sysuser.SysGroup
 	for _, any := range result.Data {
-		var r sysuser.SysRole
+		var r sysuser.SysGroup
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -207,9 +218,9 @@ func TreeList(c *gin.Context) {
 	req := sysuser.PageReq{}
 	c.Bind(&req)
 	result, err := client.TreeList(context.TODO(), &req)
-	var rs []sysuser.SysRole
+	var rs []sysuser.SysTree
 	for _, any := range result.Data {
-		var r sysuser.SysRole
+		var r sysuser.SysTree
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -220,9 +231,9 @@ func MenuList(c *gin.Context) {
 	req := sysuser.PageReq{}
 	c.Bind(&req)
 	result, err := client.MenuList(context.TODO(), &req)
-	var rs []sysuser.SysRole
+	var rs []sysuser.SysMenu
 	for _, any := range result.Data {
-		var r sysuser.SysRole
+		var r sysuser.SysMenu
 		ptypes.UnmarshalAny(any, &r)
 		rs = append(rs, r)
 	}
@@ -262,4 +273,11 @@ func UserInfoList(c *gin.Context) {
 	fmt.Println(string(result.Data.Value))
 	json.Unmarshal(result.Data.Value, &users)
 	resp.MicroTotalResp(c, result.Total, users, err)*/
+}
+func ChangePassword(c *gin.Context) {
+	req := sysuser.ChangePasswordReq{}
+	c.Bind(&req)
+	result, err := client.ChangePassword(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+
 }

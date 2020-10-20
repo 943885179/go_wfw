@@ -40,6 +40,7 @@ type UserSrvService interface {
 	Registry(ctx context.Context, in *RegistryReq, opts ...client.CallOption) (*EditResp, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordReq, opts ...client.CallOption) (*EditResp, error)
 	UserInfoList(ctx context.Context, in *UserInfoListReq, opts ...client.CallOption) (*PageResp, error)
+	EditUser(ctx context.Context, in *SysUser, opts ...client.CallOption) (*EditResp, error)
 	EditRole(ctx context.Context, in *SysRole, opts ...client.CallOption) (*EditResp, error)
 	DelRole(ctx context.Context, in *DelReq, opts ...client.CallOption) (*EditResp, error)
 	RoleList(ctx context.Context, in *PageReq, opts ...client.CallOption) (*PageResp, error)
@@ -111,6 +112,16 @@ func (c *userSrvService) ChangePassword(ctx context.Context, in *ChangePasswordR
 func (c *userSrvService) UserInfoList(ctx context.Context, in *UserInfoListReq, opts ...client.CallOption) (*PageResp, error) {
 	req := c.c.NewRequest(c.name, "UserSrv.UserInfoList", in)
 	out := new(PageResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSrvService) EditUser(ctx context.Context, in *SysUser, opts ...client.CallOption) (*EditResp, error) {
+	req := c.c.NewRequest(c.name, "UserSrv.EditUser", in)
+	out := new(EditResp)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -305,6 +316,7 @@ type UserSrvHandler interface {
 	Registry(context.Context, *RegistryReq, *EditResp) error
 	ChangePassword(context.Context, *ChangePasswordReq, *EditResp) error
 	UserInfoList(context.Context, *UserInfoListReq, *PageResp) error
+	EditUser(context.Context, *SysUser, *EditResp) error
 	EditRole(context.Context, *SysRole, *EditResp) error
 	DelRole(context.Context, *DelReq, *EditResp) error
 	RoleList(context.Context, *PageReq, *PageResp) error
@@ -331,6 +343,7 @@ func RegisterUserSrvHandler(s server.Server, hdlr UserSrvHandler, opts ...server
 		Registry(ctx context.Context, in *RegistryReq, out *EditResp) error
 		ChangePassword(ctx context.Context, in *ChangePasswordReq, out *EditResp) error
 		UserInfoList(ctx context.Context, in *UserInfoListReq, out *PageResp) error
+		EditUser(ctx context.Context, in *SysUser, out *EditResp) error
 		EditRole(ctx context.Context, in *SysRole, out *EditResp) error
 		DelRole(ctx context.Context, in *DelReq, out *EditResp) error
 		RoleList(ctx context.Context, in *PageReq, out *PageResp) error
@@ -375,6 +388,10 @@ func (h *userSrvHandler) ChangePassword(ctx context.Context, in *ChangePasswordR
 
 func (h *userSrvHandler) UserInfoList(ctx context.Context, in *UserInfoListReq, out *PageResp) error {
 	return h.UserSrvHandler.UserInfoList(ctx, in, out)
+}
+
+func (h *userSrvHandler) EditUser(ctx context.Context, in *SysUser, out *EditResp) error {
+	return h.UserSrvHandler.EditUser(ctx, in, out)
 }
 
 func (h *userSrvHandler) EditRole(ctx context.Context, in *SysRole, out *EditResp) error {

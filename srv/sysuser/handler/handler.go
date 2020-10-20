@@ -9,6 +9,10 @@ import (
 type Handler struct {
 }
 
+func (h Handler) EditUser(ctx context.Context, req *sysuser.SysUser, resp *sysuser.EditResp) error {
+	return server.NewUser().EditUser(req, resp)
+}
+
 func (h Handler) UserGroupList(ctx context.Context, req *sysuser.PageReq, resp *sysuser.PageResp) error {
 	return server.NewUserGroup().UserGroupList(req, resp)
 }

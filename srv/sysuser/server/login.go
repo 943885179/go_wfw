@@ -35,7 +35,12 @@ func (*loginByName) Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error 
 	if len(req.UserNameOrPhoneOrEmail) == 0 || len(req.UserPasswordOrCode) == 0 {
 		return errors.New("用户名或密码不能为空")
 	}
-	db := Conf.DbConfig.New()
+	db := Conf.DbConfig.New().Model(&models.SysUser{})
+	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles") //注意大小写
+	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
+	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")
+	db = db.Preload("Province").Preload("City").Preload("Area") //地址
+	db = db.Preload("Icon")                                     //头像
 	u := models.SysUser{}
 	err := db.Where(&models.SysUser{UserName: req.UserNameOrPhoneOrEmail, UserPassword: mzjmd5.MD5(req.UserPasswordOrCode)}).First(&u).Error
 	if err != nil {
@@ -57,7 +62,12 @@ func (*loginByEmail) Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error
 	if v, err := CodeVerify(req.UserNameOrPhoneOrEmail, req.UserPasswordOrCode); err != nil || !v {
 		return errors.New("验证码错误")
 	}
-	db := Conf.DbConfig.New()
+	db := Conf.DbConfig.New().Model(&models.SysUser{})
+	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles") //注意大小写
+	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
+	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")
+	db = db.Preload("Province").Preload("City").Preload("Area") //地址
+	db = db.Preload("Icon")
 	u := models.SysUser{
 		UserEmail: req.UserNameOrPhoneOrEmail,
 	}
@@ -80,7 +90,12 @@ func (*loginByPhone) Login(req *sysuser.LoginReq, resp *sysuser.LoginResp) error
 	if v, err := CodeVerify(req.UserNameOrPhoneOrEmail, req.UserPasswordOrCode); err != nil || !v {
 		return errors.New("验证码错误")
 	}
-	db := Conf.DbConfig.New()
+	db := Conf.DbConfig.New().Model(&models.SysUser{})
+	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles") //注意大小写
+	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
+	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")
+	db = db.Preload("Province").Preload("City").Preload("Area") //地址
+	db = db.Preload("Icon")
 	u := models.SysUser{
 		UserPhone: req.UserNameOrPhoneOrEmail,
 	}

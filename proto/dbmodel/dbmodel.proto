@@ -137,7 +137,7 @@ message  SysMenu{
   bool shortcut_root=17;
   bool reuse=18;
   string  icon=19;
-  int64 pid=20;
+  int64 p_id=20;
   repeated SysMenu children=21;
   bool group=22;
   int64 created = 98;//创建时间，时间戳秒

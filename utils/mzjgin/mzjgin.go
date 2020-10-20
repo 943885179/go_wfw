@@ -148,6 +148,7 @@ func (r Resp) APIWary(c *gin.Context, errMsg string) {
 var (
 	notoken = []string{"/user/login", "/user/addUser", "/static", "/swagger", "/favicon.ico", "/login", "/registry", "/codeVerify", "/sendCode"}
 	apiresp = Resp{}
+	user    = &models.SysUser{}
 )
 
 //APIGin 自定义gin
@@ -158,7 +159,7 @@ func NewGin() *APIGin {
 	result := APIGin{}
 	return &result
 }
-func (api *APIGin) Default() *gin.Engine {
+func (api *APIGin) Default(service string) *gin.Engine {
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f)
 	//fe, _ := os.Create("gin_error.log")
@@ -171,7 +172,7 @@ func (api *APIGin) Default() *gin.Engine {
 	//添加Token中间件
 	//g.Use(APITokenMiddleware)
 	//或者使用下面的方法
-	//g.engine.Use(TokenAuthMiddleware())
+	g.Use(TokenAuthMiddleware(service))
 	// 加载html文件，即template包下所有文件
 	//g.engine.LoadHTMLGlob("wwwroot/*")
 	//g.engine.LoadHTMLGlob("template/*")
@@ -195,7 +196,7 @@ func (api *APIGin) Run(addr string) {
 	//添加Token中间件
 	g.Use(APITokenMiddleware)
 	//或者使用下面的方法
-	//g.engine.Use(TokenAuthMiddleware())
+	//g.Use(TokenAuthMiddleware(addr))
 	// 加载html文件，即template包下所有文件
 	//g.engine.LoadHTMLGlob("wwwroot/*")
 	//g.engine.LoadHTMLGlob("template/*")
@@ -227,7 +228,7 @@ func handleNotFound(c *gin.Context) {
 }
 
 //TokenAuthMiddleware token验证中间件(方法一)
-func TokenAuthMiddleware() gin.HandlerFunc {
+func TokenAuthMiddleware(service string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		for _, r := range notoken {
 			if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(r)) {
@@ -240,12 +241,84 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 			apiresp.APIResult(c, http.StatusForbidden, "Not token")
 			return
 		}
-		user := &models.SysUser{}
 		if err := conf.Jwt.ParseToken(user); err != nil {
 			apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
 			return
 		}
+		var isRole = false
+		for _, r := range user.Roles { //检查web api接口是否符合要求
+			for _, a := range r.Apis {
+				if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
+					if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(a.Method)) {
+						isRole = true
+						break
+					}
+				}
+			}
+		}
+		if !isRole { //权限不足查询用户组权限是否够了
+			for _, gr := range user.Groups { //检查web api接口是否符合要求
+				for _, r := range gr.Roles {
+					for _, a := range r.Apis {
+						if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
+							if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(a.Method)) {
+								isRole = true
+								break
+							}
+						}
+					}
+				}
+			}
+		}
+		if !isRole {
+			apiresp.APIResult(c, http.StatusBadRequest, "权限不足")
+			return
+		}
 		c.Next()
+	}
+}
+
+/**
+ * @Author mzj
+ * @Description 服务权限判断，暂时不做权限设置
+ * @Date 上午 11:36 2020/10/20 0020
+ * @Param
+ * @return
+ **/
+func SrvRole(c *gin.Context, service, method string) { //接口权限是否足够判断
+	for _, r := range notoken {
+		if strings.Contains(strings.ToLower(method), strings.ToLower(r)) {
+			return
+		}
+	}
+	var isRole = false
+	for _, r := range user.Roles { //检查web api接口是否符合要求
+		for _, a := range r.Apis {
+			if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
+				if strings.Contains(strings.ToLower(method), strings.ToLower(a.Method)) {
+					isRole = true
+					break
+				}
+			}
+		}
+	}
+	if !isRole { //权限不足查询用户组权限是否够了
+		for _, gr := range user.Groups { //检查web api接口是否符合要求
+			for _, r := range gr.Roles {
+				for _, a := range r.Apis {
+					if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
+						if strings.Contains(strings.ToLower(method), strings.ToLower(a.Method)) {
+							isRole = true
+							break
+						}
+					}
+				}
+			}
+		}
+	}
+	if !isRole {
+		apiresp.APIResult(c, http.StatusBadRequest, "权限不足")
+		return
 	}
 }
 
@@ -267,8 +340,8 @@ func APITokenMiddleware(c *gin.Context) {
 		apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
 		return
 	}
-	fmt.Println(user)
-	//Todo：根据返回的用户查询操作权限范围
+	//Todo:是否单点登录，可以去读redis查看token是否一致
+
 	c.Next()
 }
 func main() {
