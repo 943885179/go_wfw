@@ -1,6 +1,7 @@
 package models
 
 import (
+	"gorm.io/datatypes"
 	"qshapi/proto/dbmodel"
 	"time"
 
@@ -242,18 +243,19 @@ type LogisticsAddress struct {
 
 //Product 商品信息表
 type Product struct {
-	Id          int64  `gorm:"primary_key"`
-	GoodsCode   string `gorm:"column:goods_code;not null;comment:'商品编码'" json:"goods_code"`
-	GoodsName   string `gorm:"column:goods_name;comment:'商品名称'" json:"goods_name"`
-	Factory     string `gorm:"column:factory;comment:'生产厂家'" json:"factory"`
-	ProAddress  string `gorm:"column:pro_address;comment:'生产地址'" json:"pro_address"`
-	ApprovalNum string `gorm:"column:approval_num;comment:'批准文号'" json:"approval_num"`
-	Spec        string `gorm:"column:spec;comment:'药品规格（12粒*2版）'" json:"spec"`
-	DosageForm  string `gorm:"column:dosage_form;comment:'剂型（胶囊剂。。。）'" json:"dosage_form"`
-	Unit        string `gorm:"column:unit;comment:'单位（盒，瓶。。。）'" json:"unit"`
-	Opcode      string `gorm:"column:opcode;comment:'拼音'" json:"opcode"`
-	MpackTotal  int    `gorm:"column:mpack_total;comment:'中包装数量'" json:"mpack_total"`
-	PackTotal   int    `gorm:"column:pack_total;comment:'件包装数量'" json:"pack_total"`
+	Id          int64   `gorm:"primary_key"`
+	GoodsCode   string  `gorm:"column:goods_code;not null;comment:'商品编码'" json:"goods_code"`
+	GoodsName   string  `gorm:"column:goods_name;comment:'商品名称'" json:"goods_name"`
+	GoodsByname string  `gorm:"column:goods_byname;comment:'商品名称'" json:"goods_byname"`
+	Factory     string  `gorm:"column:factory;comment:'生产厂家'" json:"factory"`
+	ProAddress  string  `gorm:"column:pro_address;comment:'生产地址'" json:"pro_address"`
+	ApprovalNum string  `gorm:"column:approval_num;comment:'批准文号'" json:"approval_num"`
+	Spec        string  `gorm:"column:spec;comment:'药品规格（12粒*2版）'" json:"spec"`
+	DosageForm  string  `gorm:"column:dosage_form;comment:'剂型（胶囊剂。。。）'" json:"dosage_form"`
+	Unit        string  `gorm:"column:unit;comment:'单位（盒，瓶。。。）'" json:"unit"`
+	Opcode      string  `gorm:"column:opcode;comment:'拼音'" json:"opcode"`
+	MpackTotal  float64 `gorm:"column:mpack_total;comment:'中包装数量'" json:"mpack_total"`
+	PackTotal   float64 `gorm:"column:pack_total;comment:'件包装数量'" json:"pack_total"`
 	//BatchNumber   string    `gorm:"column:batch_number;comment:'批号'" json:"batch_number"`
 	//ProdutionDate time.Time `gorm:"column:prodution_date;date;comment:'生产日期'" json:"prodution_date"`
 	//EffectiveDate time.Time `gorm:"column:effective_date;date;comment:'有效期至'" json:"effective_date"`
@@ -287,7 +289,7 @@ type Product struct {
 	DistributionNumber     float64      `gorm:"column:distribution_number;default:0;comment:'分销值'" json:"distribution_number"`
 	Imgs                   []SysFile    `gorm:"many2many:product_img"`
 	BusinessRange          []SysTree    `gorm:"many2many:product_range;"`
-	ProductSkus            []ProductSku `gorm:"foreignKey:goods_id"`
+	ProductSkus            []ProductSku `gorm:"foreignKey:goods_id" json:"product_skus"`
 	//ProductPartServants    []ProductPartServant `gorm:"foreignKey:goods_id"` //商品分佣表
 
 	ProductLogs []ProductLog `gorm:"foreignKey:goods_id"`
@@ -296,16 +298,16 @@ type Product struct {
 
 //ProductSku 商品规格表
 type ProductSku struct {
-	Id           int64   `gorm:"primary_key"`
-	SkuName      string  `gorm:"column:sku_name;not null;comment:'Sku值（医药批发多批号，所以默认为批号）'" json:"sku_name"`
-	AttriList    string  `gorm:"column:attri_list;size:800;not null;comment:'Sku描述（这里还没想好，初步打算存放json）'" json:"attri_list"`
-	Point        float64 `gorm:"column:point;default:0;comment:'积分'" json:"point"`
-	SellPrice    float64 `gorm:"column:sell_price;default:9999;comment:'销售价格'" json:"sell_price"`
-	MarketPrice  float64 `gorm:"column:market_price;default:9999;comment:'市场价格'" json:"market_price"`
-	CostPrice    float64 `gorm:"column:cost_price;default:9999;comment:'成本价格'" json:"cost_price"`
-	SalePrice    float64 `gorm:"column:sale_price;default:9999;comment:'批发价格'" json:"sale_price"`
-	SalePriceErp float64 `gorm:"column:sale_price_erp;default:9999;comment:'erp批发价格(当批发价为0或者9999读取erp价格)'" json:"sale_price_erp"`
-	Stock        float64 `gorm:"column:stock;not null;comment:'库存'" json:"stock"`
+	Id           int64          `gorm:"primary_key"`
+	SkuName      string         `gorm:"column:sku_name;not null;comment:'Sku值（医药批发多批号，所以默认为批号）'" json:"sku_name"`
+	AttriList    datatypes.JSON `gorm:"column:attri_list;size:800;not null;comment:'Sku描述（这里还没想好，初步打算存放json）'" json:"attri_list"`
+	Point        float64        `gorm:"column:point;default:0;comment:'积分'" json:"point"`
+	SellPrice    float64        `gorm:"column:sell_price;default:9999;comment:'销售价格'" json:"sell_price"`
+	MarketPrice  float64        `gorm:"column:market_price;default:9999;comment:'市场价格'" json:"market_price"`
+	CostPrice    float64        `gorm:"column:cost_price;default:9999;comment:'成本价格'" json:"cost_price"`
+	SalePrice    float64        `gorm:"column:sale_price;default:9999;comment:'批发价格'" json:"sale_price"`
+	SalePriceErp float64        `gorm:"column:sale_price_erp;default:9999;comment:'erp批发价格(当批发价为0或者9999读取erp价格)'" json:"sale_price_erp"`
+	Stock        float64        `gorm:"column:stock;not null;comment:'库存'" json:"stock"`
 
 	IsChecked bool    `gorm:"column:is_checked;not null;comment:'是否选择'" json:"is_checked"`
 	GoodsId   int     `gorm:"index;column:goods_id;not null" json:"goods_id"`
@@ -436,7 +438,8 @@ type Orders struct {
 	//OrderStatus   SysTree `gorm:"foreignKey:order_status"`
 	PayStatus int64 `gorm:"column:pay_status;not null;comment:'支付状态 0未支付,1已支付'" json:"pay_status"`
 	//PayStatus     SysTree `gorm:"foreignKey:pay_status"`
-	DistributionStatus int64 `gorm:"column:distribution_status;not null;comment:'配送状态 0：未发送,1：已发送,2：部分发送'" json:"distribution_status"`
+	DistributionStatus int64       `gorm:"column:distribution_status;not null;comment:'配送状态 0：未发送,1：已发送,2：部分发送'" json:"distribution_status"`
+	OrderItems         []OrderItem `json:"order_items"`
 	Model
 }
 

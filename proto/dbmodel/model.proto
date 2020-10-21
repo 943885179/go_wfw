@@ -1,0 +1,21 @@
+syntax = "proto3";
+package dbmodel;
+import "google/protobuf/any.proto";
+message PageReq{
+    int32 page=1;//页码
+    int32 row=2;//每页显示行数
+  }
+message PageResp{
+    int64 total=1;//数量
+    repeated google.protobuf.Any data=2;
+  }
+  /*
+message DelReq{
+    int64 id=1;
+  }
+message EditResp{
+    int64 id=1;
+  }*/
+message Id{
+    int64 id=1;//唯一Id
+}

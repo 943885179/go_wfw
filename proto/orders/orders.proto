@@ -1,0 +1,11 @@
+syntax = "proto3";
+package orders;
+import "proto/dbmodel/dbmodel.proto";
+
+import "proto/dbmodel/model.proto";
+service OrderSrv {
+  rpc EditOrder (dbmodel.Orders) returns (dbmodel.Id);
+  rpc DelOrder(dbmodel.Id)returns(dbmodel.Id){}
+  rpc OrderList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+
+}

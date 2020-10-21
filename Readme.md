@@ -115,15 +115,15 @@
 
 `Get-ChildItem proto/dbmodel/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=.}`
 
-### 用户服务（sysuser）
+### 基础服务服务（basic）
 
 ~~protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/*.proto~~
 
-`protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/sysuser ./proto/sysuser/sysuser.proto`
+`protoc --go_out=plugins=grpc:. --micro_out=. -I=proto/basic ./proto/basic/basic.proto`
 
 请在powershell模式下执行命令
 
-`Get-ChildItem proto/sysuser/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
+`Get-ChildItem proto/basic/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
 
 这样就可以使用*.proto了,
 

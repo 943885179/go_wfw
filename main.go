@@ -113,9 +113,9 @@ func initSrv() {
 		{Id: 29, Service: "com.weixiao.api.send", Method: "sendAll", SrvExplain: ""},
 		{Id: 30, Service: "com.weixiao.api.send", Method: "codeVerify", SrvExplain: ""},
 
-		{Id: 31, Service: "com.weixiao.api.shop", Method: "Editshop", SrvExplain: ""},
-		{Id: 32, Service: "com.weixiao.api.shop", Method: "Delshop", SrvExplain: ""},
-		{Id: 33, Service: "com.weixiao.api.shop", Method: "shopList", SrvExplain: ""},
+		{Id: 31, Service: "com.weixiao.api.product", Method: "Editshop", SrvExplain: ""},
+		{Id: 32, Service: "com.weixiao.api.product", Method: "Delshop", SrvExplain: ""},
+		{Id: 33, Service: "com.weixiao.api.product", Method: "shopList", SrvExplain: ""},
 	}
 	db.Create(srv)
 }
@@ -162,9 +162,9 @@ func initApi() {
 		{Id: 30, Service: "com.weixiao.web.send", Method: "sendAll", ApiExplain: ""},
 		{Id: 31, Service: "com.weixiao.web.send", Method: "codeVerify", ApiExplain: ""},
 
-		{Id: 32, Service: "com.weixiao.web.shop", Method: "Editshop", ApiExplain: ""},
-		{Id: 33, Service: "com.weixiao.web.shop", Method: "Delshop", ApiExplain: ""},
-		{Id: 34, Service: "com.weixiao.web.shop", Method: "shopList", ApiExplain: ""},
+		{Id: 32, Service: "com.weixiao.web.product", Method: "Editshop", ApiExplain: ""},
+		{Id: 33, Service: "com.weixiao.web.product", Method: "Delshop", ApiExplain: ""},
+		{Id: 34, Service: "com.weixiao.web.product", Method: "shopList", ApiExplain: ""},
 	}
 	db.Create(srv)
 }

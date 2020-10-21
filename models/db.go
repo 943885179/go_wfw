@@ -3,7 +3,7 @@ package models
 //
 //import (
 //	"qshapi/proto/file"
-//	"qshapi/proto/sysuser"
+//	"qshapi/proto/basic"
 //	"time"
 //)
 //
@@ -52,7 +52,7 @@ package models
 //	LogisticsAddresss []LogisticsAddress `gorm:"Foreignkey:user_id"` //地址管理
 //	Qualificationss   []Qualifications   `gorm:"Foreignkey:user_id"` //资质管理
 //	Model
-//	UserType sysuser.UserType `gorm:"column:user_name;type:int;not null;comment:'用户类型'" json:"user_name"`
+//	UserType basic.UserType `gorm:"column:user_name;type:int;not null;comment:'用户类型'" json:"user_name"`
 //}
 //
 ////SysRole 角色表

@@ -1,0 +1,10 @@
+syntax = "proto3";
+package product;
+import "proto/dbmodel/dbmodel.proto";
+
+import "proto/dbmodel/model.proto";
+service ProductSrv {
+  rpc EditProduct (dbmodel.Product) returns (dbmodel.Id);
+  rpc DelProduct(dbmodel.Id)returns(dbmodel.Id){}
+  rpc ProductList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+}

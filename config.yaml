@@ -56,16 +56,16 @@
         "html":""
     },
     "services":{
-        "userSrv":{
+        "basicSrv":{
             "etcd":"",
-            "name":"com.weixiao.api.user",
+            "name":"com.weixiao.api.basic",
             "version":"latest",
             "ip":"",
             "port":0
         },
-        "userCli":{
+        "basicCli":{
             "etcd":"",
-            "name":"com.weixiao.web.user",
+            "name":"com.weixiao.web.basic",
             "version":"latest",
             "ip":"",
             "port":8701
@@ -98,16 +98,16 @@
             "ip":"",
             "port":8705
         },
-        "shopSrv":{
+        "productSrv":{
             "etcd":"",
-            "name":"com.weixiao.api.shop",
+            "name":"com.weixiao.api.product",
             "version":"latest",
             "ip":"",
             "port":8706
         },
-        "shopCli":{
+        "productCli":{
             "etcd":"",
-            "name":"com.weixiao.web.shop",
+            "name":"com.weixiao.web.product",
             "version":"latest",
             "ip":"",
             "port":8707

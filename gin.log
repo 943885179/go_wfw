@@ -1,0 +1,18 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (5 handlers)
+[GIN-debug] HEAD   /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (5 handlers)
+[GIN-debug] GET    /                         --> main.SrvGin.func1 (5 handlers)
+[GIN-debug] POST   /                         --> main.SrvGin.func2 (5 handlers)
+[GIN-debug] POST   /EditShop                 --> main.EditShop (5 handlers)
+[GIN-debug] POST   /DelShop                  --> main.DelShop (5 handlers)
+[GIN-debug] POST   /ShopList                 --> main.ShopList (5 handlers)
+[GIN] 2020/10/20 - 16:33:51 | 200 |    109.0095ms |             ::1 | POST     "/ShopList"
+[GIN] 2020/10/20 - 16:34:49 | 404 |            0s |             ::1 | POST     "/DelRole"
+[GIN] 2020/10/20 - 16:34:57 | 200 |    106.0192ms |             ::1 | POST     "/ShopList"
+[GIN] 2020/10/20 - 16:35:12 | 200 |     11.0312ms |             ::1 | POST     "/DelShop"
+[GIN] 2020/10/20 - 16:35:17 | 200 |       7.999ms |             ::1 | POST     "/ShopList"

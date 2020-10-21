@@ -72,6 +72,7 @@ require (
 	gopkg.in/olivere/elastic.v5 v5.0.84
 	gopkg.in/sohlich/elogrus.v2 v2.0.2
 	gopkg.in/yaml.v2 v2.2.8 // indirect
+	gorm.io/datatypes v0.0.0-20200924071644-3967db6857cf
 	gorm.io/driver/clickhouse v0.0.0-20201012085455-facfac3584cc
 	gorm.io/driver/mysql v1.0.2
 	gorm.io/driver/postgres v1.0.2
