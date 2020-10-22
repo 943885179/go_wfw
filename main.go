@@ -22,6 +22,7 @@ func init() {
 }
 func main() {
 	dbInit()
+	initMenu()
 	initApi()
 	initSrv()
 	initAdmin()
@@ -75,35 +76,35 @@ func dbInit() {
 func initSrv() {
 	db := conf.DbConfig.New()
 	srv := []models.SysSrv{
-		{Id: 1, Service: "com.weixiao.api.user", Method: "Login", SrvExplain: ""},
-		{Id: 2, Service: "com.weixiao.api.user", Method: "Registry", SrvExplain: ""},
-		{Id: 3, Service: "com.weixiao.api.user", Method: "ChangePassword", SrvExplain: ""},
-		{Id: 4, Service: "com.weixiao.api.user", Method: "UserInfoList", SrvExplain: ""},
-		{Id: 5, Service: "com.weixiao.api.user", Method: "EditUser", SrvExplain: ""},
+		{Id: 1, Service: "com.weixiao.api.basic", Method: "Login", SrvExplain: ""},
+		{Id: 2, Service: "com.weixiao.api.basic", Method: "Registry", SrvExplain: ""},
+		{Id: 3, Service: "com.weixiao.api.basic", Method: "ChangePassword", SrvExplain: ""},
+		{Id: 4, Service: "com.weixiao.api.basic", Method: "UserInfoList", SrvExplain: ""},
+		{Id: 5, Service: "com.weixiao.api.basic", Method: "EditUser", SrvExplain: ""},
 
-		{Id: 6, Service: "com.weixiao.api.user", Method: "EditRole", SrvExplain: ""},
-		{Id: 7, Service: "com.weixiao.api.user", Method: "DelRole", SrvExplain: ""},
-		{Id: 8, Service: "com.weixiao.api.user", Method: "RoleList", SrvExplain: ""},
+		{Id: 6, Service: "com.weixiao.api.basic", Method: "EditRole", SrvExplain: ""},
+		{Id: 7, Service: "com.weixiao.api.basic", Method: "DelRole", SrvExplain: ""},
+		{Id: 8, Service: "com.weixiao.api.basic", Method: "RoleList", SrvExplain: ""},
 
-		{Id: 9, Service: "com.weixiao.api.user", Method: "EditUserGroup", SrvExplain: ""},
-		{Id: 10, Service: "com.weixiao.api.user", Method: "DelUserGroup", SrvExplain: ""},
-		{Id: 11, Service: "com.weixiao.api.user", Method: "UserGroupList", SrvExplain: ""},
+		{Id: 9, Service: "com.weixiao.api.basic", Method: "EditUserGroup", SrvExplain: ""},
+		{Id: 10, Service: "com.weixiao.api.basic", Method: "DelUserGroup", SrvExplain: ""},
+		{Id: 11, Service: "com.weixiao.api.basic", Method: "UserGroupList", SrvExplain: ""},
 
-		{Id: 12, Service: "com.weixiao.api.user", Method: "EditMenu", SrvExplain: ""},
-		{Id: 13, Service: "com.weixiao.api.user", Method: "DelMenu", SrvExplain: ""},
-		{Id: 14, Service: "com.weixiao.api.user", Method: "MenuList", SrvExplain: ""},
+		{Id: 12, Service: "com.weixiao.api.basic", Method: "EditMenu", SrvExplain: ""},
+		{Id: 13, Service: "com.weixiao.api.basic", Method: "DelMenu", SrvExplain: ""},
+		{Id: 14, Service: "com.weixiao.api.basic", Method: "MenuList", SrvExplain: ""},
 
-		{Id: 15, Service: "com.weixiao.api.user", Method: "EditApi", SrvExplain: ""},
-		{Id: 16, Service: "com.weixiao.api.user", Method: "DelApi", SrvExplain: ""},
-		{Id: 17, Service: "com.weixiao.api.user", Method: "ApiList", SrvExplain: ""},
+		{Id: 15, Service: "com.weixiao.api.basic", Method: "EditApi", SrvExplain: ""},
+		{Id: 16, Service: "com.weixiao.api.basic", Method: "DelApi", SrvExplain: ""},
+		{Id: 17, Service: "com.weixiao.api.basic", Method: "ApiList", SrvExplain: ""},
 
-		{Id: 18, Service: "com.weixiao.api.user", Method: "EditSrv", SrvExplain: ""},
-		{Id: 19, Service: "com.weixiao.api.user", Method: "DelSrv", SrvExplain: ""},
-		{Id: 20, Service: "com.weixiao.api.user", Method: "SrvList", SrvExplain: ""},
+		{Id: 18, Service: "com.weixiao.api.basic", Method: "EditSrv", SrvExplain: ""},
+		{Id: 19, Service: "com.weixiao.api.basic", Method: "DelSrv", SrvExplain: ""},
+		{Id: 20, Service: "com.weixiao.api.basic", Method: "SrvList", SrvExplain: ""},
 
-		{Id: 21, Service: "com.weixiao.api.user", Method: "EditTree", SrvExplain: ""},
-		{Id: 22, Service: "com.weixiao.api.user", Method: "DelTree", SrvExplain: ""},
-		{Id: 23, Service: "com.weixiao.api.user", Method: "TreeList", SrvExplain: ""},
+		{Id: 21, Service: "com.weixiao.api.basic", Method: "EditTree", SrvExplain: ""},
+		{Id: 22, Service: "com.weixiao.api.basic", Method: "DelTree", SrvExplain: ""},
+		{Id: 23, Service: "com.weixiao.api.basic", Method: "TreeList", SrvExplain: ""},
 
 		{Id: 24, Service: "com.weixiao.api.file", Method: "UploadFile", SrvExplain: ""},
 		{Id: 25, Service: "com.weixiao.api.file", Method: "GetFile", SrvExplain: ""},
@@ -113,44 +114,44 @@ func initSrv() {
 		{Id: 29, Service: "com.weixiao.api.send", Method: "sendAll", SrvExplain: ""},
 		{Id: 30, Service: "com.weixiao.api.send", Method: "codeVerify", SrvExplain: ""},
 
-		{Id: 31, Service: "com.weixiao.api.product", Method: "Editshop", SrvExplain: ""},
-		{Id: 32, Service: "com.weixiao.api.product", Method: "Delshop", SrvExplain: ""},
-		{Id: 33, Service: "com.weixiao.api.product", Method: "shopList", SrvExplain: ""},
+		{Id: 31, Service: "com.weixiao.api.product", Method: "EditProduct", SrvExplain: ""},
+		{Id: 32, Service: "com.weixiao.api.product", Method: "DelProduct", SrvExplain: ""},
+		{Id: 33, Service: "com.weixiao.api.product", Method: "productList", SrvExplain: ""},
 	}
 	db.Create(srv)
 }
 func initApi() {
 	db := conf.DbConfig.New()
 	srv := []models.SysApi{
-		{Id: 1, Service: "com.weixiao.web.user", Method: "Login", ApiExplain: ""},
-		{Id: 2, Service: "com.weixiao.web.user", Method: "Registry", ApiExplain: ""},
-		{Id: 3, Service: "com.weixiao.web.user", Method: "ChangePassword", ApiExplain: ""},
-		{Id: 4, Service: "com.weixiao.web.user", Method: "UserInfoList", ApiExplain: ""},
-		{Id: 5, Service: "com.weixiao.web.user", Method: "EditUser", ApiExplain: ""},
+		{Id: 1, Service: "com.weixiao.web.basic", Method: "Login", ApiExplain: ""},
+		{Id: 2, Service: "com.weixiao.web.basic", Method: "Registry", ApiExplain: ""},
+		{Id: 3, Service: "com.weixiao.web.basic", Method: "ChangePassword", ApiExplain: ""},
+		{Id: 4, Service: "com.weixiao.web.basic", Method: "UserInfoList", ApiExplain: ""},
+		{Id: 5, Service: "com.weixiao.web.basic", Method: "EditUser", ApiExplain: ""},
 
-		{Id: 6, Service: "com.weixiao.web.user", Method: "EditRole", ApiExplain: ""},
-		{Id: 7, Service: "com.weixiao.web.user", Method: "DelRole", ApiExplain: ""},
-		{Id: 8, Service: "com.weixiao.web.user", Method: "RoleList", ApiExplain: ""},
+		{Id: 6, Service: "com.weixiao.web.basic", Method: "EditRole", ApiExplain: ""},
+		{Id: 7, Service: "com.weixiao.web.basic", Method: "DelRole", ApiExplain: ""},
+		{Id: 8, Service: "com.weixiao.web.basic", Method: "RoleList", ApiExplain: ""},
 
-		{Id: 9, Service: "com.weixiao.web.user", Method: "EditUserGroup", ApiExplain: ""},
-		{Id: 10, Service: "com.weixiao.web.user", Method: "DelUserGroup", ApiExplain: ""},
-		{Id: 11, Service: "com.weixiao.web.user", Method: "UserGroupList", ApiExplain: ""},
+		{Id: 9, Service: "com.weixiao.web.basic", Method: "EditUserGroup", ApiExplain: ""},
+		{Id: 10, Service: "com.weixiao.web.basic", Method: "DelUserGroup", ApiExplain: ""},
+		{Id: 11, Service: "com.weixiao.web.basic", Method: "UserGroupList", ApiExplain: ""},
 
-		{Id: 12, Service: "com.weixiao.web.user", Method: "EditMenu", ApiExplain: ""},
-		{Id: 13, Service: "com.weixiao.web.user", Method: "DelMenu", ApiExplain: ""},
-		{Id: 14, Service: "com.weixiao.web.user", Method: "MenuList", ApiExplain: ""},
+		{Id: 12, Service: "com.weixiao.web.basic", Method: "EditMenu", ApiExplain: ""},
+		{Id: 13, Service: "com.weixiao.web.basic", Method: "DelMenu", ApiExplain: ""},
+		{Id: 14, Service: "com.weixiao.web.basic", Method: "MenuList", ApiExplain: ""},
 
-		{Id: 15, Service: "com.weixiao.web.user", Method: "EditApi", ApiExplain: ""},
-		{Id: 16, Service: "com.weixiao.web.user", Method: "DelApi", ApiExplain: ""},
-		{Id: 17, Service: "com.weixiao.web.user", Method: "ApiList", ApiExplain: ""},
+		{Id: 15, Service: "com.weixiao.web.basic", Method: "EditApi", ApiExplain: ""},
+		{Id: 16, Service: "com.weixiao.web.basic", Method: "DelApi", ApiExplain: ""},
+		{Id: 17, Service: "com.weixiao.web.basic", Method: "ApiList", ApiExplain: ""},
 
-		{Id: 18, Service: "com.weixiao.web.user", Method: "EditSrv", ApiExplain: ""},
-		{Id: 19, Service: "com.weixiao.web.user", Method: "DelSrv", ApiExplain: ""},
-		{Id: 20, Service: "com.weixiao.web.user", Method: "SrvList", ApiExplain: ""},
+		{Id: 18, Service: "com.weixiao.web.basic", Method: "EditSrv", ApiExplain: ""},
+		{Id: 19, Service: "com.weixiao.web.basic", Method: "DelSrv", ApiExplain: ""},
+		{Id: 20, Service: "com.weixiao.web.basic", Method: "SrvList", ApiExplain: ""},
 
-		{Id: 21, Service: "com.weixiao.web.user", Method: "EditTree", ApiExplain: ""},
-		{Id: 22, Service: "com.weixiao.web.user", Method: "DelTree", ApiExplain: ""},
-		{Id: 23, Service: "com.weixiao.web.user", Method: "TreeList", ApiExplain: ""},
+		{Id: 21, Service: "com.weixiao.web.basic", Method: "EditTree", ApiExplain: ""},
+		{Id: 22, Service: "com.weixiao.web.basic", Method: "DelTree", ApiExplain: ""},
+		{Id: 23, Service: "com.weixiao.web.basic", Method: "TreeList", ApiExplain: ""},
 
 		{Id: 24, Service: "com.weixiao.web.file", Method: "upload", ApiExplain: ""},
 		{Id: 25, Service: "com.weixiao.web.file", Method: "uploadMutiple", ApiExplain: ""},
@@ -162,13 +163,40 @@ func initApi() {
 		{Id: 30, Service: "com.weixiao.web.send", Method: "sendAll", ApiExplain: ""},
 		{Id: 31, Service: "com.weixiao.web.send", Method: "codeVerify", ApiExplain: ""},
 
-		{Id: 32, Service: "com.weixiao.web.product", Method: "Editshop", ApiExplain: ""},
-		{Id: 33, Service: "com.weixiao.web.product", Method: "Delshop", ApiExplain: ""},
-		{Id: 34, Service: "com.weixiao.web.product", Method: "shopList", ApiExplain: ""},
+		{Id: 32, Service: "com.weixiao.web.product", Method: "EditProduct", ApiExplain: ""},
+		{Id: 33, Service: "com.weixiao.web.product", Method: "DelProduct", ApiExplain: ""},
+		{Id: 34, Service: "com.weixiao.web.product", Method: "productList", ApiExplain: ""},
 	}
 	db.Create(srv)
 }
 
+func initMenu() {
+	db := conf.DbConfig.New()
+	srv := []models.SysMenu{
+		{
+			Text:             "主导航",
+			I18n:             "menu.main",
+			Group:            true,
+			HideInBreadcrumb: true,
+			Children: []models.SysMenu{
+				{
+					Text: "仪表盘",
+					I18n: "menu.dashboard",
+					Icon: "anticon-dashboard",
+					Children: []models.SysMenu{
+						{
+							Text: "仪表盘V1",
+							I18n: "menu.dashboard.v1",
+							Icon: "anticon-dashboard",
+							Link: "/dashboard/v1",
+						},
+					},
+				},
+			},
+		},
+	}
+	db.Create(srv)
+}
 func initAdmin() { //超级管理员
 	db := conf.DbConfig.New()
 	var a []models.SysApi

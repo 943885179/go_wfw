@@ -9,3 +9,22 @@ service OrderSrv {
   rpc OrderList(dbmodel.PageReq)returns(dbmodel.PageResp){}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

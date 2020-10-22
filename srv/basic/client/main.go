@@ -38,6 +38,7 @@ func main() {
 }
 func SrvGin() *gin.Engine {
 	g := mzjgin.NewGin().Default(cliName)
+	//g.Use(mzjgin.TokenAuthMiddleware(cliName)) 权限认证
 	r := g.Group("/")
 	{
 		r.GET("/", func(c *gin.Context) {
@@ -49,6 +50,7 @@ func SrvGin() *gin.Engine {
 				"service":   conf.Services[svName].Name,
 			})
 		})
+		//r.POST("Login", mzjgin.APITokenMiddleware, mzjgin.TokenAuthMiddleware(""), Login)
 		r.POST("Login", Login)
 		r.POST("Registry", Registry)
 
@@ -260,6 +262,7 @@ func RoleList(c *gin.Context) {
 }
 
 func UserInfoList(c *gin.Context) {
+	fmt.Println(mzjgin.User.UserName)
 	req := basic.UserInfoListReq{}
 	c.Bind(&req)
 	result, err := client.UserInfoList(context.TODO(), &req)

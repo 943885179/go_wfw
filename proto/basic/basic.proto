@@ -1,6 +1,7 @@
 syntax ="proto3";
 package basic;
 option go_package = "proto/basic";
+//import "google/protobuf/timestamp.proto";
 import "proto/dbmodel/dbmodel.proto";
 import "proto/dbmodel/model.proto";
 service UserSrv{
@@ -22,6 +23,8 @@ service UserSrv{
   rpc EditMenu(dbmodel.SysMenu)returns(dbmodel.Id){}//编辑菜单
   rpc DelMenu(dbmodel.Id)returns(dbmodel.Id){}
   rpc MenuList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc MenuListByUserId(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc MenuListById(dbmodel.Id)returns(dbmodel.SysMenu){}
 
   rpc EditApi(dbmodel.SysApi)returns(dbmodel.Id){}//编辑SysApi
   rpc DelApi(dbmodel.Id)returns(dbmodel.Id){}
@@ -49,9 +52,12 @@ message LoginReq{
 }
 //用户登录返回
 message LoginResp{
+  TokenResp token=1;//token
+  dbmodel.SysUser user=2;//用户名
+}
+message TokenResp{
   string token=1;//token
-  string user_name=2;//用户名
-  string user_img=3;//用户头像
+  int64 expired=2;//过期时间
 }
 //用户注册请求
 message RegistryReq{

@@ -73,7 +73,7 @@ type SysUser struct {
 	BankCardName string `gorm:"column:bank_card_name;comment:'持卡人/单位'" json:"bank_card_name"`
 
 	UserIcon          int64              `gorm:"index;column:user_icon;comment:'用户头像'" json:"user_icon"`
-	Icon              SysFile            `gorm:"foreignKey:UserIcon"` //;AssociationforeignKey:Code
+	Icon              SysFile            `gorm:"foreignKey:UserIcon" json:"icon"` //;AssociationforeignKey:Code
 	Roles             []SysRole          `gorm:"many2many:sys_user_role" json:"roles"`
 	Groups            []SysGroup         `gorm:"many2many:sys_user_group" json:"groups"`
 	LogisticsAddresss []LogisticsAddress `gorm:"foreignKey:user_id" json:"logistics_addresss"` //地址管理

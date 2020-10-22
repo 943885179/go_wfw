@@ -107,9 +107,10 @@
     }
 }
 ```
+
 ## 微服务划分
 
-#### 特别注意：proto改为依赖后使用powershell命名行去构建
+### 特别注意：proto改为依赖后使用powershell命名行去构建
 
 ### 基础试题构建
 
@@ -257,3 +258,24 @@ set MICRO_CLIENT=grpc
 set MICRO_SERVER=grpc
 micro api --handler=rpc
 ```
+## docker 部署微服务
+
+## 部署micro
+`docker pull micro/micro`
+
+`docker run micro/micro server`
+
+`docker exec -it 7184a69ac6cc（此值为容器id） /micro login` 使用默认的账号登录micro用户名: admin 密码: micro
+
+ `docker exec -it 7184a69ac6cc /micro run github.com/micro/services/helloworld`
+
+ `docker exec -it 7184a69ac6cc /micro logs helloworld`
+ 
+ `docker exec -it 7184a69ac6cc /micro status`查看服务状态
+ 
+ `docker exec -it 7184a69ac6cc /micro services` 查询服务列表
+ 
+ `docker exec -it 7184a69ac6cc /micro update helloworld`更新服务
+ 
+ `docker exec -it 7184a69ac6cc /micro env`env是在本地或其他地方托管的微型服务器。它定义为映射到指向微型代理（gRPC代理）的host:port的名称。我们引入了两种环境，即“local”和“platform”。
+ 

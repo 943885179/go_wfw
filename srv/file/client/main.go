@@ -40,7 +40,7 @@ func main() {
 	service := conf.Services[cliName]
 	cliName = service.Name
 	svName = conf.Services[svName].Name
-	client = file.NewFileSrvService(conf.Services[svName].Name, service.NewRoundSrv().Options().Client)
+	client = file.NewFileSrvService(svName, service.NewRoundSrv().Options().Client)
 	s := service.NewGinWeb(SrvGin())
 	if err := s.Run(); err != nil {
 		log.Fatal(err)

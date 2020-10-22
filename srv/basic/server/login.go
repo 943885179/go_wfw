@@ -7,6 +7,7 @@ import (
 	"qshapi/proto/basic"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjmd5"
+	"qshapi/utils/mzjstruct"
 	"strings"
 	"time"
 )
@@ -108,9 +109,13 @@ func (*loginByPhone) Login(req *basic.LoginReq, resp *basic.LoginResp) error {
 	return nil
 }
 func addToken(u models.SysUser, resp *basic.LoginResp) {
-	resp.UserName = u.UserName
-	Conf.Jwt.Data = u
+
+	Conf.Jwt.Data = fmt.Sprintf("Login_%s", u.UserName) // u
 	tk, _ := Conf.Jwt.CreateToken()
-	resp.Token = tk
-	go Conf.RedisConfig.Set(fmt.Sprintf("Login_%s", u.UserName), resp.Token, Conf.Jwt.TimeOut*time.Second) //添加到redis中
+	resp.Token = &basic.TokenResp{
+		Token:   tk,
+		Expired: int64(Conf.Jwt.TimeOut * time.Second),
+	}
+	mzjstruct.CopyStruct(&u, &resp.User)
+	go Conf.RedisConfig.Set(fmt.Sprintf("Login_%s", u.UserName), u, Conf.Jwt.TimeOut*time.Second) //添加到redis中
 }

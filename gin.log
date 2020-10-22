@@ -4,15 +4,37 @@
  - using env:	export GIN_MODE=release
  - using code:	gin.SetMode(gin.ReleaseMode)
 
-[GIN-debug] GET    /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (5 handlers)
-[GIN-debug] HEAD   /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (5 handlers)
-[GIN-debug] GET    /                         --> main.SrvGin.func1 (5 handlers)
-[GIN-debug] POST   /                         --> main.SrvGin.func2 (5 handlers)
-[GIN-debug] POST   /EditShop                 --> main.EditShop (5 handlers)
-[GIN-debug] POST   /DelShop                  --> main.DelShop (5 handlers)
-[GIN-debug] POST   /ShopList                 --> main.ShopList (5 handlers)
-[GIN] 2020/10/20 - 16:33:51 | 200 |    109.0095ms |             ::1 | POST     "/ShopList"
-[GIN] 2020/10/20 - 16:34:49 | 404 |            0s |             ::1 | POST     "/DelRole"
-[GIN] 2020/10/20 - 16:34:57 | 200 |    106.0192ms |             ::1 | POST     "/ShopList"
-[GIN] 2020/10/20 - 16:35:12 | 200 |     11.0312ms |             ::1 | POST     "/DelShop"
-[GIN] 2020/10/20 - 16:35:17 | 200 |       7.999ms |             ::1 | POST     "/ShopList"
+[GIN-debug] GET    /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (6 handlers)
+[GIN-debug] HEAD   /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (6 handlers)
+[GIN-debug] GET    /                         --> main.SrvGin.func1 (6 handlers)
+[GIN-debug] POST   /                         --> main.SrvGin.func2 (6 handlers)
+[GIN-debug] POST   /Login                    --> main.Login (6 handlers)
+[GIN-debug] POST   /Registry                 --> main.Registry (6 handlers)
+[GIN-debug] POST   /EditUser                 --> main.EditUser (6 handlers)
+[GIN-debug] POST   /EditApi                  --> main.EditApi (6 handlers)
+[GIN-debug] POST   /EditSrv                  --> main.EditSrv (6 handlers)
+[GIN-debug] POST   /EditRole                 --> main.EditRole (6 handlers)
+[GIN-debug] POST   /EditUserGroup            --> main.EditUserGroup (6 handlers)
+[GIN-debug] POST   /EditMenu                 --> main.EditMenu (6 handlers)
+[GIN-debug] POST   /EditTree                 --> main.EditTree (6 handlers)
+[GIN-debug] POST   /DelApi                   --> main.DelApi (6 handlers)
+[GIN-debug] POST   /DelSrv                   --> main.DelSrv (6 handlers)
+[GIN-debug] POST   /DelRole                  --> main.DelRole (6 handlers)
+[GIN-debug] POST   /DelUserGroup             --> main.DelUserGroup (6 handlers)
+[GIN-debug] POST   /DelMenu                  --> main.DelMenu (6 handlers)
+[GIN-debug] POST   /DelTree                  --> main.DelTree (6 handlers)
+[GIN-debug] POST   /ChangePassword           --> main.ChangePassword (6 handlers)
+[GIN-debug] POST   /UserInfoList             --> main.UserInfoList (6 handlers)
+[GIN-debug] POST   /RoleList                 --> main.RoleList (6 handlers)
+[GIN-debug] POST   /TreeList                 --> main.TreeList (6 handlers)
+[GIN-debug] POST   /ApiList                  --> main.ApiList (6 handlers)
+[GIN-debug] POST   /SrvList                  --> main.SrvList (6 handlers)
+[GIN-debug] POST   /MenuList                 --> main.MenuList (6 handlers)
+[GIN-debug] POST   /UserGroupList            --> main.UserGroupList (6 handlers)
+[GIN-debug] POST   /EditShop                 --> main.EditShop (6 handlers)
+[GIN-debug] POST   /DelShop                  --> main.DelShop (6 handlers)
+[GIN-debug] POST   /ShopList                 --> main.ShopList (6 handlers)
+[GIN] 2020/10/22 - 17:29:22 | 200 |    119.9713ms |             ::1 | POST     "/UserInfoList"
+[GIN] 2020/10/22 - 17:29:30 | 200 |     23.9977ms |             ::1 | POST     "/UserInfoList"
+[GIN] 2020/10/22 - 17:29:33 | 200 |     19.9981ms |             ::1 | POST     "/UserInfoList"
+[GIN] 2020/10/22 - 17:29:38 | 200 |     12.0007ms |             ::1 | POST     "/UserInfoList"

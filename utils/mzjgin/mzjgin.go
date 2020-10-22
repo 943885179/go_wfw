@@ -148,7 +148,7 @@ func (r Resp) APIWary(c *gin.Context, errMsg string) {
 var (
 	notoken = []string{"/user/login", "/user/addUser", "/static", "/swagger", "/favicon.ico", "/login", "/registry", "/codeVerify", "/sendCode"}
 	apiresp = Resp{}
-	user    = &models.SysUser{}
+	User    = &models.SysUser{}
 )
 
 //APIGin 自定义gin
@@ -172,7 +172,7 @@ func (api *APIGin) Default(service string) *gin.Engine {
 	//添加Token中间件
 	//g.Use(APITokenMiddleware)
 	//或者使用下面的方法
-	//g.Use(TokenAuthMiddleware(service)) //权限认证先暂时关闭
+	g.Use(TokenAuthMiddleware(service)) //权限认证先暂时关闭(外部调用吧)
 	// 加载html文件，即template包下所有文件
 	//g.engine.LoadHTMLGlob("wwwroot/*")
 	//g.engine.LoadHTMLGlob("template/*")
@@ -241,12 +241,12 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 			apiresp.APIResult(c, http.StatusForbidden, "Not token")
 			return
 		}
-		if err := conf.Jwt.ParseToken(user); err != nil {
+		if err := conf.Jwt.ParseToken(User); err != nil {
 			apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
 			return
 		}
 		var isRole = false
-		for _, r := range user.Roles { //检查web api接口是否符合要求
+		for _, r := range User.Roles { //检查web api接口是否符合要求
 			for _, a := range r.Apis {
 				if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
 					if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(a.Method)) {
@@ -257,7 +257,7 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 			}
 		}
 		if !isRole { //权限不足查询用户组权限是否够了
-			for _, gr := range user.Groups { //检查web api接口是否符合要求
+			for _, gr := range User.Groups { //检查web api接口是否符合要求
 				for _, r := range gr.Roles {
 					for _, a := range r.Apis {
 						if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
@@ -274,6 +274,8 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 			apiresp.APIResult(c, http.StatusBadRequest, "权限不足")
 			return
 		}
+		//c.Request.Header.Set("UserName", User.UserName)
+		//c.Request.Form.Set("UserName", user.UserName)
 		c.Next()
 	}
 }
@@ -292,7 +294,7 @@ func SrvRole(c *gin.Context, service, method string) { //接口权限是否足�
 		}
 	}
 	var isRole = false
-	for _, r := range user.Roles { //检查web api接口是否符合要求
+	for _, r := range User.Roles { //检查web api接口是否符合要求
 		for _, a := range r.Apis {
 			if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
 				if strings.Contains(strings.ToLower(method), strings.ToLower(a.Method)) {
@@ -303,7 +305,7 @@ func SrvRole(c *gin.Context, service, method string) { //接口权限是否足�
 		}
 	}
 	if !isRole { //权限不足查询用户组权限是否够了
-		for _, gr := range user.Groups { //检查web api接口是否符合要求
+		for _, gr := range User.Groups { //检查web api接口是否符合要求
 			for _, r := range gr.Roles {
 				for _, a := range r.Apis {
 					if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
