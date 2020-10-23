@@ -79,6 +79,12 @@ type SysUser struct {
 	LogisticsAddresss []LogisticsAddress `gorm:"foreignKey:user_id" json:"logistics_addresss"` //地址管理
 	Qualifications    []Qualification    `gorm:"foreignKey:user_id" json:"qualifications"`
 	UserType          dbmodel.UserType   `gorm:"column:user_type;comment:'用户类型'" json:"user_type"`
+
+	//其他返回的实体，处理过的数据
+	//Menus []SysMenu `gorm:"many2many:sys_role_menu" json:"menus"`
+	//Srvs  []SysSrv  `gorm:"many2many:sys_role_syssrv" json:"srvs"`
+	//Apis  []SysApi  `gorm:"many2many:sys_role_sysapi" json:"apis"`
+
 	Model
 }
 

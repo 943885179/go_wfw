@@ -262,7 +262,6 @@ func RoleList(c *gin.Context) {
 }
 
 func UserInfoList(c *gin.Context) {
-	fmt.Println(mzjgin.User.UserName)
 	req := basic.UserInfoListReq{}
 	c.Bind(&req)
 	result, err := client.UserInfoList(context.TODO(), &req)

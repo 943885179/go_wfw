@@ -34,7 +34,12 @@
 [GIN-debug] POST   /EditShop                 --> main.EditShop (6 handlers)
 [GIN-debug] POST   /DelShop                  --> main.DelShop (6 handlers)
 [GIN-debug] POST   /ShopList                 --> main.ShopList (6 handlers)
-[GIN] 2020/10/22 - 17:29:22 | 200 |    119.9713ms |             ::1 | POST     "/UserInfoList"
-[GIN] 2020/10/22 - 17:29:30 | 200 |     23.9977ms |             ::1 | POST     "/UserInfoList"
-[GIN] 2020/10/22 - 17:29:33 | 200 |     19.9981ms |             ::1 | POST     "/UserInfoList"
-[GIN] 2020/10/22 - 17:29:38 | 200 |     12.0007ms |             ::1 | POST     "/UserInfoList"
+[GIN] 2020/10/23 - 17:19:49 | 400 |           6ms |             ::1 | POST     "/UserInfoList"
+[GIN] 2020/10/23 - 17:19:53 | 200 |    118.0015ms |             ::1 | POST     "/Login"
+[GIN] 2020/10/23 - 17:20:03 | 200 |     15.0015ms |             ::1 | POST     "/UserInfoList"
+[GIN] 2020/10/23 - 17:20:09 | 200 |     19.9986ms |             ::1 | POST     "/Login"
+[GIN] 2020/10/23 - 17:20:11 | 400 |      5.0014ms |             ::1 | POST     "/UserInfoList"
+[GIN] 2020/10/23 - 17:20:30 | 204 |            0s |             ::1 | OPTIONS  "/Login"
+[GIN] 2020/10/23 - 17:20:30 | 200 |     18.0002ms |             ::1 | POST     "/Login"
+[GIN] 2020/10/23 - 17:20:56 | 204 |            0s |             ::1 | OPTIONS  "/Login"
+[GIN] 2020/10/23 - 17:20:57 | 200 |    120.0002ms |             ::1 | POST     "/Login"

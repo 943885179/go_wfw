@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/v2/util/log"
 	"io"
 	"net/http"
 	"os"
 	"qshapi/models"
+	"qshapi/proto/basic"
 	"qshapi/utils/mzjinit"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -148,7 +148,7 @@ func (r Resp) APIWary(c *gin.Context, errMsg string) {
 var (
 	notoken = []string{"/user/login", "/user/addUser", "/static", "/swagger", "/favicon.ico", "/login", "/registry", "/codeVerify", "/sendCode"}
 	apiresp = Resp{}
-	User    = &models.SysUser{}
+	RoleKey string
 )
 
 //APIGin 自定义gin
@@ -236,37 +236,33 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 				return
 			}
 		}
-		conf.Jwt.Token = c.Request.Header.Get("api_token")
+		conf.Jwt.Token = c.Request.Header.Get("token")
 		if conf.Jwt.Token == "" {
 			apiresp.APIResult(c, http.StatusForbidden, "Not token")
 			return
 		}
-		if err := conf.Jwt.ParseToken(User); err != nil {
+		if err := conf.Jwt.ParseToken(&RoleKey); err != nil {
 			apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
 			return
 		}
-		var isRole = false
-		for _, r := range User.Roles { //检查web api接口是否符合要求
-			for _, a := range r.Apis {
-				if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
-					if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(a.Method)) {
-						isRole = true
-						break
-					}
-				}
-			}
+		var resp basic.LoginResp
+		err := conf.RedisConfig.GetEntity(RoleKey, &resp)
+		fmt.Println(err)
+		if resp.User == nil || resp.User.UserName == "" {
+			apiresp.APIResult(c, http.StatusBadRequest, "权限不足")
+			return
 		}
-		if !isRole { //权限不足查询用户组权限是否够了
-			for _, gr := range User.Groups { //检查web api接口是否符合要求
-				for _, r := range gr.Roles {
-					for _, a := range r.Apis {
-						if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
-							if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(a.Method)) {
-								isRole = true
-								break
-							}
-						}
-					}
+		if resp.Token.Token != conf.Jwt.Token {
+			apiresp.APIResult(c, http.StatusBadRequest, "已经再其他地方登录，被迫下线,请重新登录")
+			return
+		}
+		//判断web权限
+		var isRole = false
+		for _, api := range resp.User.Apis {
+			if strings.ToLower(api.Service) == strings.ToLower(service) { //服务是否一致
+				if strings.Contains(strings.ToLower(c.Request.RequestURI), strings.ToLower(api.Method)) {
+					isRole = true
+					break
 				}
 			}
 		}
@@ -277,50 +273,6 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 		//c.Request.Header.Set("UserName", User.UserName)
 		//c.Request.Form.Set("UserName", user.UserName)
 		c.Next()
-	}
-}
-
-/**
- * @Author mzj
- * @Description 服务权限判断，暂时不做权限设置
- * @Date 上午 11:36 2020/10/20 0020
- * @Param
- * @return
- **/
-func SrvRole(c *gin.Context, service, method string) { //接口权限是否足够判断
-	for _, r := range notoken {
-		if strings.Contains(strings.ToLower(method), strings.ToLower(r)) {
-			return
-		}
-	}
-	var isRole = false
-	for _, r := range User.Roles { //检查web api接口是否符合要求
-		for _, a := range r.Apis {
-			if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
-				if strings.Contains(strings.ToLower(method), strings.ToLower(a.Method)) {
-					isRole = true
-					break
-				}
-			}
-		}
-	}
-	if !isRole { //权限不足查询用户组权限是否够了
-		for _, gr := range User.Groups { //检查web api接口是否符合要求
-			for _, r := range gr.Roles {
-				for _, a := range r.Apis {
-					if strings.ToLower(a.Service) == strings.ToLower(service) { //服务是否一致
-						if strings.Contains(strings.ToLower(method), strings.ToLower(a.Method)) {
-							isRole = true
-							break
-						}
-					}
-				}
-			}
-		}
-	}
-	if !isRole {
-		apiresp.APIResult(c, http.StatusBadRequest, "权限不足")
-		return
 	}
 }
 

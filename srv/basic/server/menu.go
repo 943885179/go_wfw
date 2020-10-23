@@ -13,6 +13,7 @@ type IMenu interface {
 	EditMenu(req *dbmodel.SysMenu, resp *dbmodel.Id) error
 	DelMenu(req *dbmodel.Id, resp *dbmodel.Id) error
 	MenuList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
+	MenuListByUser(userMenu ...[]models.SysMenu) []models.SysMenu
 }
 
 func NewMenu() IMenu {
@@ -20,6 +21,51 @@ func NewMenu() IMenu {
 }
 
 type Menu struct{}
+
+func (m *Menu) MenuListByUser(userMenu ...[]models.SysMenu) []models.SysMenu {
+	onlyMenu := []models.SysMenu{}
+	for _, menus := range userMenu {
+		for _, menu := range menus {
+			isAdd := true
+			for _, o := range onlyMenu {
+				if menu.Id == o.Id {
+					isAdd = false
+					break
+				}
+			}
+			if isAdd {
+				onlyMenu = append(onlyMenu, menu)
+			}
+		}
+	}
+	var ms []models.SysMenu
+	db := Conf.DbConfig.New().Model(&models.SysMenu{}).Where("p_id=0")
+	db = db.Preload("Children")
+	db = db.Preload("Children.Children")
+	db = db.Preload("Children.Children.Children")
+	db = db.Preload("Children.Children.Children.Children")
+	db.Find(&ms)
+	return menuTree(onlyMenu, ms)
+}
+func menuTree(userMenu, menus []models.SysMenu) []models.SysMenu {
+	var result []models.SysMenu
+	for _, menu := range menus {
+		if len(menu.Children) > 0 {
+			menu.Children = menuTree(userMenu, menu.Children)
+			if len(menu.Children) > 0 {
+				result = append(result, menu)
+			}
+		} else {
+			for _, sysMenu := range userMenu {
+				if sysMenu.Id == menu.Id {
+					result = append(result, menu)
+					break
+				}
+			}
+		}
+	}
+	return result
+}
 
 func (m *Menu) MenuList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.SysMenu

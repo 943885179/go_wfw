@@ -59,6 +59,10 @@ message SysUser {//用户表
   repeated Qualification qualifications=29;
   UserType user_type=30;
 
+  //处理后的数据
+  repeated SysMenu menus=31;
+  repeated SysSrv srvs=32;
+  repeated SysApi apis=33;
   int64 created = 98;//创建时间，时间戳秒
   int64 updated = 99;//修改时间，
 }
