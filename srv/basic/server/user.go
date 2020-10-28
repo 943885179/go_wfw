@@ -14,6 +14,7 @@ type IUser interface {
 	ChangePassword(req *basic.ChangePasswordReq, resp *dbmodel.Id) error
 	UserInfoList(req *basic.UserInfoListReq, resp *dbmodel.PageResp) error
 	EditUser(user *dbmodel.SysUser, resp *dbmodel.Id) error
+	UserById(id *dbmodel.Id, user *dbmodel.SysUser) error
 }
 
 func NewUser() IUser {
@@ -22,8 +23,12 @@ func NewUser() IUser {
 
 type User struct{}
 
+func (u User) UserById(id *dbmodel.Id, user *dbmodel.SysUser) error {
+	return Conf.DbConfig.New().Model(&models.SysUser{}).First(user, id.Id).Error
+}
+
 func (u User) EditUser(req *dbmodel.SysUser, resp *dbmodel.Id) error {
-	if req.Id == 0 {
+	if len(req.Id) == 0 {
 		return errors.New("不存在该客户")
 	}
 	db := Conf.DbConfig.New()

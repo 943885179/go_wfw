@@ -21,7 +21,7 @@ func init() {
 func main() {
 	service := conf.Services[svName]
 	s := service.NewSrv()
-	basic.RegisterUserSrvHandler(s.Server(), handler.Handler{})
+	basic.RegisterBasicSrvHandler(s.Server(), handler.Handler{})
 	if err := s.Run(); err != nil {
 		log.Fatal(err)
 	}

@@ -83,10 +83,10 @@ func SrvGin() *gin.Engine {
 }
 
 func fileById(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
 	req := &dbmodel.Id{
-		Id: int64(id),
-	} //c.Bind(req)
+		Id: c.Param("id"),
+	}
+	//c.Bind(req)
 	//c.BindQuery(req)
 	result, err := client.GetFile(context.Background(), req)
 	if err != nil {
@@ -157,9 +157,8 @@ func ImgWH(c *gin.Context) {
 	//http://localhost:8705/ImgWH/321988436372230144_100*100
 	imgstr := c.Param("img")
 	s := strings.Split(imgstr, "_")
-	id, _ := strconv.Atoi(s[0])
 	req := &dbmodel.Id{
-		Id: int64(id),
+		Id: s[0],
 	}
 	result, err := client.GetFile(context.Background(), req)
 	if err != nil {
@@ -207,9 +206,9 @@ func fileAttribute(c *gin.Context, f *multipart.FileHeader, sort int) *dbmodel.S
 	req := &dbmodel.SysFile{}
 	c.Bind(req) //这里可以得到path(文件存放路径),file_type(文件业务类型)，file_explain（文件描述）
 	req.FileSuffix = path.Ext(f.Filename)
-	req.Id = mzjuuid.WorkerDefault()
-	req.Name = strconv.Itoa(int(req.Id)) + path.Ext(f.Filename) //这个后缀看情况吧，需要先解决下载doc，excel等问题
-	req.Size = f.Size
+	req.Id = mzjuuid.WorkerDefaultStr(conf.WorkerId)
+	req.Name = req.Id + path.Ext(f.Filename) //这个后缀看情况吧，需要先解决下载doc，excel等问题
+	req.Size = strconv.Itoa(int(f.Size))
 	req.Path = path.Join(conf.FilePath, req.Path) //文件夹前面加上文件系统路径
 	req.Sort = int32(sort + 1)
 	return req

@@ -8,10 +8,11 @@ enum LoginType{
   EMAIL=2;//邮箱登录
 }
 enum UserType{
-  ADMIN =0; //超级管理员
-  PLATFORM=1;//平台用户（业务员）
-  SHOP=2;//平台入驻商家（商家，批发商）
-  CUSTOMER=3;//平台客户（客户，采购商）
+  PLATFORM=0;//平台用户（业务员）
+  SHOP=1;//平台入驻商家（商家，批发商）
+  CUSTOMER=2;//平台客户（客户，采购商）
+  
+  ADMIN =9527; //超级管理员
 }
 enum FileType{
   USERLOG=0;//用户头像
@@ -23,7 +24,7 @@ enum FileType{
 }
 
 message SysUser {//用户表
-  int64 id = 1;
+  string  id = 1;
   string user_name = 2;
   string true_name = 3;
   string user_phone = 4;
@@ -35,12 +36,12 @@ message SysUser {//用户表
   string user_tel = 8;
   string balance = 9;//账户余额
   string id_card = 10;//身份证号码
-  int64 point=11;//积分
-  int64 province_id=12;
+  string point=11;//积分
+  string province_id=12;
   SysTree province=13;
-  int64 city_id = 14;
+  string city_id = 14;
   SysTree city=15;
-  int64 area_id = 16;
+  string area_id = 16;
   SysTree area=17;
   string address = 18;
   int32 vip = 19;//vip等级
@@ -50,7 +51,7 @@ message SysUser {//用户表
   string bankcard = 22;//银行卡号
   string bank_card_name = 23;//持卡人/单位
 
-  int64 user_icon = 24;
+  string user_icon = 24;
   SysFile icon=25;
 
   repeated SysRole roles=26;
@@ -59,72 +60,81 @@ message SysUser {//用户表
   repeated Qualification qualifications=29;
   UserType user_type=30;
 
-  //处理后的数据
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
+}
+message OnlyMenu{
   repeated SysMenu menus=31;
-  repeated SysSrv srvs=32;
-  repeated SysApi apis=33;
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+}
+message OnlySrv{
+  repeated SysSrv srvs=1;
 }
 
+message OnlyApi{
+  repeated SysApi apis=1;
+}
 message SysFile{//SysFile文件
-  int64 id=1;//文件id
+  string id=1;//文件id
   string name=2;//上传文件名称，一般设置为id+后缀
   string path=3;//路径
-  int64 size=4;//大小
+  string size=4;//大小
   string  file_explain=5;//描述
   int32 sort=6;//排序
   FileType file_type=7;//图片类型
   string file_suffix=8;//图片后缀
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message SysTree{
-  int64 id=1;//id,有则修改，无则添加
+  string id=1;//id,有则修改，无则添加
   string code=2;//编码
   string text=3;
   int32 sort=4;
-  int64 p_id=5;
+  string  p_id=5;
   repeated SysTree children=6;
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string key=100;
+  string title=101;
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 
 
 //用户组请求
 message  SysGroup{
-  int64 id=1;//id,有则修改，无则添加
+  string id=1;//id,有则修改，无则添加
   string group_name=2;//用户组名称
   string  group_explain=3;//用户组说明
   repeated SysRole roles=4;//角色
   repeated SysRole users=5;//角色
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 
 //角色请求
 message  SysRole{
-  int64 id=1;//id,有则修改，无则添加
+  string id=1;//id,有则修改，无则添加
   string role_name=2;//角色名称
   string role_explain=3;//角色说明
   repeated SysMenu menus=4;
   repeated SysSrv srvs=5;
   repeated SysApi apis=6;
   repeated SysUser users=7;
-  int64 p_id=8;//父级id
+  string  p_id=8;//父级id
   repeated SysRole children=9;
-
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  
+  string key=100;
+  string title=101;
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message  SysMenu{
-  int64 id=1;
+  string id=1;
   string key=2;
   string text=3;//树名称
-  string i18n=4;//i18n主键
+  string i_18_n=4;//i18n主键
   string link=5;//'路由，link、externalLink 二选其一
   string external_link=6;//外部链接
   string target=7;//链接类型
@@ -140,56 +150,57 @@ message  SysMenu{
   bool shortcut_root=17;
   bool reuse=18;
   string  icon=19;
-  int64 p_id=20;
+  string  p_id=20;
   repeated SysMenu children=21;
   bool group=22;
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string title=101;
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message SysApi{
-  int64 id=1;//id,有则修改，无则添加
+  string id=1;//id,有则修改，无则添加
   string service=2;//服务名
   string method=3;//方法
   string api_explain=4;//描述
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message SysSrv{
-  int64 id=1;//id,有则修改，无则添加
+  string id=1;//id,有则修改，无则添加
   string service=2;//服务名
   string method=3;//方法
   string srv_explain=4;//描述
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message LogisticsAddress {
-  int64 id=1;//id,有则修改，无则添加
+  string id=1;//id,有则修改，无则添加
   bool is_default = 2;
-  int64 user_id = 3;
+  string user_id = 3;
   SysUser user=4;
 
-  int64 province_id=12;
+  string province_id=12;
   SysTree province=13;
-  int64 city_id = 14;
+  string city_id = 14;
   SysTree city=15;
-  int64 area_id = 16;
+  string area_id = 16;
   SysTree area=17;
   string address = 18;
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message Qualification {
 
-  int64 id=1;//id,有则修改，无则添加
+  string id=1;//id,有则修改，无则添加
   bool is_default = 2;
-  int64 user_id = 3;
+  string user_id = 3;
   SysUser user=4;
-  int64 qua_type_id = 5;
+  string qua_type_id = 5;
   SysTree qua_type=6;
-  int64 qua_file_id = 7;
+  string qua_file_id = 7;
   SysTree qua_file=8;
 
   string qua_explain = 9;
@@ -198,11 +209,11 @@ message Qualification {
   google.protobuf.Timestamp start_times=11;
   google.protobuf.Timestamp end_times=12;
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message SysShop {//店铺
-  int64 id = 100;
+  string  id = 100;
   string shop_name = 1;
   string shop_explain = 2;
   bool is_sht = 3;
@@ -224,11 +235,11 @@ message SysShop {//店铺
   repeated SysUser user=18;
   repeated SysFile imgs=19;
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message Product {
-  int64 id = 1;
+  string  id = 1;
   string goods_code = 2;
   string goods_byname = 3;
 
@@ -254,11 +265,11 @@ message Product {
   ProductSku product_skus=18;
 
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message ProductSku {
-  int64 id = 1;
+  string  id = 1;
   string sku_name = 2;
   //Attributes: datatypes.JSON([]byte(`{"name": "jinzhu", "age": 18, "tags": ["tag1", "tag2"], "orgs": {"orga": "orga"}}`)),
   bytes attri_list_bt = 3;
@@ -271,21 +282,21 @@ message ProductSku {
   float stock = 9;//库存
   bool is_checked = 10;
   Product goods=11;
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message Orders {
-  int64 id = 1;
+  string  id = 1;
   string order_number = 2;
   string serial_number = 3;
   repeated OrderItem order_items=4;
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }
 message OrderItem {
-  int64 id = 1;
-  int64 goods_sku_id = 2;
-  int64 order_id = 3;
+  string  id = 1;
+  string goods_sku_id = 2;
+  string order_id = 3;
   Orders orders=4;
   float unit_price = 5;
   float pay_unit_price = 6; 
@@ -293,6 +304,6 @@ message OrderItem {
   float send_quantity = 8;
   float total_price = 9;
 
-  int64 created = 98;//创建时间，时间戳秒
-  int64 updated = 99;//修改时间，
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
 }

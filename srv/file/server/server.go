@@ -35,8 +35,8 @@ func (*fileSrv) UploadFile(req *dbmodel.SysFile, resp *dbmodel.Id) error {
 	db := conf.DbConfig.New()
 	file := &models.SysFile{}
 	mzjstruct.CopyStruct(req, file)
-	if req.Id == 0 {
-		req.Id = mzjuuid.WorkerDefault()
+	if len(req.Id) == 0 {
+		req.Id = mzjuuid.WorkerDefaultStr(conf.WorkerId)
 	}
 	resp.Id = file.Id
 	return db.Create(file).Error

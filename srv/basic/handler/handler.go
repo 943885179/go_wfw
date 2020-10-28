@@ -2,12 +2,70 @@ package handler
 
 import (
 	"context"
+	"github.com/golang/protobuf/ptypes/empty"
 	"qshapi/proto/basic"
 	"qshapi/proto/dbmodel"
 	"qshapi/srv/basic/server"
 )
 
 type Handler struct {
+}
+
+func (h Handler) MenuListByUser(ctx context.Context, user *dbmodel.SysUser, menu *dbmodel.OnlyMenu) error {
+	return server.NewMenu().MenuListByUser(user, menu)
+}
+
+func (h Handler) ApiListByUser(ctx context.Context, user *dbmodel.SysUser, api *dbmodel.OnlyApi) error {
+	return server.NewAPI().ApiListByUser(user, api)
+}
+
+func (h Handler) SrvListByUser(ctx context.Context, user *dbmodel.SysUser, srv *dbmodel.OnlySrv) error {
+	return server.NewSrv().SrvListByUser(user, srv)
+}
+
+func (h Handler) RoleTree(ctx context.Context, empty *empty.Empty, resp *dbmodel.TreeResp) error {
+	return server.NewRole().RoleTree(empty, resp)
+}
+
+func (h Handler) MenuTree(ctx context.Context, empty *empty.Empty, resp *dbmodel.TreeResp) error {
+	return server.NewMenu().MenuTree(empty, resp)
+}
+
+func (h Handler) TreeTree(ctx context.Context, empty *empty.Empty, resp *dbmodel.TreeResp) error {
+
+	return server.NewTree().TreeTree(empty, resp)
+}
+
+func (h Handler) UserById(ctx context.Context, id *dbmodel.Id, user *dbmodel.SysUser) error {
+	return server.NewUser().UserById(id, user)
+}
+
+func (h Handler) RoleById(ctx context.Context, id *dbmodel.Id, role *dbmodel.SysRole) error {
+	return server.NewRole().RoleById(id, role)
+}
+
+func (h Handler) UserGroupById(ctx context.Context, id *dbmodel.Id, group *dbmodel.SysGroup) error {
+	return server.NewUserGroup().UserGroupById(id, group)
+}
+
+func (h Handler) MenuById(ctx context.Context, id *dbmodel.Id, menu *dbmodel.SysMenu) error {
+	return server.NewMenu().MenuById(id, menu)
+}
+
+func (h Handler) ApiById(ctx context.Context, id *dbmodel.Id, api *dbmodel.SysApi) error {
+	return server.NewAPI().ApiById(id, api)
+}
+
+func (h Handler) SrvById(ctx context.Context, id *dbmodel.Id, srv *dbmodel.SysSrv) error {
+	return server.NewSrv().SrvById(id, srv)
+}
+
+func (h Handler) TreeById(ctx context.Context, id *dbmodel.Id, tree *dbmodel.SysTree) error {
+	return server.NewTree().TreeById(id, tree)
+}
+
+func (h Handler) ShopById(ctx context.Context, id *dbmodel.Id, shop *dbmodel.SysShop) error {
+	return server.NewShop().ShopById(id, shop)
 }
 
 func (h Handler) EditUser(ctx context.Context, req *dbmodel.SysUser, resp *dbmodel.Id) error {

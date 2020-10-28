@@ -1,46 +1,60 @@
 syntax ="proto3";
 package basic;
 option go_package = "proto/basic";
-//import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 import "proto/dbmodel/dbmodel.proto";
 import "proto/dbmodel/model.proto";
-service UserSrv{
+service BasicSrv{
   rpc Login(LoginReq)returns(LoginResp){} //登录
   rpc Registry(RegistryReq)returns(dbmodel.Id){} //注册
   rpc ChangePassword(ChangePasswordReq)returns(dbmodel.Id){}//修改密码
   rpc UserInfoList(UserInfoListReq)returns(dbmodel.PageResp){}//分页查询用户
   rpc EditUser(dbmodel.SysUser)returns(dbmodel.Id){}//编辑用户
+  rpc UserById(dbmodel.Id)returns(dbmodel.SysUser){}//查询用户
 
   rpc EditRole(dbmodel.SysRole)returns(dbmodel.Id){}//编辑角色
   rpc DelRole(dbmodel.Id)returns(dbmodel.Id){}
   rpc RoleList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc RoleById(dbmodel.Id)returns(dbmodel.SysRole){}//查询
+  rpc RoleTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
 
 
   rpc EditUserGroup(dbmodel.SysGroup)returns(dbmodel.Id){}//编辑用户组
   rpc DelUserGroup(dbmodel.Id)returns(dbmodel.Id){}
   rpc UserGroupList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc UserGroupById(dbmodel.Id)returns(dbmodel.SysGroup){}//查询
 
   rpc EditMenu(dbmodel.SysMenu)returns(dbmodel.Id){}//编辑菜单
   rpc DelMenu(dbmodel.Id)returns(dbmodel.Id){}
   rpc MenuList(dbmodel.PageReq)returns(dbmodel.PageResp){}
-  rpc MenuListByUserId(dbmodel.PageReq)returns(dbmodel.PageResp){}
-  rpc MenuListById(dbmodel.Id)returns(dbmodel.SysMenu){}
+  rpc MenuTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
+  
+  rpc MenuListByUser(dbmodel.SysUser)returns(dbmodel.OnlyMenu){}
+
+  rpc MenuById(dbmodel.Id)returns(dbmodel.SysMenu){}
 
   rpc EditApi(dbmodel.SysApi)returns(dbmodel.Id){}//编辑SysApi
   rpc DelApi(dbmodel.Id)returns(dbmodel.Id){}
   rpc ApiList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc ApiById(dbmodel.Id)returns(dbmodel.SysApi){}
+  rpc ApiListByUser(dbmodel.SysUser)returns(dbmodel.OnlyApi){}
 
   rpc EditSrv(dbmodel.SysSrv)returns(dbmodel.Id){}//编辑服务
   rpc DelSrv(dbmodel.Id)returns(dbmodel.Id){}
   rpc SrvList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc SrvById(dbmodel.Id)returns(dbmodel.SysSrv){}
+  rpc SrvListByUser(dbmodel.SysUser)returns(dbmodel.OnlySrv){}
 
-  rpc EditTree(dbmodel.SysTree)returns(dbmodel.Id){}//编辑服务
+  rpc EditTree(dbmodel.SysTree)returns(dbmodel.Id){}//编辑树
   rpc DelTree(dbmodel.Id)returns(dbmodel.Id){}
   rpc TreeList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc TreeById(dbmodel.Id)returns(dbmodel.SysTree){}
+  rpc TreeTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
   
   rpc EditShop (dbmodel.SysShop) returns (dbmodel.Id);
   rpc DelShop(dbmodel.Id)returns(dbmodel.Id){}
   rpc ShopList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc ShopById(dbmodel.Id)returns(dbmodel.SysShop){}
   
 }
 

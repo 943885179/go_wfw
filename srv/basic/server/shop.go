@@ -13,6 +13,7 @@ type IShop interface {
 	EditShop(req *dbmodel.SysShop, resp *dbmodel.Id) error
 	DelShop(req *dbmodel.Id, resp *dbmodel.Id) error
 	ShopList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
+	ShopById(id *dbmodel.Id, shop *dbmodel.SysShop) error
 }
 
 func NewShop() IShop {
@@ -21,6 +22,9 @@ func NewShop() IShop {
 
 type Shop struct{}
 
+func (a *Shop) ShopById(id *dbmodel.Id, shop *dbmodel.SysShop) error {
+	return Conf.DbConfig.New().Model(&models.SysShop{}).First(shop, id.Id).Error
+}
 func (a *Shop) ShopList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.SysShop
 	db := Conf.DbConfig.New().Model(&models.SysShop{})
@@ -48,7 +52,7 @@ func (*Shop) EditShop(req *dbmodel.SysShop, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	//defer db.Close()
 	Shop := &models.SysShop{}
-	if req.Id > 0 { //修改0
+	if len(req.Id) > 0 { //修改0
 		//if db.FirstOrInit(Shop, req.Id).RecordNotFound() { v2版本移除了
 		if err := db.First(Shop, req.Id).Error; err != nil {
 			if Conf.DbConfig.IsErrRecordNotFound(err) {
@@ -61,7 +65,7 @@ func (*Shop) EditShop(req *dbmodel.SysShop, resp *dbmodel.Id) error {
 		return db.Updates(Shop).Error
 	} else { //添加
 		mzjstruct.CopyStruct(req, Shop)
-		Shop.Id = mzjuuid.WorkerDefault()
+		Shop.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 		resp.Id = Shop.Id
 		return db.Create(Shop).Error
 	}

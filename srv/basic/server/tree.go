@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	"qshapi/models"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
@@ -13,6 +14,8 @@ type ITree interface {
 	EditTree(req *dbmodel.SysTree, resp *dbmodel.Id) error
 	DelTree(req *dbmodel.Id, resp *dbmodel.Id) error
 	TreeList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
+	TreeById(id *dbmodel.Id, tree *dbmodel.SysTree) error
+	TreeTree(empty *empty.Empty, resp *dbmodel.TreeResp) error
 }
 
 func NewTree() ITree {
@@ -21,6 +24,28 @@ func NewTree() ITree {
 
 type Tree struct{}
 
+func (r *Tree) TreeTree(empty *empty.Empty, resp *dbmodel.TreeResp) error {
+	var data []models.SysTree
+	db := Conf.DbConfig.New().Model(&models.SysMenu{}).Where("p_id=0")
+	db = db.Preload("Children")
+	db = db.Preload("Children.Children")
+	db = db.Preload("Children.Children.Children")
+	db = db.Preload("Children.Children.Children.Children")
+	if err := db.Find(&data).Error; err != nil {
+		return err
+	}
+
+	for _, m := range data {
+		var r dbmodel.Tree
+		mzjstruct.CopyStruct(&m, &r)
+		resp.Data = append(resp.Data, &r)
+	}
+	return nil
+}
+
+func (g *Tree) TreeById(id *dbmodel.Id, tree *dbmodel.SysTree) error {
+	return Conf.DbConfig.New().Model(&models.SysTree{}).First(tree, id.Id).Error
+}
 func (t *Tree) TreeList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysTree
 	db := Conf.DbConfig.New().Model(&models.SysTree{}).Where("p_id=0")
@@ -52,7 +77,7 @@ func (*Tree) DelTree(req *dbmodel.Id, resp *dbmodel.Id) error {
 func (*Tree) EditTree(req *dbmodel.SysTree, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	Tree := &models.SysTree{}
-	if req.Id > 0 { //修改0
+	if len(req.Id) > 0 { //修改0
 		if err := db.First(Tree, req.Id).Error; err != nil {
 			if Conf.DbConfig.IsErrRecordNotFound(err) {
 				return errors.New("修改失败,数据不存在")
@@ -61,11 +86,14 @@ func (*Tree) EditTree(req *dbmodel.SysTree, resp *dbmodel.Id) error {
 		}
 		mzjstruct.CopyStruct(req, Tree)
 		resp.Id = Tree.Id
+		Tree.Title = Tree.Text
 		return db.Updates(Tree).Error
 	} else { //添加
 		mzjstruct.CopyStruct(req, Tree)
-		Tree.Id = mzjuuid.WorkerDefault()
+		Tree.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
+		Tree.Key = Tree.Id
 		resp.Id = Tree.Id
+		Tree.Title = Tree.Text
 		return db.Create(Tree).Error
 	}
 }

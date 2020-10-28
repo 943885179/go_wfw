@@ -60,7 +60,7 @@ func (*Registry) Registry(req *basic.RegistryReq, resp *dbmodel.Id) error {
 	req.UserPassword = mzjmd5.MD5(req.UserPassword)
 	u := &models.SysUser{}
 	mzjstruct.CopyStruct(req, u)
-	u.Id = mzjuuid.WorkerDefault()
+	u.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 	resp.Id = u.Id
 	return db.Create(u).Error
 }

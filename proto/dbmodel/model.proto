@@ -17,5 +17,14 @@ message EditResp{
     int64 id=1;
   }*/
 message Id{
-    int64 id=1;//唯一Id
+    string id=1;//唯一Id
+}
+
+message Tree{
+  string title = 1;
+  string key = 2;
+  repeated Tree children=3;
+}
+message TreeResp{
+  repeated Tree data=1;
 }

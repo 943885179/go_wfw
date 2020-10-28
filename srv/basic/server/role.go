@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	"qshapi/models"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
@@ -13,6 +14,8 @@ type IRole interface {
 	EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error
 	DelRole(req *dbmodel.Id, resp *dbmodel.Id) error
 	RoleList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
+	RoleById(id *dbmodel.Id, role *dbmodel.SysRole) error
+	RoleTree(empty *empty.Empty, resp *dbmodel.TreeResp) error
 }
 
 func NewRole() IRole {
@@ -20,6 +23,29 @@ func NewRole() IRole {
 }
 
 type Role struct{}
+
+func (r *Role) RoleTree(empty *empty.Empty, resp *dbmodel.TreeResp) error {
+	var data []models.SysRole
+	db := Conf.DbConfig.New().Model(&models.SysMenu{}).Where("p_id=0")
+	db = db.Preload("Children")
+	db = db.Preload("Children.Children")
+	db = db.Preload("Children.Children.Children")
+	db = db.Preload("Children.Children.Children.Children")
+	if err := db.Find(&data).Error; err != nil {
+		return err
+	}
+
+	for _, m := range data {
+		var r dbmodel.Tree
+		mzjstruct.CopyStruct(&m, &r)
+		resp.Data = append(resp.Data, &r)
+	}
+	return nil
+}
+
+func (r *Role) RoleById(id *dbmodel.Id, role *dbmodel.SysRole) error {
+	return Conf.DbConfig.New().Model(&models.SysRole{}).First(role, id.Id).Error
+}
 
 func (r *Role) RoleList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var roles []models.SysRole
@@ -69,7 +95,7 @@ func (*Role) DelRole(req *dbmodel.Id, resp *dbmodel.Id) error {
 func (*Role) EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	Role := &models.SysRole{}
-	if req.Id > 0 { //修改0
+	if len(req.Id) > 0 { //修改0
 		if err := db.First(Role, req.Id).Error; err != nil {
 			if Conf.DbConfig.IsErrRecordNotFound(err) {
 				return errors.New("修改失败,数据不存在")
@@ -82,7 +108,7 @@ func (*Role) EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error {
 		db.Model(&Role).Association("Srvs").Clear()
 		db.Model(&Role).Association("Menus").Clear()
 		if req.Apis != nil && len(req.Apis) != 0 {
-			var ids []int64
+			var ids []string
 			for _, a := range req.Apis {
 				ids = append(ids, a.Id)
 			}
@@ -91,7 +117,7 @@ func (*Role) EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error {
 			}
 		}
 		if req.Srvs != nil && len(req.Srvs) != 0 {
-			var ids []int64
+			var ids []string
 			for _, a := range req.Srvs {
 				ids = append(ids, a.Id)
 			}
@@ -100,7 +126,7 @@ func (*Role) EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error {
 			}
 		}
 		if req.Menus != nil && len(req.Menus) != 0 {
-			var ids []int64
+			var ids []string
 			for _, a := range req.Menus {
 				ids = append(ids, a.Id)
 			}
@@ -108,13 +134,16 @@ func (*Role) EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error {
 				db.Where(ids).Find(&Role.Menus)
 			}
 		}
+		Role.Title = Role.RoleName
 		return db.Updates(Role).Error
 	} else { //添加
 		mzjstruct.CopyStruct(req, Role)
-		Role.Id = mzjuuid.WorkerDefault()
+		Role.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
+		Role.Key = Role.Id
+		Role.Title = Role.RoleName
 		resp.Id = Role.Id
 		if req.Apis != nil && len(req.Apis) != 0 {
-			var ids []int64
+			var ids []string
 			for _, a := range req.Apis {
 				ids = append(ids, a.Id)
 			}
@@ -123,7 +152,7 @@ func (*Role) EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error {
 			}
 		}
 		if req.Srvs != nil && len(req.Srvs) != 0 {
-			var ids []int64
+			var ids []string
 			for _, a := range req.Srvs {
 				ids = append(ids, a.Id)
 			}
@@ -132,7 +161,7 @@ func (*Role) EditRole(req *dbmodel.SysRole, resp *dbmodel.Id) error {
 			}
 		}
 		if req.Menus != nil && len(req.Menus) != 0 {
-			var ids []int64
+			var ids []string
 			for _, a := range req.Menus {
 				ids = append(ids, a.Id)
 			}

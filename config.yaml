@@ -7,6 +7,7 @@
         "password":"123456",
         "database":"test",
         "dateSourceName":"",
+        "workerId":1,
         "isDebug":true
     },
     "filePath":"static/upload",#前缀加./或不加表示在该程序下，只加/表示在磁盘文件下

@@ -12,6 +12,7 @@ type IUserGroup interface {
 	EditUserGroup(req *dbmodel.SysGroup, resp *dbmodel.Id) error
 	DelUserGroup(req *dbmodel.Id, resp *dbmodel.Id) error
 	UserGroupList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
+	UserGroupById(id *dbmodel.Id, group *dbmodel.SysGroup) error
 }
 
 func NewUserGroup() IUserGroup {
@@ -19,6 +20,10 @@ func NewUserGroup() IUserGroup {
 }
 
 type UserGroup struct{}
+
+func (g *UserGroup) UserGroupById(id *dbmodel.Id, group *dbmodel.SysGroup) error {
+	return Conf.DbConfig.New().Model(&models.SysGroup{}).First(group, id.Id).Error
+}
 
 func (g *UserGroup) UserGroupList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysGroup
@@ -49,7 +54,7 @@ func (*UserGroup) EditUserGroup(req *dbmodel.SysGroup, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	//defer db.Close()
 	UserGroup := &models.SysGroup{}
-	if req.Id > 0 { //修改0
+	if len(req.Id) > 0 { //修改0
 		if err := db.First(UserGroup, req.Id).Error; err != nil {
 			return err
 		}
@@ -62,7 +67,7 @@ func (*UserGroup) EditUserGroup(req *dbmodel.SysGroup, resp *dbmodel.Id) error {
 		return db.Updates(UserGroup).Error
 	} else { //添加
 		mzjstruct.CopyStruct(req, UserGroup)
-		UserGroup.Id = mzjuuid.WorkerDefault()
+		UserGroup.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 		resp.Id = UserGroup.Id
 		if len(req.Roles) > 0 {
 			db.Find(&UserGroup.Roles)

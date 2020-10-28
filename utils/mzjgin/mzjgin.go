@@ -1,11 +1,10 @@
 package mzjgin
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/gin-contrib/gzip"
-	"github.com/gin-gonic/gin"
-	"github.com/micro/go-micro/v2/util/log"
 	"io"
 	"net/http"
 	"os"
@@ -13,16 +12,25 @@ import (
 	"qshapi/proto/basic"
 	"qshapi/utils/mzjinit"
 	"strings"
+
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-gonic/gin"
+	"github.com/micro/go-micro/v2/util/log"
 )
 
 var (
-	conf models.APIConfig
+	conf         models.APIConfig
+	basicCliName = "basicCli"
+	basicSvName  = "basicSrv"
+	client       basic.BasicSrvService
 )
 
 func init() {
 	if err := mzjinit.Default(&conf); err != nil {
 		log.Fatal(err)
 	}
+	service := conf.Services[basicCliName]
+	client = basic.NewBasicSrvService(conf.Services[basicSvName].Name, service.NewRoundSrv().Options().Client)
 }
 
 //RespCode 返回代码
@@ -146,7 +154,8 @@ func (r Resp) APIWary(c *gin.Context, errMsg string) {
 }
 
 var (
-	notoken = []string{"/user/login", "/user/addUser", "/static", "/swagger", "/favicon.ico", "/login", "/registry", "/codeVerify", "/sendCode"}
+	filterApi = []string{"/user/login", "/user/addUser", "/static", "/swagger", "/favicon.ico", "/login", "/registry", "/codeVerify", "/sendCode"} //强制不验证
+	//fApi      = []string("/token")                                                                                                                 //验证存在token
 	apiresp = Resp{}
 	RoleKey string
 )
@@ -230,35 +239,26 @@ func handleNotFound(c *gin.Context) {
 //TokenAuthMiddleware token验证中间件(方法一)
 func TokenAuthMiddleware(service string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		for _, r := range notoken {
+		for _, r := range filterApi {
 			if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(r)) {
 				c.Next()
 				return
 			}
 		}
-		conf.Jwt.Token = c.Request.Header.Get("token")
-		if conf.Jwt.Token == "" {
-			apiresp.APIResult(c, http.StatusForbidden, "Not token")
+		resp, err := TokenResp(c)
+
+		if err != nil {
+			apiresp.APIResult(c, http.StatusUnauthorized, err.Error())
 			return
 		}
-		if err := conf.Jwt.ParseToken(&RoleKey); err != nil {
-			apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
-			return
-		}
-		var resp basic.LoginResp
-		err := conf.RedisConfig.GetEntity(RoleKey, &resp)
-		fmt.Println(err)
-		if resp.User == nil || resp.User.UserName == "" {
-			apiresp.APIResult(c, http.StatusBadRequest, "权限不足")
-			return
-		}
-		if resp.Token.Token != conf.Jwt.Token {
-			apiresp.APIResult(c, http.StatusBadRequest, "已经再其他地方登录，被迫下线,请重新登录")
+		apis, err := client.ApiListByUser(context.TODO(), resp.User)
+		if err != nil {
+			apiresp.APIResult(c, http.StatusUnauthorized, err.Error())
 			return
 		}
 		//判断web权限
 		var isRole = false
-		for _, api := range resp.User.Apis {
+		for _, api := range apis.Apis {
 			if strings.ToLower(api.Service) == strings.ToLower(service) { //服务是否一致
 				if strings.Contains(strings.ToLower(c.Request.RequestURI), strings.ToLower(api.Method)) {
 					isRole = true
@@ -267,7 +267,7 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 			}
 		}
 		if !isRole {
-			apiresp.APIResult(c, http.StatusBadRequest, "权限不足")
+			apiresp.APIResult(c, http.StatusUnauthorized, "权限不足")
 			return
 		}
 		//c.Request.Header.Set("UserName", User.UserName)
@@ -275,10 +275,27 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 		c.Next()
 	}
 }
+func TokenResp(c *gin.Context) (resp basic.LoginResp, err error) {
+	conf.Jwt.Token = c.Request.Header.Get("token")
+	if conf.Jwt.Token == "" {
+		return resp, errors.New("读取token失败")
+	}
+	if err := conf.Jwt.ParseToken(&RoleKey); err != nil {
+		return resp, errors.New("权限不足")
+	}
+	conf.RedisConfig.GetEntity(RoleKey, &resp)
+	if resp.User == nil || resp.User.UserName == "" {
+		return resp, errors.New("权限不足")
+	}
+	if resp.Token.Token != conf.Jwt.Token {
+		return resp, errors.New("已经再其他地方登录，被迫下线,请重新登录")
+	}
+	return resp, nil
+}
 
 //APITokenMiddleware token验证中间件(方法二)
 func APITokenMiddleware(c *gin.Context) {
-	for _, r := range notoken {
+	for _, r := range filterApi {
 		if strings.Contains(strings.ToLower(c.Request.URL.String()), strings.ToLower(r)) {
 			c.Next()
 			return
@@ -286,12 +303,12 @@ func APITokenMiddleware(c *gin.Context) {
 	}
 	conf.Jwt.Token = c.Request.Header.Get("api_token")
 	if conf.Jwt.Token == "" {
-		apiresp.APIResult(c, http.StatusForbidden, "权限不足")
+		apiresp.APIResult(c, http.StatusUnauthorized, "权限不足")
 		return
 	}
 	user := &models.SysUser{}
 	if err := conf.Jwt.ParseToken(user); err != nil {
-		apiresp.APIResult(c, http.StatusBadRequest, fmt.Sprintf("Token is Bad:%s", err.Error()))
+		apiresp.APIResult(c, http.StatusUnauthorized, fmt.Sprintf("Token is Bad:%s", err.Error()))
 		return
 	}
 	//Todo:是否单点登录，可以去读redis查看token是否一致

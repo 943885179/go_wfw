@@ -15,6 +15,7 @@ type APIConfig struct {
 	DbConfig    mzjgorm.DbConfig      `json:"dbConfig"`    //数据库配置
 	RedisConfig mzjredis.RedisConfig  `json:"redisConfig"` //redis配置
 	EmailConfig mzjemail.EmailConfig  `json:"emailConfig"`
+	WorkerId    int64                 `json:"workerId"`
 	TxOcrAPI    TxOcrAPI              `json:"txOcrApi"`    //腾讯Orcapi
 	WxPayConfig WxPayConfig           `json:"wxPayConfig"` //微信支付config
 	Jwt         mzjjwt.Jwt            `json:"jwt"`         //jwt

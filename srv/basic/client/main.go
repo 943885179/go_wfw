@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
 	"qshapi/proto/basic"
@@ -17,7 +18,7 @@ var (
 	cliName = "basicCli"
 	svName  = "basicSrv"
 	conf    models.APIConfig
-	client  basic.UserSrvService
+	client  basic.BasicSrvService
 	resp    = mzjgin.Resp{}
 )
 
@@ -30,7 +31,7 @@ func main() {
 	service := conf.Services[cliName]
 	cliName = service.Name
 	svName = conf.Services[svName].Name
-	client = basic.NewUserSrvService(svName, service.NewRoundSrv().Options().Client)
+	client = basic.NewBasicSrvService(svName, service.NewRoundSrv().Options().Client)
 	s := service.NewGinWeb(SrvGin())
 	if err := s.Run(); err != nil {
 		log.Fatal(err)
@@ -68,6 +69,19 @@ func SrvGin() *gin.Engine {
 		r.POST("DelUserGroup", DelUserGroup)
 		r.POST("DelMenu", DelMenu)
 		r.POST("DelTree", DelTree)
+
+		r.GET("/UserById/:id", UserById)
+		r.GET("/ApiById/:id", ApiById)
+		r.GET("/SrvById/:id", SrvById)
+		r.GET("/RoleById/:id", RoleById)
+		r.GET("/UserGroupById/:id", UserGroupById)
+		r.GET("/MenuById/:id", MenuById)
+		r.GET("/TreeById/:id", TreeById)
+
+		r.GET("RoleTree", RoleTree)
+		r.GET("MenuTree", MenuTree)
+		r.GET("TreeTree", TreeTree)
+
 		r.POST("ChangePassword", ChangePassword)
 
 		r.POST("UserInfoList", UserInfoList)
@@ -81,8 +95,17 @@ func SrvGin() *gin.Engine {
 		r.POST("EditShop", EditShop)
 		r.POST("DelShop", DelShop)
 		r.POST("ShopList", ShopList)
+		r.POST("ShopById", ShopById)
+
+		r.GET("Token", Token)
 	}
 	return g
+}
+
+func Token(c *gin.Context) {
+	user, err := mzjgin.TokenResp(c)
+	result, err := client.MenuListByUser(context.TODO(), user.User)
+	resp.MicroResp(c, result, err)
 }
 func Login(c *gin.Context) {
 	//mzjgin.SrvRole(c, svName, "Login") //服务权限判断
@@ -312,4 +335,76 @@ func ShopList(c *gin.Context) {
 		rs = append(rs, r)
 	}
 	resp.MicroTotalResp(c, result.Total, rs, err)
+}
+
+func UserById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.UserById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func UserGroupById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.UserGroupById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func RoleById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.RoleById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func MenuById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.MenuById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func TreeById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.TreeById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func ApiById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.ApiById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func SrvById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.SrvById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func ShopById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.ShopById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+
+func TreeTree(c *gin.Context) {
+	result, err := client.TreeTree(context.TODO(), &empty.Empty{})
+	resp.MicroResp(c, result, err)
+}
+
+func MenuTree(c *gin.Context) {
+	result, err := client.MenuTree(context.TODO(), &empty.Empty{})
+	resp.MicroResp(c, result, err)
+}
+
+func RoleTree(c *gin.Context) {
+	result, err := client.RoleTree(context.TODO(), &empty.Empty{})
+	resp.MicroResp(c, result, err)
 }

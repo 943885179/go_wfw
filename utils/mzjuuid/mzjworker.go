@@ -1,10 +1,13 @@
 package mzjuuid
+
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 )
+
 //雪花算法
 const (
 	workerBits  uint8 = 10
@@ -53,11 +56,19 @@ func (w *Worker) GetId() int64 {
 	ID := int64((now-startTime)<<timeShift | (w.workerId << workerShift) | (w.number))
 	return ID
 }
+
 //返回唯一的雪花算法id
-func WorkerDefault()int64{
+func WorkerDefault() int64 {
 	node, _ := NewWorker(1)
 	return node.GetId()
 }
+
+//返回唯一的雪花算法id
+func WorkerDefaultStr(workerid int64) string {
+	node, _ := NewWorker(workerid)
+	return strconv.Itoa(int(node.GetId()))
+}
+
 func main() {
 	// 生成节点实例
 	node, err := NewWorker(1)
