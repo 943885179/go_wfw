@@ -20,6 +20,8 @@ import (
 
 type DbType int
 
+var dbList = map[string]*gorm.DB{} //数据库集合
+
 const (
 	DbType_Mysql      DbType = iota //Mysql
 	DbType_SqlServer                //SqlServer
@@ -87,6 +89,13 @@ type ResolverDb struct {
 	Replicas []string `json:"replicas"` //replicas
 }
 
+/**
+ * @Author mzj
+ * @Description 创建一个db
+ * @Date 上午 10:02 2020/10/29 0029
+ * @Param
+ * @return
+ **/
 func (c *DbConfig) New() (db *gorm.DB) {
 	var err error
 	newLogger := logger.New(
@@ -100,22 +109,32 @@ func (c *DbConfig) New() (db *gorm.DB) {
 	gormConfig := &gorm.Config{
 		Logger:                                   newLogger, // logger.Default.LogMode(logger.Silent),
 		DisableForeignKeyConstraintWhenMigrating: true,      //外键约束,默认开启
+		DisableAutomaticPing:                     true,      //在完成初始化后，GORM 会自动 ping 数据库以检查数据库的可用性
 		//SkipDefaultTransaction:                   true, //禁用默认事务
 		//DryRun: true, //缓存预编译语句
-		PrepareStmt: true, //带 PreparedStmt 的 SQL 生成器
+		/*NamingStrategy: schema.NamingStrategy{
+			TablePrefix:   "t_", // 表名前缀，`User` 的表名应该是 `t_users`
+			SingularTable: true, // 使用单数表名，启用该选项，此时，`User` 的表名应该是 `t_user`
+		},*/
+		PrepareStmt: true, //带 PreparedStmt 的 SQL 生成器 在执行任何 SQL 时都会创建一个 prepared statement 并将其缓存，以提高后续的效率
 
 	}
 	switch c.DbType {
 	case DbType_Mysql:
 		c.Source = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.User, c.Password, c.Server, c.Port, c.Database)
 		//db, err = gorm.Open(mysql.Open(c.Source), gormConfig)
+		for s, i := range dbList {
+			if c.Source == s {
+				return i
+			}
+		}
 		db, err = gorm.Open(mysql.New(mysql.Config{
 			DSN:                       c.Source, // DSN data source name
 			DefaultStringSize:         191,      // string 类型字段的默认长度
 			DisableDatetimePrecision:  true,     // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
 			DontSupportRenameIndex:    true,     // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
 			DontSupportRenameColumn:   true,     // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
-			SkipInitializeWithVersion: false,    // 根据版本自动配置
+			SkipInitializeWithVersion: false,    // 根据版本自动配置,
 		}), gormConfig)
 	/*case DbType_SqlServer:
 		c.Source = fmt.Sprintf("server=%s;port=%d;database=%s;user id=%s;password=%s", c.Server, c.Port, c.Database, c.User, c.Password)
@@ -138,13 +157,17 @@ func (c *DbConfig) New() (db *gorm.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	//db = db.Session(&gorm.Session{PrepareStmt: true})
+	// 下面这段是否有用不太清楚，不用了吧，v2找不到设置的连接数量了
 	sqldb, _ := db.DB()
 	sqldb.SetMaxOpenConns(100)            //设置数据库连接池最大连接数
 	sqldb.SetMaxIdleConns(20)             //连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超过的连接会被连接池关闭。
 	sqldb.SetConnMaxLifetime(time.Minute) //过期时间
+	//defer sqldb.Close() 不能关闭，关闭后就查不到数据了
 	if c.IsDebug {
-		return db.Debug()
+		db = db.Debug()
 	}
+	dbList[c.Source] = db
 	return db
 }
 

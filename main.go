@@ -27,6 +27,16 @@ func main() {
 	initApi()
 	initSrv()
 	initAdmin()
+	//test()
+}
+func test() {
+	var i = 0
+	for {
+		i++
+		var u models.SysUser
+		conf.DbConfig.New().First(&u)
+		fmt.Println(i, u.UserName)
+	}
 }
 
 func dbInit() {
@@ -312,7 +322,7 @@ func initAdmin() { //超级管理员
 		UserWx:       "18206840781",
 		UserType:     dbmodel.UserType_ADMIN,
 	}
-	u.Groups = append(u.Groups, gr)
+	u.Groups = append(u.Groups, gr) //admin可以不设置用户组权限了
 	//u.Roles = append(u.Roles, r) //这个可以不用
 	db.Create(&u)
 	//db.Updates(&u)
