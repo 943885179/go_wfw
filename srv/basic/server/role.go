@@ -44,7 +44,18 @@ func (r *Role) RoleTree(empty *empty.Empty, resp *dbmodel.TreeResp) error {
 }
 
 func (r *Role) RoleById(id *dbmodel.Id, role *dbmodel.SysRole) error {
-	return Conf.DbConfig.New().Model(&models.SysRole{}).First(role, id.Id).Error
+	db := Conf.DbConfig.New().Model(&models.SysRole{})
+	db = db.Preload("Srvs").Preload("Apis").Preload("Menus")
+	db = db.Preload("Children").Preload("Children.Srvs").Preload("Children.Apis").Preload("Children.Menus")
+	db = db.Preload("Children.Children").Preload("Children.Children.Srvs").Preload("Children.Children.Apis").Preload("Children.Children.Menus")
+	db = db.Preload("Children.Children.Children").Preload("Children.Children.Children.Srvs").Preload("Children.Children.Children.Apis").Preload("Children.Children.Children.Menus")
+	db = db.Preload("Children.Children.Children.Children").Preload("Children.Children.Children.Children.Srvs").Preload("Children.Children.Children.Children.Apis").Preload("Children.Children.Children.Children.Menus")
+	var dbrole models.SysRole
+	if err := db.First(&dbrole, id.Id).Error; err != nil {
+		return err
+	}
+	mzjstruct.CopyStruct(&dbrole, &role)
+	return nil
 }
 
 func (r *Role) RoleList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {

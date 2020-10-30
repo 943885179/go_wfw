@@ -111,7 +111,7 @@ type SysGroup struct {
 	GroupName    string    `gorm:"column:group_name;not null;comment:'用户组名称'" json:"group_name"`
 	GroupExplain string    `gorm:"column:group_explain;comment:'用户组描述'" json:"group_explain"`
 	Roles        []SysRole `gorm:"many2many:sys_group_role" json:"roles"`
-	Users        []SysUser `gorm:"many2many:sys_user_group" json:"users"`
+	// Users        []SysUser `gorm:"many2many:sys_user_group" json:"users"`
 	Model
 }
 

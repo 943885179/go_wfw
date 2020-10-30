@@ -22,12 +22,19 @@ func NewUserGroup() IUserGroup {
 type UserGroup struct{}
 
 func (g *UserGroup) UserGroupById(id *dbmodel.Id, group *dbmodel.SysGroup) error {
-	return Conf.DbConfig.New().Model(&models.SysGroup{}).First(group, id.Id).Error
+	//return Conf.DbConfig.New().Model(&models.SysGroup{}).Preload("Roles").First(group, id.Id).Error
+	db := Conf.DbConfig.New().Model(&models.SysGroup{}).Preload("Roles")
+	var dbgroup models.SysGroup
+	if err := db.First(&dbgroup, id.Id).Error; err != nil {
+		return err
+	}
+	mzjstruct.CopyStruct(&dbgroup, &group)
+	return nil
 }
 
 func (g *UserGroup) UserGroupList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysGroup
-	db := Conf.DbConfig.New().Model(&models.SysGroup{})
+	db := Conf.DbConfig.New().Model(&models.SysGroup{}).Preload("Roles")
 	db.Count(&resp.Total)
 	req.Page -= 1 //分页查询页码减1
 	if resp.Total == 0 {

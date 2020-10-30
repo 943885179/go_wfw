@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"qshapi/models"
@@ -87,9 +86,6 @@ func (m *Menu) MenuListByUser(req *dbmodel.SysUser, resp *dbmodel.OnlyMenu) erro
 		}
 	}
 	tree := menuTree(hasIds, ms)
-	fmt.Println("等到数据")
-	fmt.Println(hasIds)
-	fmt.Println(tree)
 	mzjstruct.CopyStruct(&tree, &resp.Menus)
 	return nil
 }

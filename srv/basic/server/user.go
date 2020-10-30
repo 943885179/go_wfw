@@ -24,24 +24,41 @@ func NewUser() IUser {
 type User struct{}
 
 func (u User) UserById(id *dbmodel.Id, user *dbmodel.SysUser) error {
-	return Conf.DbConfig.New().Model(&models.SysUser{}).First(user, id.Id).Error
+	//return Conf.DbConfig.New().Model(&models.SysUser{}).First(user, id.Id).Error
+	db := Conf.DbConfig.New().Model(&models.SysUser{}).Preload("Roles").Preload("Groups").Preload("Groups.Roles")
+	var dbu models.SysUser
+	if err := db.First(&dbu, id.Id).Error; err != nil {
+		return err
+	}
+	mzjstruct.CopyStruct(&dbu, &user)
+	return nil
 }
 
 func (u User) EditUser(req *dbmodel.SysUser, resp *dbmodel.Id) error {
 	if len(req.Id) == 0 {
 		return errors.New("不存在该客户")
 	}
+	user := &models.SysUser{}
 	db := Conf.DbConfig.New()
-	api := &models.SysUser{}
-	if err := db.First(api, req.Id).Error; err != nil {
+	if err := db.Model(user).First(user, req.Id).Error; err != nil {
 		if Conf.DbConfig.IsErrRecordNotFound(err) {
 			return errors.New("修改失败,数据不存在")
 		}
 		return err
 	}
-	mzjstruct.CopyStruct(req, api)
-	resp.Id = api.Id
-	return db.Updates(api).Error
+	resp.Id = user.Id
+	db.Model(&user).Association("Groups").Clear()
+	mzjstruct.CopyStruct(req, user)
+	if req.Groups != nil && len(req.Groups) != 0 {
+		var ids []string
+		for _, a := range req.Groups {
+			ids = append(ids, a.Id)
+		}
+		if len(ids) > 0 {
+			db.Model(&models.SysGroup{}).Where(ids).Find(&user.Groups)
+		}
+	}
+	return db.Updates(user).Error
 }
 
 func (u User) ChangePassword(req *basic.ChangePasswordReq, resp *dbmodel.Id) error {
