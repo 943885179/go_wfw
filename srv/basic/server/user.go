@@ -47,7 +47,8 @@ func (u User) EditUser(req *dbmodel.SysUser, resp *dbmodel.Id) error {
 		return err
 	}
 	resp.Id = user.Id
-	db.Model(&user).Association("Groups").Clear()
+	db.Model(&user).Association("Imgs").Clear()
+
 	mzjstruct.CopyStruct(req, user)
 	if req.Groups != nil && len(req.Groups) != 0 {
 		var ids []string

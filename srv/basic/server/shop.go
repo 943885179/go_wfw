@@ -23,11 +23,19 @@ func NewShop() IShop {
 type Shop struct{}
 
 func (a *Shop) ShopById(id *dbmodel.Id, shop *dbmodel.SysShop) error {
-	return Conf.DbConfig.New().Model(&models.SysShop{}).First(shop, id.Id).Error
+	//return Conf.DbConfig.New().Model(&models.SysShop{}).First(shop, id.Id).Error
+
+	db := Conf.DbConfig.New().Model(&models.SysShop{}).Preload("Logo").Preload("Imgs")
+	var dbs models.SysShop
+	if err := db.First(&dbs, id.Id).Error; err != nil {
+		return err
+	}
+	mzjstruct.CopyStruct(&dbs, &shop)
+	return nil
 }
 func (a *Shop) ShopList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.SysShop
-	db := Conf.DbConfig.New().Model(&models.SysShop{})
+	db := Conf.DbConfig.New().Model(&models.SysShop{}).Preload("Logo").Preload("Imgs")
 	db.Count(&resp.Total)
 	req.Page -= 1 //分页查询页码减1
 	if resp.Total == 0 {
@@ -60,13 +68,29 @@ func (*Shop) EditShop(req *dbmodel.SysShop, resp *dbmodel.Id) error {
 			}
 			return err
 		}
-		mzjstruct.CopyStruct(req, Shop)
 		resp.Id = Shop.Id
+		mzjstruct.CopyStruct(req, Shop)
+		if req.Logo != nil {
+			Shop.LogoId = req.Logo.Id
+		}
+		db.Model(&Shop).Association("Imgs").Clear()
+		if req.Imgs != nil && len(req.Imgs) != 0 {
+			var ids []string
+			for _, a := range req.Imgs {
+				ids = append(ids, a.Id)
+			}
+			if len(ids) > 0 {
+				db.Where(ids).Find(&Shop.Imgs)
+			}
+		}
 		return db.Updates(Shop).Error
 	} else { //添加
 		mzjstruct.CopyStruct(req, Shop)
 		Shop.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 		resp.Id = Shop.Id
+		if req.Logo != nil {
+			Shop.LogoId = req.Logo.Id
+		}
 		return db.Create(Shop).Error
 	}
 }

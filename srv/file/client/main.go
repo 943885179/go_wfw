@@ -192,7 +192,8 @@ func upload(c *gin.Context) {
 		return
 	}
 	result, err := client.UploadFile(context.Background(), req)
-	resp.MicroResp(c, result, err)
+	s, err := client.GetFile(context.TODO(), result)
+	resp.MicroResp(c, s, err)
 }
 
 /**

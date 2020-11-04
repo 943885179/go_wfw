@@ -95,7 +95,7 @@ func SrvGin() *gin.Engine {
 		r.POST("EditShop", EditShop)
 		r.POST("DelShop", DelShop)
 		r.POST("ShopList", ShopList)
-		r.POST("ShopById", ShopById)
+		r.GET("/ShopById/:id", ShopById)
 
 		r.GET("Token", Token)
 	}

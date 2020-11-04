@@ -68,8 +68,14 @@ func (*UserGroup) EditUserGroup(req *dbmodel.SysGroup, resp *dbmodel.Id) error {
 		mzjstruct.CopyStruct(req, UserGroup)
 		resp.Id = UserGroup.Id
 		db.Model(&UserGroup).Association("Roles").Clear() //先清空关联再插入
-		if len(req.Roles) > 0 {
-			db.Find(&UserGroup.Roles)
+		if req.Roles != nil && len(req.Roles) != 0 {
+			var ids []string
+			for _, a := range req.Roles {
+				ids = append(ids, a.Id)
+			}
+			if len(ids) > 0 {
+				db.Where(ids).Find(&UserGroup.Roles)
+			}
 		}
 		return db.Updates(UserGroup).Error
 	} else { //添加
