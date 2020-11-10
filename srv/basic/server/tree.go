@@ -26,7 +26,7 @@ type Tree struct{}
 
 func (r *Tree) TreeTree(empty *empty.Empty, resp *dbmodel.TreeResp) error {
 	var data []models.SysTree
-	db := Conf.DbConfig.New().Model(&models.SysMenu{}).Where("p_id=0")
+	db := Conf.DbConfig.New().Model(&models.SysTree{}).Where("p_id=0")
 	db = db.Preload("Children")
 	db = db.Preload("Children.Children")
 	db = db.Preload("Children.Children.Children")
@@ -48,16 +48,16 @@ func (g *Tree) TreeById(id *dbmodel.Id, tree *dbmodel.SysTree) error {
 }
 func (t *Tree) TreeList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysTree
-	db := Conf.DbConfig.New().Model(&models.SysTree{}).Where("p_id=0")
+	db := Conf.DbConfig.New().Model(&models.SysTree{}) //.Where("p_id=0")
 	db.Count(&resp.Total)
 	req.Page -= 1 //分页查询页码减1
 	if resp.Total == 0 {
 		return nil
 	}
 	db = db.Preload("Children")
-	db = db.Preload("Children.Children")
+	/*db = db.Preload("Children.Children")
 	db = db.Preload("Children.Children.Children")
-	db = db.Preload("Children.Children.Children.Children")
+	db = db.Preload("Children.Children.Children.Children")*/
 	db.Limit(int(req.Row)).Offset(int(req.Page * req.Row)).Find(&ts)
 	for _, role := range ts {
 		var r dbmodel.SysTree

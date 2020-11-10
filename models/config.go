@@ -1,6 +1,7 @@
 package models
 
 import (
+	"qshapi/threeapi/tencentcloud"
 	"qshapi/utils/mzjemail"
 	"qshapi/utils/mzjgorm"
 	"qshapi/utils/mzjjwt"
@@ -16,13 +17,14 @@ type APIConfig struct {
 	RedisConfig mzjredis.RedisConfig  `json:"redisConfig"` //redis配置
 	EmailConfig mzjemail.EmailConfig  `json:"emailConfig"`
 	WorkerId    int64                 `json:"workerId"`
-	TxOcrAPI    TxOcrAPI              `json:"txOcrApi"`    //腾讯Orcapi
+	TxOcrAPI    tencentcloud.TxOcrAPI `json:"txOcrApi"`    //腾讯Orcapi
 	WxPayConfig WxPayConfig           `json:"wxPayConfig"` //微信支付config
 	Jwt         mzjjwt.Jwt            `json:"jwt"`         //jwt
 	Services    map[string]v2.Service `json:"services"`
 	Yzm         Yzm                   `json:"yzm"`
 }
 
+/*
 //TxOcrAPI 腾讯文字OrC
 type TxOcrAPI struct {
 	Region    string `json:"region"`
@@ -30,7 +32,7 @@ type TxOcrAPI struct {
 	SecretKey string `json:"secretKey"`
 	Endpoint  string `json:"endpoint"`
 	IsDebug   bool   `json:"isDebug"` //是否为调试模式
-}
+}*/
 
 //WxPayConfig 微信支付基础配置
 type WxPayConfig struct {

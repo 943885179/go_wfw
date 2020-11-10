@@ -224,6 +224,12 @@ func Img2Base64(m image.Image) string {
 	return string(dist)
 }
 
+func ImgByPath2Base64(fileName string) string {
+	image, _ := ioutil.ReadFile(fileName)
+	imageBase64 := base64.StdEncoding.EncodeToString(image)
+	return imageBase64
+}
+
 /**
  *base64转byte
  * @Author Administrator

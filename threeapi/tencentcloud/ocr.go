@@ -1,27 +1,47 @@
 package tencentcloud
 
-
 import (
-"encoding/json"
-"fmt"
+	"encoding/json"
+	"fmt"
 	log "github.com/sirupsen/logrus"
-	"qshapi/models"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	ocr "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ocr/v20181119"
+	"qshapi/utils/mzjstruct"
 )
 
 var (
 	client *ocr.Client
 )
 
+//TxOcrAPI 腾讯文字OrC
+type TxOcrAPI struct {
+	Region    string `json:"region"`
+	SecretID  string `json:"secretId"`
+	SecretKey string `json:"secretKey"`
+	Endpoint  string `json:"endpoint"`
+	IsDebug   bool   `json:"isDebug"` //是否为调试模式
+}
+
+//OCRConfig 图像基础设置
+type OCRConfig struct {
+	ImageBase64 string `json:"ImageBase64,omitempty"` //图片base64
+	ImageURL    string `json:"ImageUrl,omitempty"`    //图片地址
+
+	Scene        string `json:"Scene,omitempty"`
+	LanguageType string `json:"LanguageType,omitempty"`
+
+	CardSide string `json:"CardSide,omitempty"`
+	Config   string `json:"Config,omitempty"`
+}
+
 //TxOcrInit 初始化
-func TxOcrInit(config models.TxOcrAPI) {
-	credential := common.NewCredential(config.SecretID, config.SecretKey)
+func (c TxOcrAPI) TxOcrInit() {
+	credential := common.NewCredential(c.SecretID, c.SecretKey)
 	cpf := profile.NewClientProfile()
-	cpf.HttpProfile.Endpoint = config.Endpoint
-	clients, err := ocr.NewClient(credential, config.Region, cpf)
+	cpf.HttpProfile.Endpoint = c.Endpoint
+	clients, err := ocr.NewClient(credential, c.Region, cpf)
 	if err != nil {
 		log.Info(fmt.Sprintf("腾讯ocrsdk初始化失败,%s", err.Error()))
 	}
@@ -30,17 +50,13 @@ func TxOcrInit(config models.TxOcrAPI) {
 }
 
 //GeneralOCR 文字识别
-func GeneralOCR(config OCRConfig, tp int) (resp *ocr.GeneralBasicOCRResponse, err error) {
-	params, err := json.Marshal(config)
-	if err != nil {
-		return resp, err
-	}
+func (c TxOcrAPI) GeneralOCR(config OCRConfig, tp int) (resp *ocr.GeneralBasicOCRResponse, err errors.TencentCloudSDKError) {
+	params, _ := json.Marshal(config)
 	request := ocr.NewGeneralBasicOCRRequest()
-	err = request.FromJsonString(string(params))
-	if err != nil {
-		return resp, err
-	}
-	return client.GeneralBasicOCR(request)
+	request.FromJsonString(string(params))
+	resp, x := client.GeneralBasicOCR(request)
+	mzjstruct.CopyStruct(&x, &err)
+	return resp, err
 	/*switch tp {
 	case 1:
 		request = ocr.NewGeneralFastOCRRequest() //高速版
@@ -63,22 +79,17 @@ func GeneralOCR(config OCRConfig, tp int) (resp *ocr.GeneralBasicOCRResponse, er
 }
 
 //IDCardOCR 身份证验证
-func IDCardOCR(config OCRConfig) (resp *ocr.IDCardOCRResponse, err error) {
+func (c TxOcrAPI) IDCardOCR(config OCRConfig) (resp *ocr.IDCardOCRResponse, err errors.TencentCloudSDKError) {
 	request := ocr.NewIDCardOCRRequest()
-	params, err := json.Marshal(config)
-	if err != nil {
-		return resp, err
-	}
-	err = request.FromJsonString(string(params))
-	if err != nil {
-		return resp, err
-	}
-	fmt.Println("当前客户端检测", client)
-	return client.IDCardOCR(request)
+	params, _ := json.Marshal(config)
+	request.FromJsonString(string(params))
+	resp, x := client.IDCardOCR(request)
+	mzjstruct.CopyStruct(&x, &err)
+	return resp, err
 }
 
 //Bizlicense 营业执照
-func Bizlicense(config OCRConfig) (resp *ocr.BizLicenseOCRResponse, err error) {
+func (c TxOcrAPI) Bizlicense(config OCRConfig) (resp *ocr.BizLicenseOCRResponse, err error) {
 	request := ocr.NewBizLicenseOCRRequest()
 	params, err := json.Marshal(config)
 	if err != nil {
@@ -92,7 +103,7 @@ func Bizlicense(config OCRConfig) (resp *ocr.BizLicenseOCRResponse, err error) {
 }
 
 //EnterpriseLicense 企业证照识别 支持智能化识别各类企业登记证书、许可证书、企业执照、三证合一类证书，结构化输出统一社会信用代码、公司名称、法定代表人、公司地址、注册资金、企业类型、经营范围等关键字段
-func EnterpriseLicense(config OCRConfig) (resp *ocr.EnterpriseLicenseOCRResponse, err error) {
+func (c TxOcrAPI) EnterpriseLicense(config OCRConfig) (resp *ocr.EnterpriseLicenseOCRResponse, err error) {
 	request := ocr.NewEnterpriseLicenseOCRRequest()
 	params, err := json.Marshal(config)
 	if err != nil {
@@ -106,7 +117,7 @@ func EnterpriseLicense(config OCRConfig) (resp *ocr.EnterpriseLicenseOCRResponse
 }
 
 //BanckCard 银行卡识别
-func BanckCard(config OCRConfig) (resp *ocr.BankCardOCRResponse, err error) {
+func (c TxOcrAPI) BanckCard(config OCRConfig) (resp *ocr.BankCardOCRResponse, err error) {
 	request := ocr.NewBankCardOCRRequest()
 	params, err := json.Marshal(config)
 	if err != nil {
@@ -115,19 +126,6 @@ func BanckCard(config OCRConfig) (resp *ocr.BankCardOCRResponse, err error) {
 	err = request.FromJsonString(string(params))
 	return client.BankCardOCR(request)
 }
-
-//OCRConfig 图像基础设置
-type OCRConfig struct {
-	ImageBase64 string `json:"ImageBase64,omitempty"`
-	ImageURL    string `json:"ImageUrl,omitempty"`
-
-	Scene        string `json:"Scene,omitempty"`
-	LanguageType string `json:"LanguageType,omitempty"`
-
-	CardSide string `json:"CardSide,omitempty"`
-	Config   string `json:"Config,omitempty"`
-}
-
 func main() {
 
 	credential := common.NewCredential(
@@ -155,4 +153,3 @@ func main() {
 	}
 	fmt.Printf("%s", response.ToJsonString())
 }
-

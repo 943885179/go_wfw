@@ -62,6 +62,7 @@ func (a *Api) ApiListByUser(req *dbmodel.SysUser, resp *dbmodel.OnlyApi) error {
 }
 
 func (a *Api) ApiById(id *dbmodel.Id, api *dbmodel.SysApi) error {
+
 	return Conf.DbConfig.New().Model(&models.SysApi{}).First(api, id.Id).Error
 }
 
