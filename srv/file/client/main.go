@@ -81,6 +81,9 @@ func SrvGin() *gin.Engine {
 		//file.GET("verifyCaptcha", verifyCaptcha)
 
 		r.POST("idcardUpload", idcardUpload)
+		r.POST("banckCardUpload", banckCardUpload)
+		r.POST("bizlicenseUpload", bizlicenseUpload)
+		r.POST("enterpriseLicenseUpload", enterpriseLicenseUpload)
 	}
 	return g
 }
@@ -197,44 +200,6 @@ func upload(c *gin.Context) {
 	result, err := client.UploadFile(context.Background(), req)
 	s, err := client.GetFile(context.TODO(), result)
 	resp.MicroResp(c, s, err)
-}
-
-/**
- * @Author mzj
- * @Description 身份证识别
- * @Date 下午 1:57 2020/11/5 0005
- * @Param
- * @return
- **/
-func idcardUpload(c *gin.Context) {
-	f, err := c.FormFile("file")
-	if err != nil {
-		resp.APIError(c, "请选择上传文件")
-		return
-	}
-	req := fileAttribute(c, f, 0)
-	if err := uploadFile(c, f, req); err != nil {
-		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
-		return
-	}
-	result, err := client.UploadFile(context.Background(), req)
-	if err != nil {
-		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
-		return
-	}
-	img, err := client.GetFile(context.TODO(), result) // 得到图片的基本信息
-	if err != nil {
-		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
-		return
-	}
-	conf.TxOcrAPI.TxOcrInit()
-	ocr, errs := conf.TxOcrAPI.IDCardOCR(tencentcloud.OCRConfig{ImageBase64: mzjimg.ImgByPath2Base64(path.Join(img.Path, img.Name))})
-	if errs.Message != "" {
-		resp.APIError(c, fmt.Sprintf("识别失败！%s", errs.Message))
-		return
-	}
-
-	resp.APIOK(c, gin.H{"img": img, "ocr": ocr})
 }
 
 /**
@@ -369,3 +334,153 @@ func verifyCaptcha(c *gin.Context) {
 	apiresp.APIOK(c, b)
 }
 */
+
+/**
+ * @Author mzj
+ * @Description 身份证识别
+ * @Date 下午 1:57 2020/11/5 0005
+ * @Param
+ * @return
+ **/
+func idcardUpload(c *gin.Context) {
+	f, err := c.FormFile("file")
+	if err != nil {
+		resp.APIError(c, "请选择上传文件")
+		return
+	}
+	req := fileAttribute(c, f, 0)
+	if err := uploadFile(c, f, req); err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	result, err := client.UploadFile(context.Background(), req)
+	if err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	img, err := client.GetFile(context.TODO(), result) // 得到图片的基本信息
+	if err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	conf.TxOcrAPI.TxOcrInit()
+	ocr, errs := conf.TxOcrAPI.IDCardOCR(tencentcloud.OCRConfig{ImageBase64: mzjimg.ImgByPath2Base64(path.Join(img.Path, img.Name))})
+	if errs.Message != "" {
+		resp.APIError(c, fmt.Sprintf("识别失败！%s", errs.Message))
+		return
+	}
+
+	resp.APIOK(c, gin.H{"img": img, "ocr": ocr})
+}
+
+/**
+ * @Author mzj
+ * @Description 营业执照识别
+ * @Date 下午 1:57 2020/11/5 0005
+ * @Param
+ * @return
+ **/
+func bizlicenseUpload(c *gin.Context) {
+	f, err := c.FormFile("file")
+	if err != nil {
+		resp.APIError(c, "请选择上传文件")
+		return
+	}
+	req := fileAttribute(c, f, 0)
+	if err := uploadFile(c, f, req); err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	result, err := client.UploadFile(context.Background(), req)
+	if err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	img, err := client.GetFile(context.TODO(), result) // 得到图片的基本信息
+	if err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	conf.TxOcrAPI.TxOcrInit()
+	ocr, errs := conf.TxOcrAPI.Bizlicense(tencentcloud.OCRConfig{ImageBase64: mzjimg.ImgByPath2Base64(path.Join(img.Path, img.Name))})
+	if errs.Message != "" {
+		resp.APIError(c, fmt.Sprintf("识别失败！%s", errs.Message))
+		return
+	}
+
+	resp.APIOK(c, gin.H{"img": img, "ocr": ocr})
+}
+
+/**
+ * @Author mzj
+ * @Description 银行卡识别
+ * @Date 下午 1:57 2020/11/5 0005
+ * @Param
+ * @return
+ **/
+func banckCardUpload(c *gin.Context) {
+	f, err := c.FormFile("file")
+	if err != nil {
+		resp.APIError(c, "请选择上传文件")
+		return
+	}
+	req := fileAttribute(c, f, 0)
+	if err := uploadFile(c, f, req); err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	result, err := client.UploadFile(context.Background(), req)
+	if err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	img, err := client.GetFile(context.TODO(), result) // 得到图片的基本信息
+	if err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	conf.TxOcrAPI.TxOcrInit()
+	ocr, errs := conf.TxOcrAPI.BanckCard(tencentcloud.OCRConfig{ImageBase64: mzjimg.ImgByPath2Base64(path.Join(img.Path, img.Name))})
+	if errs.Message != "" {
+		resp.APIError(c, fmt.Sprintf("识别失败！%s", errs.Message))
+		return
+	}
+	resp.APIOK(c, gin.H{"img": img, "ocr": ocr})
+}
+
+/**
+ * @Author mzj
+ * @Description 企业信息识别
+ * @Date 下午 1:57 2020/11/5 0005
+ * @Param
+ * @return
+ **/
+func enterpriseLicenseUpload(c *gin.Context) {
+	f, err := c.FormFile("file")
+	if err != nil {
+		resp.APIError(c, "请选择上传文件")
+		return
+	}
+	req := fileAttribute(c, f, 0)
+	if err := uploadFile(c, f, req); err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	result, err := client.UploadFile(context.Background(), req)
+	if err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	img, err := client.GetFile(context.TODO(), result) // 得到图片的基本信息
+	if err != nil {
+		resp.APIError(c, fmt.Sprintf("上传失败!%s", err.Error()))
+		return
+	}
+	conf.TxOcrAPI.TxOcrInit()
+	ocr, errs := conf.TxOcrAPI.EnterpriseLicense(tencentcloud.OCRConfig{ImageBase64: mzjimg.ImgByPath2Base64(path.Join(img.Path, img.Name))})
+	if errs.Message != "" {
+		resp.APIError(c, fmt.Sprintf("识别失败！%s", errs.Message))
+		return
+	}
+	resp.APIOK(c, gin.H{"img": img, "ocr": ocr})
+}

@@ -89,42 +89,33 @@ func (c TxOcrAPI) IDCardOCR(config OCRConfig) (resp *ocr.IDCardOCRResponse, err 
 }
 
 //Bizlicense 营业执照
-func (c TxOcrAPI) Bizlicense(config OCRConfig) (resp *ocr.BizLicenseOCRResponse, err error) {
+func (c TxOcrAPI) Bizlicense(config OCRConfig) (resp *ocr.BizLicenseOCRResponse, err errors.TencentCloudSDKError) {
 	request := ocr.NewBizLicenseOCRRequest()
-	params, err := json.Marshal(config)
-	if err != nil {
-		return resp, err
-	}
-	err = request.FromJsonString(string(params))
-	if err != nil {
-		return resp, err
-	}
-	return client.BizLicenseOCR(request)
+	params, _ := json.Marshal(config)
+	request.FromJsonString(string(params))
+	resp, x := client.BizLicenseOCR(request)
+	mzjstruct.CopyStruct(&x, &err)
+	return resp, err
 }
 
 //EnterpriseLicense 企业证照识别 支持智能化识别各类企业登记证书、许可证书、企业执照、三证合一类证书，结构化输出统一社会信用代码、公司名称、法定代表人、公司地址、注册资金、企业类型、经营范围等关键字段
-func (c TxOcrAPI) EnterpriseLicense(config OCRConfig) (resp *ocr.EnterpriseLicenseOCRResponse, err error) {
+func (c TxOcrAPI) EnterpriseLicense(config OCRConfig) (resp *ocr.EnterpriseLicenseOCRResponse, err errors.TencentCloudSDKError) {
 	request := ocr.NewEnterpriseLicenseOCRRequest()
-	params, err := json.Marshal(config)
-	if err != nil {
-		return resp, err
-	}
-	err = request.FromJsonString(string(params))
-	if err != nil {
-		return resp, err
-	}
-	return client.EnterpriseLicenseOCR(request)
+	params, _ := json.Marshal(config)
+	request.FromJsonString(string(params))
+	resp, x := client.EnterpriseLicenseOCR(request)
+	mzjstruct.CopyStruct(&x, &err)
+	return resp, err
 }
 
 //BanckCard 银行卡识别
-func (c TxOcrAPI) BanckCard(config OCRConfig) (resp *ocr.BankCardOCRResponse, err error) {
+func (c TxOcrAPI) BanckCard(config OCRConfig) (resp *ocr.BankCardOCRResponse, err errors.TencentCloudSDKError) {
 	request := ocr.NewBankCardOCRRequest()
-	params, err := json.Marshal(config)
-	if err != nil {
-		return resp, err
-	}
-	err = request.FromJsonString(string(params))
-	return client.BankCardOCR(request)
+	params, _ := json.Marshal(config)
+	request.FromJsonString(string(params))
+	resp, x := client.BankCardOCR(request)
+	mzjstruct.CopyStruct(&x, &err)
+	return resp, err
 }
 func main() {
 

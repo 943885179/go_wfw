@@ -26,20 +26,33 @@ type Model struct {
  * @return
  **/
 type Qualification struct {
-	Id                   string                `gorm:"primary_key;type:varchar(50);"`
-	QuaTypeId            string                `gorm:"index;column:qua_type_id;not null;comment:'资质类型（身份证正面，身份证背面，营业执照，。。。）'" json:"qua_type_id"`
-	QuaType              SysTree               `gorm:"foreignKey:qua_type_id" json:"qua_type"`
-	UserId               string                `gorm:"index;column:user_id;not null;comment:'用户ID'" json:"user_id"`
-	User                 SysUser               `gorm:"foreignKey:user_id"`
-	QuaFileId            string                `gorm:"index;column:qua_file_id;not null;comment:'资质文件对应id'" json:"qua_file_id"`
-	QuaFile              SysFile               `gorm:"foreignKey:qua_file_id" json:"qua_file"`
-	QuaExplain           string                `gorm:"column:qua_explain;comment:'资质描述'" json:"qua_explain"`
-	StartTime            time.Time             `gorm:"column:start_time;comment:'注册日期'" json:"start_time"`
-	EndTime              time.Time             `gorm:"column:end_time;comment:'过期日期'" json:"end_time"`
-	QuaNumber            string                `gorm:"column:qua_number;comment:'资质编号'" json:"qua_number"`
-	QualificationsRanges []QualificationsRange `gorm:"foreignKey:qualifications_id"`
+	Id string `gorm:"primary_key;type:varchar(50);"`
+	//QuaTypeId            string                `gorm:"index;column:qua_type_id;not null;comment:'资质类型（身份证正面，身份证背面，营业执照，。。。）'" json:"qua_type_id"`
+	//QuaType              SysTree               `gorm:"foreignKey:qua_type_id" json:"qua_type"`
+	QuaType dbmodel.QuaType `column:qua_type;comment:'资质编号'" json:"qua_type"`
+	UserId  string          `gorm:"index;column:user_id;not null;comment:'用户ID'" json:"user_id"`
+	User    SysUser         `gorm:"foreignKey:user_id"`
+	//QuaFileId            string                `gorm:"index;column:qua_file_id;not null;comment:'资质文件对应id'" json:"qua_file_id"`
+	//QuaFile              SysFile               `gorm:"foreignKey:qua_file_id" json:"qua_file"`
+	QuaFiles   []SysFile `gorm:"many2many:qualification_files" json:"qua_files"` //资质文件
+	QuaExplain string    `gorm:"column:qua_explain;comment:'资质描述'" json:"qua_explain"`
+	StartTime  time.Time `gorm:"column:start_time;comment:'注册日期'" json:"start_time"`
+	EndTime    time.Time `gorm:"column:end_time;comment:'过期日期'" json:"end_time"`
+	QuaNumber  string    `gorm:"column:qua_number;comment:'资质编号'" json:"qua_number"`
+	// QualificationsRanges []QualificationsRange `gorm:"foreignKey:qualifications_id"`
 	Model
 }
+
+//QualificationsRange 资质对应范围
+/*type QualificationsRange struct {
+	Id               string  `gorm:"primary_key;type:varchar(50);"`
+	QualificationsId string  `gorm:"index;column:qualifications_id;not null;comment:'资质对应范围ID'" json:"qualifications_id"`
+	GpmId            string  `gorm:"index;column:gpm_id;not null;comment:'资质类型（生产范围剂型，经营范围，诊疗机构等）'" json:"gpm_id"`
+	Gpm              SysTree `gorm:"foreignKey:gpm_id"`
+	QualId           string  `gorm:"index;column:qual_id;not null;comment:'资质范围类型（根据资质类型生产的明细 中成药，等）'"json:"qual_id"`
+	Qual             SysTree `gorm:"foreignKey:qual_id"`
+	Model
+}*/
 
 //SysUser 用户表
 type SysUser struct {
@@ -76,7 +89,7 @@ type SysUser struct {
 	Roles             []SysRole          `gorm:"many2many:sys_user_role" json:"roles"`
 	Groups            []SysGroup         `gorm:"many2many:sys_user_group" json:"groups"`
 	LogisticsAddresss []LogisticsAddress `gorm:"foreignKey:user_id" json:"logistics_addresss"` //地址管理
-	Qualifications    []Qualification    `gorm:"foreignKey:user_id" json:"qualifications"`
+	Qualifications    []Qualification    `gorm:"foreignKey:user_id" json:"qualifications"`     //用户资质管理
 	UserType          dbmodel.UserType   `gorm:"column:user_type;comment:'用户类型'" json:"user_type"`
 
 	//其他返回的实体，处理过的数据
@@ -196,8 +209,8 @@ type SysShop struct {
 	Id          string `gorm:"primary_key;type:varchar(50);"`
 	ShopName    string `gorm:"column:shop_name;not null;comment:'店铺名称';unique" json:"shop_name"`
 	ShopExplain string `gorm:"column:shop_explain;size:800;comment:'公告描述'" json:"shop_explain"`
-	IsSht       bool   `gorm:"column:is_sht;not null;default:0;comment:'四海通认证状态'" json:"is_sht"`
-	ShtExplain  string `gorm:"column:sht_explain;comment:'四海通认证返回'" json:"sht_explain"`
+	//IsSht       bool   `gorm:"column:is_sht;not null;default:0;comment:'四海通认证状态'" json:"is_sht"`
+	//ShtExplain  string `gorm:"column:sht_explain;comment:'四海通认证返回'" json:"sht_explain"`
 
 	AppId     string `gorm:"column:app_id;" json:"app_id"`
 	Appsecret string `gorm:"column:appsecret;" json:"appsecret"`
@@ -215,9 +228,11 @@ type SysShop struct {
 	LogoId string  `gorm:"index;column:logo_id;comment:'店铺logo'" json:"logo_id"`
 	Logo   SysFile `gorm:"foreignKey:logo_id" json:"logo"`
 
-	Classify []SysTree `gorm:"many2many:sys_shop_classify" json:"classify"` //商家分类
-	User     []SysUser `gorm:"many2many:sys_shop_user" json:"user"`
-	Imgs     []SysFile `gorm:"many2many:sys_shop_imgs" json:"imgs"`
+	Classify       []SysTree       `gorm:"many2many:sys_shop_classify" json:"classify"` //商家分类
+	User           []SysUser       `gorm:"many2many:sys_shop_user" json:"user"`
+	Imgs           []SysFile       `gorm:"many2many:sys_shop_imgs" json:"imgs"`
+	Qualifications []Qualification `gorm:"foreignKey:user_id" json:"qualifications"` //店铺资质管理
+
 	Model
 }
 
@@ -347,17 +362,6 @@ type PartServant struct {
 	PartPriceTypeId string    `gorm:"index;column:part_price_type_id;not null;comment:'费用类型（平台推广费。。。）'" json:"part_price_type_id"`
 	PartPriceType   SysTree   `gorm:"foreignKey:part_price_type_id"`
 	Area            []SysTree `gorm:"many2many:part_servant_"`
-	Model
-}
-
-//QualificationsRange 资质对应范围
-type QualificationsRange struct {
-	Id               string  `gorm:"primary_key;type:varchar(50);"`
-	QualificationsId string  `gorm:"index;column:qualifications_id;not null;comment:'资质对应范围ID'" json:"qualifications_id"`
-	GpmId            string  `gorm:"index;column:gpm_id;not null;comment:'资质类型（生产范围剂型，经营范围，诊疗机构等）'" json:"gpm_id"`
-	Gpm              SysTree `gorm:"foreignKey:gpm_id"`
-	QualId           string  `gorm:"index;column:qual_id;not null;comment:'资质范围类型（根据资质类型生产的明细 中成药，等）'"json:"qual_id"`
-	Qual             SysTree `gorm:"foreignKey:qual_id"`
 	Model
 }
 

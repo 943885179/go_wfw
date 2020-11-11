@@ -69,7 +69,7 @@ func dbInit() {
 		&models.ProductLog{},
 		&models.PartServant{},
 		&models.Qualification{},
-		&models.QualificationsRange{},
+		//&models.QualificationsRange{},
 		&models.Express{},
 		&models.Freight{},
 		&models.Orders{},

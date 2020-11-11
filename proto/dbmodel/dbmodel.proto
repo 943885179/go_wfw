@@ -22,6 +22,36 @@ enum FileType{
   PRODUCTIMG=4;//商品图片
   OTHERIMG=5;//其他图片
 }
+enum QuaType{//资质类型 参照http://www.twgrace.cn/chanpinrenzheng/p12.html
+  IDCARD=0;//身份证
+  BANCKCARD=1;//银行卡
+  BIZLICENSE=2;//营业执照证书(三证合一)
+  DMC=3;//药品生产许可证
+  DSC=4;//药品经营许可证
+  GSP=5;//药品经营质量管理规范
+  GMP=6;//药品生产质量管理规范
+  PPC=7;//医疗机构制剂许可证
+  IDL=8;//进口药品注册证书
+  CT=9;//临床试验
+  NDC=10;//新药证书
+  ATTORNEY=11;//授权委托书
+  GTQ=12;//一般纳税人资质证明
+  SQC=13;//SC/QC食品生产许可证
+  QS=14;//食品质量安全生产许可证
+  OIML=15;//OIML即国际法制计量组织,任何企业、事业单位要求获得计量器具的OIML证书，可向OIML中国秘书处提出申请。
+  HZP=16;//化妆品生产许可
+  GMPC=17;//化妆品GMPC是以《化妆品产品的良好生产规范----顾客的健康保护》(简称GMPC)为标准，基于对顾客的健康保护为出发点的第三方认证。对于在美国和欧盟市场上销售的化妆品，无论在国内生产还是从国外进口，都必须符合美国联邦化妆品法
+  THREEC=18;//3C认证的全称为“强制性产品认证制度”，它是中国政府为保护消费者人身安全和国家安全、加强产品质量管理、依照法律法规实施的一种产品合格评定制度。所谓3C认证，就是中国强制性产品认证制度，英文名称China Compulsory
+  KHXKZ=19;//开户许可证
+  SHOPURL=20;//网店完整的域名截图照片（含店铺信息）
+  BIZLICENSEADREES=21;//商户营业场所照片
+  OTHER=22;//其他资质
+  OTHERONE=111;
+  OTHERTWO=112;
+  OTHERTHREE=113;
+  OTHERFOUR=114;
+  OTHERFIVE=115;
+}
 
 message SysUser {//用户表
   string  id = 1;
@@ -198,10 +228,11 @@ message Qualification {
   bool is_default = 2;
   string user_id = 3;
   SysUser user=4;
-  string qua_type_id = 5;
-  SysTree qua_type=6;
+  //string qua_type_id = 5;
+  // SysTree qua_type=6;
+  QuaType qua_type=5;
   string qua_file_id = 7;
-  SysTree qua_file=8;
+  SysFile qua_file=8;
 
   string qua_explain = 9;
   string qua_number = 10;
