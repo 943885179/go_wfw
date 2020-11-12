@@ -11,11 +11,16 @@ import (
 type TimeFormat int
 
 const (
-	timeTeplate1 TimeFormat = iota
-	timeTeplate2
-	timeTeplate3
-	timeTeplate4
-	timeTeplate5
+	YYYYMMDDHHmmss_HORIZONTAL TimeFormat = iota
+	YYYYMMDDHHmmss_SLASH
+	//yyyy-MM-dd
+	YYYYMMDD_HORIZONTAL
+	//yyyy/MM/dd
+	YYYYMMDD_SLASH
+	//HH:mm:ss
+	HHmmss
+	//yyyy.MM.dd
+	YYYYMMDD_SPOT
 )
 
 func (t TimeFormat) String() string {
@@ -30,6 +35,8 @@ func (t TimeFormat) String() string {
 		return "2006/01/02" //yyyy/MM/dd
 	case 4:
 		return "15:04:05" //HH:mm:ss
+	case 5:
+		return "2006.01.02" //yyyy.MM.dd
 	default:
 		return "时间格式未定义"
 	}

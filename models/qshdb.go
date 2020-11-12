@@ -26,19 +26,14 @@ type Model struct {
  * @return
  **/
 type Qualification struct {
-	Id string `gorm:"primary_key;type:varchar(50);"`
-	//QuaTypeId            string                `gorm:"index;column:qua_type_id;not null;comment:'资质类型（身份证正面，身份证背面，营业执照，。。。）'" json:"qua_type_id"`
-	//QuaType              SysTree               `gorm:"foreignKey:qua_type_id" json:"qua_type"`
-	QuaType dbmodel.QuaType `column:qua_type;comment:'资质编号'" json:"qua_type"`
-	UserId  string          `gorm:"index;column:user_id;not null;comment:'用户ID'" json:"user_id"`
-	User    SysUser         `gorm:"foreignKey:user_id"`
-	//QuaFileId            string                `gorm:"index;column:qua_file_id;not null;comment:'资质文件对应id'" json:"qua_file_id"`
-	//QuaFile              SysFile               `gorm:"foreignKey:qua_file_id" json:"qua_file"`
-	QuaFiles   []SysFile `gorm:"many2many:qualification_files" json:"qua_files"` //资质文件
-	QuaExplain string    `gorm:"column:qua_explain;comment:'资质描述'" json:"qua_explain"`
-	StartTime  time.Time `gorm:"column:start_time;comment:'注册日期'" json:"start_time"`
-	EndTime    time.Time `gorm:"column:end_time;comment:'过期日期'" json:"end_time"`
-	QuaNumber  string    `gorm:"column:qua_number;comment:'资质编号'" json:"qua_number"`
+	Id         string          `gorm:"primary_key;type:varchar(50);"`
+	QuaType    dbmodel.QuaType `gorm:"column:qua_type;comment:'资质类型'" json:"qua_type"`
+	UserId     string          `gorm:"index;column:user_id;not null;comment:'用户ID'" json:"user_id"`
+	QuaFiles   []SysFile       `gorm:"many2many:qualification_files" json:"qua_files"` //资质文件
+	QuaExplain string          `gorm:"column:qua_explain;type:longblob;comment:'资质描述'" json:"qua_explain"`
+	StartTime  time.Time       `gorm:"column:start_time;comment:'注册日期'" json:"start_time"`
+	EndTime    time.Time       `gorm:"column:end_time;comment:'过期日期'" json:"end_time"`
+	QuaNumber  string          `gorm:"column:qua_number;comment:'资质编号'" json:"qua_number"`
 	// QualificationsRanges []QualificationsRange `gorm:"foreignKey:qualifications_id"`
 	Model
 }

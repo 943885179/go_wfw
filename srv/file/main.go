@@ -28,15 +28,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-func majorityElement(nums []int) int {
-	var m map[int]int
-	for _, r := range nums {
-		m[r] = m[r] + 1
-	}
-	for x, y := range m {
-		if y > len(nums)/2 {
-			return x
-		}
-	}
-	return 0
-}

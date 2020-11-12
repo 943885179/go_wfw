@@ -46,11 +46,6 @@ enum QuaType{//资质类型 参照http://www.twgrace.cn/chanpinrenzheng/p12.html
   SHOPURL=20;//网店完整的域名截图照片（含店铺信息）
   BIZLICENSEADREES=21;//商户营业场所照片
   OTHER=22;//其他资质
-  OTHERONE=111;
-  OTHERTWO=112;
-  OTHERTHREE=113;
-  OTHERFOUR=114;
-  OTHERFIVE=115;
 }
 
 message SysUser {//用户表
@@ -228,17 +223,14 @@ message Qualification {
   bool is_default = 2;
   string user_id = 3;
   SysUser user=4;
-  //string qua_type_id = 5;
-  // SysTree qua_type=6;
   QuaType qua_type=5;
-  string qua_file_id = 7;
-  SysFile qua_file=8;
+  repeated SysFile qua_files=6;
 
-  string qua_explain = 9;
-  string qua_number = 10;
+  string qua_explain = 7;
+  string qua_number = 8;
 
-  google.protobuf.Timestamp start_times=11;
-  google.protobuf.Timestamp end_times=12;
+  string start_time=9;
+  string end_time=10;
 
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
