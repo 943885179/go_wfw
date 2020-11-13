@@ -28,7 +28,8 @@ type Model struct {
 type Qualification struct {
 	Id         string          `gorm:"primary_key;type:varchar(50);"`
 	QuaType    dbmodel.QuaType `gorm:"column:qua_type;comment:'资质类型'" json:"qua_type"`
-	UserId     string          `gorm:"index;column:user_id;not null;comment:'用户ID'" json:"user_id"`
+	UserId     string          `gorm:"index;column:user_id;comment:'用户ID'" json:"user_id"`
+	ShopId     string          `gorm:"index;column:shop_id;comment:'店铺ID'" json:"shop_id"`
 	QuaFiles   []SysFile       `gorm:"many2many:qualification_files" json:"qua_files"` //资质文件
 	QuaExplain string          `gorm:"column:qua_explain;type:longblob;comment:'资质描述'" json:"qua_explain"`
 	StartTime  time.Time       `gorm:"column:start_time;comment:'注册日期'" json:"start_time"`
@@ -226,8 +227,7 @@ type SysShop struct {
 	Classify       []SysTree       `gorm:"many2many:sys_shop_classify" json:"classify"` //商家分类
 	User           []SysUser       `gorm:"many2many:sys_shop_user" json:"user"`
 	Imgs           []SysFile       `gorm:"many2many:sys_shop_imgs" json:"imgs"`
-	Qualifications []Qualification `gorm:"foreignKey:user_id" json:"qualifications"` //店铺资质管理
-
+	Qualifications []Qualification `gorm:"foreignKey:shop_id" json:"qualifications"` //店铺资质管理
 	Model
 }
 

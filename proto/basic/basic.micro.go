@@ -76,6 +76,8 @@ type BasicSrvService interface {
 	DelShop(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
 	ShopList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
 	ShopById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.SysShop, error)
+	EditQualifications(ctx context.Context, in *dbmodel.Qualification, opts ...client.CallOption) (*dbmodel.Id, error)
+	DelQualifications(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
 }
 
 type basicSrvService struct {
@@ -496,6 +498,26 @@ func (c *basicSrvService) ShopById(ctx context.Context, in *dbmodel.Id, opts ...
 	return out, nil
 }
 
+func (c *basicSrvService) EditQualifications(ctx context.Context, in *dbmodel.Qualification, opts ...client.CallOption) (*dbmodel.Id, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.EditQualifications", in)
+	out := new(dbmodel.Id)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *basicSrvService) DelQualifications(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.DelQualifications", in)
+	out := new(dbmodel.Id)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for BasicSrv service
 
 type BasicSrvHandler interface {
@@ -539,6 +561,8 @@ type BasicSrvHandler interface {
 	DelShop(context.Context, *dbmodel.Id, *dbmodel.Id) error
 	ShopList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
 	ShopById(context.Context, *dbmodel.Id, *dbmodel.SysShop) error
+	EditQualifications(context.Context, *dbmodel.Qualification, *dbmodel.Id) error
+	DelQualifications(context.Context, *dbmodel.Id, *dbmodel.Id) error
 }
 
 func RegisterBasicSrvHandler(s server.Server, hdlr BasicSrvHandler, opts ...server.HandlerOption) error {
@@ -583,6 +607,8 @@ func RegisterBasicSrvHandler(s server.Server, hdlr BasicSrvHandler, opts ...serv
 		DelShop(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
 		ShopList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
 		ShopById(ctx context.Context, in *dbmodel.Id, out *dbmodel.SysShop) error
+		EditQualifications(ctx context.Context, in *dbmodel.Qualification, out *dbmodel.Id) error
+		DelQualifications(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
 	}
 	type BasicSrv struct {
 		basicSrv
@@ -753,4 +779,12 @@ func (h *basicSrvHandler) ShopList(ctx context.Context, in *dbmodel.PageReq, out
 
 func (h *basicSrvHandler) ShopById(ctx context.Context, in *dbmodel.Id, out *dbmodel.SysShop) error {
 	return h.BasicSrvHandler.ShopById(ctx, in, out)
+}
+
+func (h *basicSrvHandler) EditQualifications(ctx context.Context, in *dbmodel.Qualification, out *dbmodel.Id) error {
+	return h.BasicSrvHandler.EditQualifications(ctx, in, out)
+}
+
+func (h *basicSrvHandler) DelQualifications(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error {
+	return h.BasicSrvHandler.DelQualifications(ctx, in, out)
 }

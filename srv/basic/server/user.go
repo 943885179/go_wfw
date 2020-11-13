@@ -8,10 +8,6 @@ import (
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjmd5"
 	"qshapi/utils/mzjstruct"
-	"qshapi/utils/mzjtime"
-	"qshapi/utils/mzjuuid"
-	"strings"
-	"time"
 )
 
 type IUser interface {
@@ -52,11 +48,7 @@ func (u User) EditUser(req *dbmodel.SysUser, resp *dbmodel.Id) error {
 		}
 		return err
 	}
-	oldUser := &models.SysUser{}
-	mzjstruct.CopyStruct(user, oldUser)
-
 	resp.Id = user.Id
-
 	db.Model(&user).Association("Groups").Clear()
 	mzjstruct.CopyStruct(req, user)
 	if req.Groups != nil && len(req.Groups) != 0 {
@@ -68,60 +60,10 @@ func (u User) EditUser(req *dbmodel.SysUser, resp *dbmodel.Id) error {
 			db.Model(&models.SysGroup{}).Where(ids).Find(&user.Groups)
 		}
 	}
-	db.Model(user).Association("Qualifications").Clear()
+	var q = NewQualifications()
 	for _, qualification := range req.Qualifications { //添加资质
-		if len(strings.Trim(qualification.QuaNumber, "")) == 0 { //如果没有设置资质编号设置默认值
-			qualification.QuaNumber = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
-		}
-		var StartTime, EndTime time.Time
-		if strings.Contains(qualification.StartTime, "-") {
-			StartTime, _ = mzjtime.ParseInlocation(qualification.StartTime, mzjtime.YYYYMMDD_HORIZONTAL)
-		} else if strings.Contains(qualification.StartTime, "/") {
-			StartTime, _ = mzjtime.ParseInlocation(qualification.StartTime, mzjtime.YYYYMMDD_SLASH)
-		} else if strings.Contains(qualification.StartTime, ".") {
-			StartTime, _ = mzjtime.ParseInlocation(qualification.StartTime, mzjtime.YYYYMMDD_SPOT)
-		}
-		if strings.Contains(qualification.EndTime, "-") {
-			EndTime, _ = mzjtime.ParseInlocation(qualification.EndTime, mzjtime.YYYYMMDD_HORIZONTAL)
-		} else if strings.Contains(qualification.StartTime, "/") {
-			EndTime, _ = mzjtime.ParseInlocation(qualification.EndTime, mzjtime.YYYYMMDD_SLASH)
-		} else if strings.Contains(qualification.StartTime, ".") {
-			EndTime, _ = mzjtime.ParseInlocation(qualification.EndTime, mzjtime.YYYYMMDD_SPOT)
-		}
-		var qf []models.SysFile
-		mzjstruct.CopyStruct(&qualification.QuaFiles, &qf)
-		isAdd := true
-		for _, q := range oldUser.Qualifications {
-			if qualification.QuaType == q.QuaType { //类型相同 修改
-				//db.Model(&models.Qualification{}).Where(user.Qualifications[i].Id).Association("QuaFiles").Clear() //清楚资质和资源关系
-				qua := &models.Qualification{}
-				_ = db.First(qua, q.Id).Error
-				db.Model(qua).Association("QuaFiles").Clear()
-				isAdd = false
-				qua.StartTime = StartTime
-				qua.EndTime = EndTime
-				qua.UserId = user.Id
-				qua.QuaExplain = qualification.QuaExplain
-				qua.QuaFiles = qf
-				qua.QuaNumber = qualification.QuaNumber
-				db.Updates(qua)
-				break
-			}
-		}
-		if isAdd {
-			qua := &models.Qualification{
-				Id:         mzjuuid.WorkerDefaultStr(Conf.WorkerId),
-				StartTime:  StartTime,
-				EndTime:    EndTime,
-				UserId:     user.Id,
-				QuaType:    qualification.QuaType,
-				QuaExplain: qualification.QuaExplain,
-				QuaFiles:   qf,
-				QuaNumber:  qualification.QuaNumber,
-			}
-			db.Create(qua)
-		}
-		// user.Qualifications[i].QuaType = req.Qualifications[i].QuaType
+		qualification.UserId = user.Id
+		q.EditQualifications(qualification, &dbmodel.Id{})
 	}
 	return db.Updates(user).Error
 }

@@ -97,6 +97,9 @@ func SrvGin() *gin.Engine {
 		r.POST("ShopList", ShopList)
 		r.GET("/ShopById/:id", ShopById)
 
+		r.POST("EditQualifications", EditQualifications)
+		r.POST("DelQualifications", DelQualifications)
+
 		r.GET("Token", Token)
 	}
 	return g
@@ -406,5 +409,18 @@ func MenuTree(c *gin.Context) {
 
 func RoleTree(c *gin.Context) {
 	result, err := client.RoleTree(context.TODO(), &empty.Empty{})
+	resp.MicroResp(c, result, err)
+}
+func EditQualifications(c *gin.Context) {
+	req := dbmodel.Qualification{}
+	c.Bind(&req)
+	result, err := client.EditQualifications(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+
+func DelQualifications(c *gin.Context) {
+	req := dbmodel.Id{}
+	c.Bind(&req)
+	result, err := client.DelQualifications(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }

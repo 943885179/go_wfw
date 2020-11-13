@@ -11,6 +11,14 @@ import (
 type Handler struct {
 }
 
+func (h Handler) EditQualifications(ctx context.Context, qualification *dbmodel.Qualification, id *dbmodel.Id) error {
+	return server.NewQualifications().EditQualifications(qualification, id)
+}
+
+func (h Handler) DelQualifications(ctx context.Context, id *dbmodel.Id, id2 *dbmodel.Id) error {
+	return server.NewQualifications().DelQualifications(id, id2)
+}
+
 func (h Handler) MenuListByUser(ctx context.Context, user *dbmodel.SysUser, menu *dbmodel.OnlyMenu) error {
 	return server.NewMenu().MenuListByUser(user, menu)
 }
