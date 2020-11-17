@@ -12,6 +12,7 @@ import (
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjgin"
 	"qshapi/utils/mzjinit"
+	"strconv"
 )
 
 var (
@@ -62,6 +63,7 @@ func SrvGin() *gin.Engine {
 		r.POST("EditUserGroup", EditUserGroup)
 		r.POST("EditMenu", EditMenu)
 		r.POST("EditTree", EditTree)
+		r.POST("EditArea", EditArea)
 
 		r.POST("DelApi", DelApi)
 		r.POST("DelSrv", DelSrv)
@@ -69,6 +71,7 @@ func SrvGin() *gin.Engine {
 		r.POST("DelUserGroup", DelUserGroup)
 		r.POST("DelMenu", DelMenu)
 		r.POST("DelTree", DelTree)
+		r.POST("DelArea", DelArea)
 
 		r.GET("/UserById/:id", UserById)
 		r.GET("/ApiById/:id", ApiById)
@@ -77,10 +80,14 @@ func SrvGin() *gin.Engine {
 		r.GET("/UserGroupById/:id", UserGroupById)
 		r.GET("/MenuById/:id", MenuById)
 		r.GET("/TreeById/:id", TreeById)
+		r.GET("/AreaById/:id", AreaById)
 
 		r.GET("RoleTree", RoleTree)
 		r.GET("MenuTree", MenuTree)
 		r.GET("TreeTree", TreeTree)
+		r.GET("AreaTree", AreaTree)
+
+		r.GET("/TreeByType/:type", TreeByType)
 
 		r.POST("ChangePassword", ChangePassword)
 
@@ -91,6 +98,7 @@ func SrvGin() *gin.Engine {
 		r.POST("SrvList", SrvList)
 		r.POST("MenuList", MenuList)
 		r.POST("UserGroupList", UserGroupList)
+		r.POST("AreaList", AreaList)
 
 		r.POST("EditShop", EditShop)
 		r.POST("DelShop", DelShop)
@@ -375,6 +383,13 @@ func TreeById(c *gin.Context) {
 	result, err := client.TreeById(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
+func AreaById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.AreaById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
 func ApiById(c *gin.Context) {
 	req := dbmodel.Id{
 		Id: c.Param("id"),
@@ -422,5 +437,67 @@ func DelQualifications(c *gin.Context) {
 	req := dbmodel.Id{}
 	c.Bind(&req)
 	result, err := client.DelQualifications(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+
+func TreeByType(c *gin.Context) {
+	//req := basic.TreeType{}
+	//c.Bind(&req)
+	treetype, _ := strconv.Atoi(c.Param("type"))
+	req := basic.TreeType{}
+	switch treetype {
+	case int(dbmodel.TreeType_AREA):
+		req.TreeType = dbmodel.TreeType_AREA
+	case int(dbmodel.TreeType_PRD):
+		req.TreeType = dbmodel.TreeType_PRD
+	case int(dbmodel.TreeType_QUA):
+		req.TreeType = dbmodel.TreeType_QUA
+	case int(dbmodel.TreeType_USER):
+		req.TreeType = dbmodel.TreeType_USER
+	case int(dbmodel.TreeType_FILE):
+		req.TreeType = dbmodel.TreeType_FILE
+	case int(dbmodel.TreeType_DEP):
+		req.TreeType = dbmodel.TreeType_DEP
+	case int(dbmodel.TreeType_MENU):
+		req.TreeType = dbmodel.TreeType_MENU
+	case int(dbmodel.TreeType_LOGIN):
+		req.TreeType = dbmodel.TreeType_LOGIN
+	case int(dbmodel.TreeType_OTHER):
+		req.TreeType = dbmodel.TreeType_OTHER
+	default:
+		resp.APIError(c, "暂时不支持该类型")
+		return
+	}
+	result, err := client.TreeByType(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func EditArea(c *gin.Context) {
+	req := dbmodel.SysArea{}
+	c.Bind(&req)
+	result, err := client.EditArea(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func DelArea(c *gin.Context) {
+	req := dbmodel.Id{}
+	c.Bind(&req)
+	result, err := client.DelArea(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func AreaList(c *gin.Context) {
+	req := dbmodel.PageReq{}
+	c.Bind(&req)
+	result, err := client.AreaList(context.TODO(), &req)
+	var rs []dbmodel.SysArea
+	for _, any := range result.Data {
+		var r dbmodel.SysArea
+		ptypes.UnmarshalAny(any, &r)
+		rs = append(rs, r)
+	}
+	resp.MicroTotalResp(c, result.Total, rs, err)
+	//resp.MicroResp(c, result, err)
+}
+
+func AreaTree(c *gin.Context) {
+	result, err := client.AreaTree(context.TODO(), &empty.Empty{})
 	resp.MicroResp(c, result, err)
 }

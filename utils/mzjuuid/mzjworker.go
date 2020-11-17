@@ -65,6 +65,7 @@ func WorkerDefault() int64 {
 
 //返回唯一的雪花算法id
 func WorkerDefaultStr(workerid int64) string {
+	time.Sleep(1) //会生成相同id.让它等一会儿在生成
 	node, _ := NewWorker(workerid)
 	return strconv.Itoa(int(node.GetId()))
 }

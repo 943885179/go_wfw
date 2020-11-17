@@ -2,11 +2,26 @@ syntax = "proto3";
 package dbmodel;
 import public "google/protobuf/timestamp.proto";
 
+enum TreeType{
+  AREA=0;//地址
+  PRD=1;//商品类型
+  QUA=2;//资质类型
+  USER=3;//用户类型
+  FILE=4;//文件类型
+  DEP=5;//部门结构
+  MENU=6;//菜单，已经单独独立出去了
+  LOGIN=7;//登录方式，单独做枚举了，因为添加登录类型的时候也要添加相应的登录方式代码
+  SEX=8;//性别
+  OTHER=99;//其他
+}
+
 enum LoginType{
   NAME=0;//用户名登陆
   PHONE=1;//手机登录
   EMAIL=2;//邮箱登录
 }
+
+/*
 enum UserType{
   PLATFORM=0;//平台用户（业务员）
   SHOP=1;//平台入驻商家（商家，批发商）
@@ -47,6 +62,7 @@ enum QuaType{//资质类型 参照http://www.twgrace.cn/chanpinrenzheng/p12.html
   BIZLICENSEADREES=21;//商户营业场所照片
   OTHER=22;//其他资质
 }
+*/
 
 message SysUser {//用户表
   string  id = 1;
@@ -63,11 +79,11 @@ message SysUser {//用户表
   string id_card = 10;//身份证号码
   string point=11;//积分
   string province_id=12;
-  SysTree province=13;
+  SysArea province=13;
   string city_id = 14;
-  SysTree city=15;
+  SysArea city=15;
   string area_id = 16;
-  SysTree area=17;
+  SysArea area=17;
   string address = 18;
   int32 vip = 19;//vip等级
 
@@ -83,8 +99,9 @@ message SysUser {//用户表
   repeated SysGroup groups=27;
   repeated LogisticsAddress logistics_addresss=28;// 发收货地址管理
   repeated Qualification qualifications=29;
-  UserType user_type=30;
-
+  //UserType user_type=30;
+  SysTree user_type=30;
+  string user_type_id=31;
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
 }
@@ -105,8 +122,10 @@ message SysFile{//SysFile文件
   string size=4;//大小
   string  file_explain=5;//描述
   int32 sort=6;//排序
-  FileType file_type=7;//图片类型
-  string file_suffix=8;//图片后缀
+ // FileType file_type=7;//图片类型
+  SysTree file_type=7;//图片类型
+  string file_type_id=8;
+  string file_suffix=9;//图片后缀
 
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
@@ -116,8 +135,30 @@ message SysTree{
   string code=2;//编码
   string text=3;
   int32 sort=4;
+  TreeType type=7;
   string  p_id=5;
   repeated SysTree children=6;
+
+  string key=100;
+  string title=101;
+  string created = 98;//创建时间，时间戳秒
+  string updated = 99;//修改时间，
+}
+
+message SysArea{
+  string id=1;//id,有则修改，无则添加
+  string code=2;//编码
+  string text=3;
+  int32 sort=4;
+  string  p_id=5;
+  repeated SysArea children=6;
+  string short_name=7;//简称
+  string city_code=8;//区号
+  string zip_code=9;//邮编
+  string merger_name=10;//完整地址
+  float lng=11;//横坐标
+  float lat=12;//纵坐标
+  string pinyin=13;//拼音
 
   string key=100;
   string title=101;
@@ -207,11 +248,11 @@ message LogisticsAddress {
   SysUser user=4;
 
   string province_id=12;
-  SysTree province=13;
+  SysArea province=13;
   string city_id = 14;
-  SysTree city=15;
+  SysArea city=15;
   string area_id = 16;
-  SysTree area=17;
+  SysArea area=17;
   string address = 18;
 
   string created = 98;//创建时间，时间戳秒
@@ -223,7 +264,9 @@ message Qualification {
   bool is_default = 2;
   string user_id = 3;
   string shop_id=4;
-  QuaType qua_type=5;
+  //QuaType qua_type=5;
+  SysTree qua_type=5;
+  string qua_type_id=11;
   repeated SysFile qua_files=6;
 
   string qua_explain = 7;
@@ -258,6 +301,14 @@ message SysShop {//店铺
   repeated SysUser user=18;
   repeated SysFile imgs=19;
   repeated Qualification qualifications=20;
+
+  string province_id=21;
+  SysArea province=22;
+  string city_id = 23;
+  SysArea city=24;
+  string area_id = 25;
+  SysArea area=26;
+  string address = 27;
 
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
@@ -314,6 +365,17 @@ message Orders {
   string order_number = 2;
   string serial_number = 3;
   repeated OrderItem order_items=4;
+
+
+
+  string province_id=12;
+  SysArea province=13;
+  string city_id = 14;
+  SysArea city=15;
+  string area_id = 16;
+  SysArea area=17;
+  string address = 18;
+
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
 }

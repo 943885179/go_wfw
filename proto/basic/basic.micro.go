@@ -55,6 +55,11 @@ type BasicSrvService interface {
 	DelMenu(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
 	MenuList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
 	MenuTree(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*dbmodel.TreeResp, error)
+	EditArea(ctx context.Context, in *dbmodel.SysArea, opts ...client.CallOption) (*dbmodel.Id, error)
+	DelArea(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
+	AreaList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
+	AreaTree(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*dbmodel.TreeResp, error)
+	AreaById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.SysArea, error)
 	MenuListByUser(ctx context.Context, in *dbmodel.SysUser, opts ...client.CallOption) (*dbmodel.OnlyMenu, error)
 	MenuById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.SysMenu, error)
 	EditApi(ctx context.Context, in *dbmodel.SysApi, opts ...client.CallOption) (*dbmodel.Id, error)
@@ -72,6 +77,7 @@ type BasicSrvService interface {
 	TreeList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
 	TreeById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.SysTree, error)
 	TreeTree(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*dbmodel.TreeResp, error)
+	TreeByType(ctx context.Context, in *TreeType, opts ...client.CallOption) (*dbmodel.TreeResp, error)
 	EditShop(ctx context.Context, in *dbmodel.SysShop, opts ...client.CallOption) (*dbmodel.Id, error)
 	DelShop(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
 	ShopList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
@@ -288,6 +294,56 @@ func (c *basicSrvService) MenuTree(ctx context.Context, in *empty.Empty, opts ..
 	return out, nil
 }
 
+func (c *basicSrvService) EditArea(ctx context.Context, in *dbmodel.SysArea, opts ...client.CallOption) (*dbmodel.Id, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.EditArea", in)
+	out := new(dbmodel.Id)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *basicSrvService) DelArea(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.DelArea", in)
+	out := new(dbmodel.Id)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *basicSrvService) AreaList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.AreaList", in)
+	out := new(dbmodel.PageResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *basicSrvService) AreaTree(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*dbmodel.TreeResp, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.AreaTree", in)
+	out := new(dbmodel.TreeResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *basicSrvService) AreaById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.SysArea, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.AreaById", in)
+	out := new(dbmodel.SysArea)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *basicSrvService) MenuListByUser(ctx context.Context, in *dbmodel.SysUser, opts ...client.CallOption) (*dbmodel.OnlyMenu, error) {
 	req := c.c.NewRequest(c.name, "BasicSrv.MenuListByUser", in)
 	out := new(dbmodel.OnlyMenu)
@@ -458,6 +514,16 @@ func (c *basicSrvService) TreeTree(ctx context.Context, in *empty.Empty, opts ..
 	return out, nil
 }
 
+func (c *basicSrvService) TreeByType(ctx context.Context, in *TreeType, opts ...client.CallOption) (*dbmodel.TreeResp, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.TreeByType", in)
+	out := new(dbmodel.TreeResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *basicSrvService) EditShop(ctx context.Context, in *dbmodel.SysShop, opts ...client.CallOption) (*dbmodel.Id, error) {
 	req := c.c.NewRequest(c.name, "BasicSrv.EditShop", in)
 	out := new(dbmodel.Id)
@@ -540,6 +606,11 @@ type BasicSrvHandler interface {
 	DelMenu(context.Context, *dbmodel.Id, *dbmodel.Id) error
 	MenuList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
 	MenuTree(context.Context, *empty.Empty, *dbmodel.TreeResp) error
+	EditArea(context.Context, *dbmodel.SysArea, *dbmodel.Id) error
+	DelArea(context.Context, *dbmodel.Id, *dbmodel.Id) error
+	AreaList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
+	AreaTree(context.Context, *empty.Empty, *dbmodel.TreeResp) error
+	AreaById(context.Context, *dbmodel.Id, *dbmodel.SysArea) error
 	MenuListByUser(context.Context, *dbmodel.SysUser, *dbmodel.OnlyMenu) error
 	MenuById(context.Context, *dbmodel.Id, *dbmodel.SysMenu) error
 	EditApi(context.Context, *dbmodel.SysApi, *dbmodel.Id) error
@@ -557,6 +628,7 @@ type BasicSrvHandler interface {
 	TreeList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
 	TreeById(context.Context, *dbmodel.Id, *dbmodel.SysTree) error
 	TreeTree(context.Context, *empty.Empty, *dbmodel.TreeResp) error
+	TreeByType(context.Context, *TreeType, *dbmodel.TreeResp) error
 	EditShop(context.Context, *dbmodel.SysShop, *dbmodel.Id) error
 	DelShop(context.Context, *dbmodel.Id, *dbmodel.Id) error
 	ShopList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
@@ -586,6 +658,11 @@ func RegisterBasicSrvHandler(s server.Server, hdlr BasicSrvHandler, opts ...serv
 		DelMenu(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
 		MenuList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
 		MenuTree(ctx context.Context, in *empty.Empty, out *dbmodel.TreeResp) error
+		EditArea(ctx context.Context, in *dbmodel.SysArea, out *dbmodel.Id) error
+		DelArea(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
+		AreaList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
+		AreaTree(ctx context.Context, in *empty.Empty, out *dbmodel.TreeResp) error
+		AreaById(ctx context.Context, in *dbmodel.Id, out *dbmodel.SysArea) error
 		MenuListByUser(ctx context.Context, in *dbmodel.SysUser, out *dbmodel.OnlyMenu) error
 		MenuById(ctx context.Context, in *dbmodel.Id, out *dbmodel.SysMenu) error
 		EditApi(ctx context.Context, in *dbmodel.SysApi, out *dbmodel.Id) error
@@ -603,6 +680,7 @@ func RegisterBasicSrvHandler(s server.Server, hdlr BasicSrvHandler, opts ...serv
 		TreeList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
 		TreeById(ctx context.Context, in *dbmodel.Id, out *dbmodel.SysTree) error
 		TreeTree(ctx context.Context, in *empty.Empty, out *dbmodel.TreeResp) error
+		TreeByType(ctx context.Context, in *TreeType, out *dbmodel.TreeResp) error
 		EditShop(ctx context.Context, in *dbmodel.SysShop, out *dbmodel.Id) error
 		DelShop(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
 		ShopList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
@@ -697,6 +775,26 @@ func (h *basicSrvHandler) MenuTree(ctx context.Context, in *empty.Empty, out *db
 	return h.BasicSrvHandler.MenuTree(ctx, in, out)
 }
 
+func (h *basicSrvHandler) EditArea(ctx context.Context, in *dbmodel.SysArea, out *dbmodel.Id) error {
+	return h.BasicSrvHandler.EditArea(ctx, in, out)
+}
+
+func (h *basicSrvHandler) DelArea(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error {
+	return h.BasicSrvHandler.DelArea(ctx, in, out)
+}
+
+func (h *basicSrvHandler) AreaList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error {
+	return h.BasicSrvHandler.AreaList(ctx, in, out)
+}
+
+func (h *basicSrvHandler) AreaTree(ctx context.Context, in *empty.Empty, out *dbmodel.TreeResp) error {
+	return h.BasicSrvHandler.AreaTree(ctx, in, out)
+}
+
+func (h *basicSrvHandler) AreaById(ctx context.Context, in *dbmodel.Id, out *dbmodel.SysArea) error {
+	return h.BasicSrvHandler.AreaById(ctx, in, out)
+}
+
 func (h *basicSrvHandler) MenuListByUser(ctx context.Context, in *dbmodel.SysUser, out *dbmodel.OnlyMenu) error {
 	return h.BasicSrvHandler.MenuListByUser(ctx, in, out)
 }
@@ -763,6 +861,10 @@ func (h *basicSrvHandler) TreeById(ctx context.Context, in *dbmodel.Id, out *dbm
 
 func (h *basicSrvHandler) TreeTree(ctx context.Context, in *empty.Empty, out *dbmodel.TreeResp) error {
 	return h.BasicSrvHandler.TreeTree(ctx, in, out)
+}
+
+func (h *basicSrvHandler) TreeByType(ctx context.Context, in *TreeType, out *dbmodel.TreeResp) error {
+	return h.BasicSrvHandler.TreeByType(ctx, in, out)
 }
 
 func (h *basicSrvHandler) EditShop(ctx context.Context, in *dbmodel.SysShop, out *dbmodel.Id) error {

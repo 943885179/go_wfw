@@ -7,6 +7,7 @@ import (
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
+	"strings"
 )
 
 type IApi interface {
@@ -26,7 +27,9 @@ type Api struct{}
 func (a *Api) ApiListByUser(req *dbmodel.SysUser, resp *dbmodel.OnlyApi) error {
 	var all []models.SysApi
 	Conf.DbConfig.New().Find(&all)
-	if req.UserType == dbmodel.UserType_ADMIN { // 超级管理员有所有的菜单权限，不受约束
+	/*var ut models.SysTree
+	Conf.DbConfig.New().First(&ut, req.UserTypeId)*/
+	if strings.ToLower(req.UserType.Code) == strings.ToLower("admin") { // 超级管理员有所有的菜单权限，不受约束
 		for _, a := range all {
 			var d dbmodel.SysApi
 			mzjstruct.CopyStruct(&a, &d)

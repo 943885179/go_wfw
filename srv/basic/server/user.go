@@ -27,7 +27,7 @@ func (u User) UserById(id *dbmodel.Id, user *dbmodel.SysUser) error {
 	//return Conf.DbConfig.New().Model(&models.SysUser{}).First(user, id.Id).Error
 	db := Conf.DbConfig.New().Model(&models.SysUser{})
 	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles")
-	db = db.Preload("Qualifications").Preload("Qualifications.QuaFiles")
+	db = db.Preload("Qualifications").Preload("Qualifications.QuaFiles").Preload("Qualifications.QuaType")
 	var dbu models.SysUser
 	if err := db.First(&dbu, id.Id).Error; err != nil {
 		return err

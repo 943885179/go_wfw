@@ -3,7 +3,6 @@ package server
 import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/empty"
 	"qshapi/models"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
@@ -15,7 +14,7 @@ type IRole interface {
 	DelRole(req *dbmodel.Id, resp *dbmodel.Id) error
 	RoleList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 	RoleById(id *dbmodel.Id, role *dbmodel.SysRole) error
-	RoleTree(empty *empty.Empty, resp *dbmodel.TreeResp) error
+	RoleTree(resp *dbmodel.TreeResp) error
 }
 
 func NewRole() IRole {
@@ -24,7 +23,7 @@ func NewRole() IRole {
 
 type Role struct{}
 
-func (r *Role) RoleTree(empty *empty.Empty, resp *dbmodel.TreeResp) error {
+func (r *Role) RoleTree(resp *dbmodel.TreeResp) error {
 	var data []models.SysRole
 	db := Conf.DbConfig.New().Model(&models.SysMenu{}).Where("p_id=0")
 	db = db.Preload("Children")

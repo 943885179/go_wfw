@@ -11,6 +11,30 @@ import (
 type Handler struct {
 }
 
+func (h Handler) AreaById(ctx context.Context, id *dbmodel.Id, area *dbmodel.SysArea) error {
+	return server.NewArea().AreaById(id, area)
+}
+
+func (h Handler) EditArea(ctx context.Context, area *dbmodel.SysArea, id *dbmodel.Id) error {
+	return server.NewArea().EditArea(area, id)
+}
+
+func (h Handler) DelArea(ctx context.Context, id *dbmodel.Id, id2 *dbmodel.Id) error {
+	return server.NewArea().DelArea(id, id2)
+}
+
+func (h Handler) AreaList(ctx context.Context, req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
+	return server.NewArea().AreaList(req, resp)
+}
+
+func (h Handler) AreaTree(ctx context.Context, e *empty.Empty, resp *dbmodel.TreeResp) error {
+	return server.NewArea().AreaTree(resp)
+}
+
+func (h Handler) TreeByType(ctx context.Context, treeType *basic.TreeType, resp *dbmodel.TreeResp) error {
+	return server.NewTree().TreeByType(treeType, resp)
+}
+
 func (h Handler) EditQualifications(ctx context.Context, qualification *dbmodel.Qualification, id *dbmodel.Id) error {
 	return server.NewQualifications().EditQualifications(qualification, id)
 }
@@ -32,16 +56,16 @@ func (h Handler) SrvListByUser(ctx context.Context, user *dbmodel.SysUser, srv *
 }
 
 func (h Handler) RoleTree(ctx context.Context, empty *empty.Empty, resp *dbmodel.TreeResp) error {
-	return server.NewRole().RoleTree(empty, resp)
+	return server.NewRole().RoleTree(resp)
 }
 
 func (h Handler) MenuTree(ctx context.Context, empty *empty.Empty, resp *dbmodel.TreeResp) error {
-	return server.NewMenu().MenuTree(empty, resp)
+	return server.NewMenu().MenuTree(resp)
 }
 
 func (h Handler) TreeTree(ctx context.Context, empty *empty.Empty, resp *dbmodel.TreeResp) error {
 
-	return server.NewTree().TreeTree(empty, resp)
+	return server.NewTree().TreeTree(resp)
 }
 
 func (h Handler) UserById(ctx context.Context, id *dbmodel.Id, user *dbmodel.SysUser) error {

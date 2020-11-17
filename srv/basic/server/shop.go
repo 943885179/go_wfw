@@ -26,7 +26,7 @@ func (a *Shop) ShopById(id *dbmodel.Id, shop *dbmodel.SysShop) error {
 	//return Conf.DbConfig.New().Model(&models.SysShop{}).First(shop, id.Id).Error
 
 	db := Conf.DbConfig.New().Model(&models.SysShop{}).Preload("Logo").Preload("Imgs")
-	db = db.Preload("Qualifications").Preload("Qualifications.QuaFiles")
+	db = db.Preload("Qualifications").Preload("Qualifications.QuaFiles").Preload("Qualifications.QuaType")
 	var dbs models.SysShop
 	if err := db.First(&dbs, id.Id).Error; err != nil {
 		return err

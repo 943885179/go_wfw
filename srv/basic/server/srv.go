@@ -7,6 +7,7 @@ import (
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
+	"strings"
 )
 
 type ISrv interface {
@@ -26,7 +27,7 @@ type Srv struct{}
 func (a *Srv) SrvListByUser(req *dbmodel.SysUser, resp *dbmodel.OnlySrv) error {
 	var all []models.SysSrv
 	Conf.DbConfig.New().Find(&all)
-	if req.UserType == dbmodel.UserType_ADMIN { // 超级管理员有所有的菜单权限，不受约束
+	if strings.ToLower(req.UserType.Code) == strings.ToLower("admin") { // 超级管理员有所有的菜单权限，不受约束
 		for _, a := range all {
 			var d dbmodel.SysSrv
 			mzjstruct.CopyStruct(&a, &d)

@@ -28,6 +28,14 @@ service BasicSrv{
   rpc DelMenu(dbmodel.Id)returns(dbmodel.Id){}
   rpc MenuList(dbmodel.PageReq)returns(dbmodel.PageResp){}
   rpc MenuTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
+
+  
+  rpc EditArea(dbmodel.SysArea)returns(dbmodel.Id){}//编辑地址
+  rpc DelArea(dbmodel.Id)returns(dbmodel.Id){}
+  rpc AreaList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc AreaTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
+  rpc AreaById(dbmodel.Id)returns(dbmodel.SysArea){}
+
   
   rpc MenuListByUser(dbmodel.SysUser)returns(dbmodel.OnlyMenu){}
 
@@ -50,6 +58,7 @@ service BasicSrv{
   rpc TreeList(dbmodel.PageReq)returns(dbmodel.PageResp){}
   rpc TreeById(dbmodel.Id)returns(dbmodel.SysTree){}
   rpc TreeTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
+  rpc TreeByType (TreeType) returns (dbmodel.TreeResp);
   
   rpc EditShop (dbmodel.SysShop) returns (dbmodel.Id);
   rpc DelShop(dbmodel.Id)returns(dbmodel.Id){}
@@ -59,6 +68,9 @@ service BasicSrv{
   rpc EditQualifications (dbmodel.Qualification) returns (dbmodel.Id);
   rpc DelQualifications(dbmodel.Id)returns(dbmodel.Id){}
   
+}
+message TreeType {
+  dbmodel.TreeType tree_type=1;
 }
 
 //用户登录
@@ -78,7 +90,7 @@ message TokenResp{
 }
 //用户注册请求
 message RegistryReq{
-  dbmodel.UserType user_type=6;//用户类型（注册通道）
+  // dbmodel.UserType user_type=6;//用户类型（注册通道）
   string user_name=1;//用户名
   string user_password=2;//密码
   string user_password_again=3;//确认密码

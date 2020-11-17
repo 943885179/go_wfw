@@ -3,8 +3,8 @@ package server
 import (
 	"errors"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/empty"
 	"qshapi/models"
+	"qshapi/proto/basic"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
@@ -15,7 +15,8 @@ type ITree interface {
 	DelTree(req *dbmodel.Id, resp *dbmodel.Id) error
 	TreeList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 	TreeById(id *dbmodel.Id, tree *dbmodel.SysTree) error
-	TreeTree(empty *empty.Empty, resp *dbmodel.TreeResp) error
+	TreeTree(resp *dbmodel.TreeResp) error
+	TreeByType(req *basic.TreeType, resp *dbmodel.TreeResp) error
 }
 
 func NewTree() ITree {
@@ -24,9 +25,9 @@ func NewTree() ITree {
 
 type Tree struct{}
 
-func (r *Tree) TreeTree(empty *empty.Empty, resp *dbmodel.TreeResp) error {
+func (r *Tree) TreeTree(resp *dbmodel.TreeResp) error {
 	var data []models.SysTree
-	db := Conf.DbConfig.New().Model(&models.SysTree{}).Where("p_id=0")
+	db := Conf.DbConfig.New().Model(&models.SysTree{}).Where("p_id=''")
 	db = db.Preload("Children")
 	db = db.Preload("Children.Children")
 	db = db.Preload("Children.Children.Children")
@@ -46,9 +47,27 @@ func (r *Tree) TreeTree(empty *empty.Empty, resp *dbmodel.TreeResp) error {
 func (g *Tree) TreeById(id *dbmodel.Id, tree *dbmodel.SysTree) error {
 	return Conf.DbConfig.New().Model(&models.SysTree{}).First(tree, id.Id).Error
 }
+func (g *Tree) TreeByType(req *basic.TreeType, resp *dbmodel.TreeResp) error {
+	var data []models.SysTree
+	db := Conf.DbConfig.New().Model(&models.SysTree{}).Where("type=? and p_id=''", int32(req.TreeType))
+	db = db.Preload("Children")
+	db = db.Preload("Children.Children")
+	db = db.Preload("Children.Children.Children")
+	db = db.Preload("Children.Children.Children.Children")
+	if err := db.Find(&data).Error; err != nil {
+		return err
+	}
+
+	for _, m := range data {
+		var r dbmodel.Tree
+		mzjstruct.CopyStruct(&m, &r)
+		resp.Data = append(resp.Data, &r)
+	}
+	return nil
+}
 func (t *Tree) TreeList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysTree
-	db := Conf.DbConfig.New().Model(&models.SysTree{}) //.Where("p_id=0")
+	db := Conf.DbConfig.New().Model(&models.SysTree{}) //.Where("p_id=''")
 	db.Count(&resp.Total)
 	req.Page -= 1 //分页查询页码减1
 	if resp.Total == 0 {
