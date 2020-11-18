@@ -140,15 +140,22 @@
 ```
 
 ### 消息服务（send）
+
 `protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/send/send.proto`
 
 `Get-ChildItem proto/send/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
 
 ### 文件服务（file）
+
 `protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/file/file.proto`
 或
 `Get-ChildItem proto/file/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
 
+### 商品服务（product）
+
+`protoc --go_out=plugins=grpc:. --micro_out=.  ./proto/product/product.proto`
+
+`Get-ChildItem proto/product/*.proto |Resolve-Path -Relative | %{protoc $_  --go_out=. --micro_out=.}`
 ### 图片webp服务（第三方服务，将图片转成webp压缩）
 
 ####本项目中我直接下载了源码，然后build,下面介绍docker中如何部署

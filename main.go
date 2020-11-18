@@ -23,8 +23,8 @@ func init() {
 	}
 }
 func main() {
-	/*dbInit()
-	initArea()
+	dbInit()
+	/*initArea()
 	initTree()
 	initMenu()
 	initApi()
@@ -4222,7 +4222,7 @@ func initArea() {
 		err := db.Create(&r).Error
 		fmt.Println(err)
 	}
-	db := conf.DbConfig.New()
+	db = conf.DbConfig.New()
 	var all = []models.SysArea{}
 	db.Find(&all)
 	for _, a := range all {

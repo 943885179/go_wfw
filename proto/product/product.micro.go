@@ -38,6 +38,7 @@ type ProductSrvService interface {
 	EditProduct(ctx context.Context, in *dbmodel.Product, opts ...client.CallOption) (*dbmodel.Id, error)
 	DelProduct(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
 	ProductList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
+	ProductById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Product, error)
 }
 
 type productSrvService struct {
@@ -88,12 +89,23 @@ func (c *productSrvService) ProductList(ctx context.Context, in *dbmodel.PageReq
 	return out, nil
 }
 
+func (c *productSrvService) ProductById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Product, error) {
+	req := c.c.NewRequest(c.name, "ProductSrv.ProductById", in)
+	out := new(dbmodel.Product)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ProductSrv service
 
 type ProductSrvHandler interface {
 	EditProduct(context.Context, *dbmodel.Product, *dbmodel.Id) error
 	DelProduct(context.Context, *dbmodel.Id, *dbmodel.Id) error
 	ProductList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
+	ProductById(context.Context, *dbmodel.Id, *dbmodel.Product) error
 }
 
 func RegisterProductSrvHandler(s server.Server, hdlr ProductSrvHandler, opts ...server.HandlerOption) error {
@@ -101,6 +113,7 @@ func RegisterProductSrvHandler(s server.Server, hdlr ProductSrvHandler, opts ...
 		EditProduct(ctx context.Context, in *dbmodel.Product, out *dbmodel.Id) error
 		DelProduct(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
 		ProductList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
+		ProductById(ctx context.Context, in *dbmodel.Id, out *dbmodel.Product) error
 	}
 	type ProductSrv struct {
 		productSrv
@@ -123,4 +136,8 @@ func (h *productSrvHandler) DelProduct(ctx context.Context, in *dbmodel.Id, out 
 
 func (h *productSrvHandler) ProductList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error {
 	return h.ProductSrvHandler.ProductList(ctx, in, out)
+}
+
+func (h *productSrvHandler) ProductById(ctx context.Context, in *dbmodel.Id, out *dbmodel.Product) error {
+	return h.ProductSrvHandler.ProductById(ctx, in, out)
 }

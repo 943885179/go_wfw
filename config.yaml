@@ -69,7 +69,7 @@
             "name":"com.weixiao.web.basic",
             "version":"latest",
             "ip":"",
-            "port":8701
+            ## "port":8701
         },
         "sendSrv":{
             "etcd":"",
@@ -90,14 +90,14 @@
             "name":"com.weixiao.api.file",
             "version":"latest",
             "ip":"",
-            "port":8704
+            ## "port":8704
         },
         "fileCli":{
             "etcd":"",
             "name":"com.weixiao.web.file",
             "version":"latest",
             "ip":"",
-            "port":8705
+            ## "port":8705
         },
         "productSrv":{
             "etcd":"",

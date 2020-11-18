@@ -304,7 +304,7 @@ type Product struct {
 	GoodsName   string  `gorm:"column:goods_name;comment:'商品名称'" json:"goods_name"`
 	GoodsByname string  `gorm:"column:goods_byname;comment:'商品名称'" json:"goods_byname"`
 	Factory     string  `gorm:"column:factory;comment:'生产厂家'" json:"factory"`
-	ProAddress  string  `gorm:"column:pro_address;comment:'生产地址'" json:"pro_address"`
+	PrdAddress  string  `gorm:"column:prd_address;comment:'生产地址'" json:"prd_address"`
 	ApprovalNum string  `gorm:"column:approval_num;comment:'批准文号'" json:"approval_num"`
 	Spec        string  `gorm:"column:spec;comment:'药品规格（12粒*2版）'" json:"spec"`
 	DosageForm  string  `gorm:"column:dosage_form;comment:'剂型（胶囊剂。。。）'" json:"dosage_form"`

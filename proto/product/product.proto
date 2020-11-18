@@ -7,4 +7,5 @@ service ProductSrv {
   rpc EditProduct (dbmodel.Product) returns (dbmodel.Id);
   rpc DelProduct(dbmodel.Id)returns(dbmodel.Id){}
   rpc ProductList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc ProductById(dbmodel.Id)returns(dbmodel.Product){}//查询
 }

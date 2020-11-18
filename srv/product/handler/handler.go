@@ -9,6 +9,10 @@ import (
 type Handler struct {
 }
 
+func (h Handler) ProductById(ctx context.Context, id *dbmodel.Id, product *dbmodel.Product) error {
+	return server.NewProduct().ProductById(id, product)
+}
+
 func (h Handler) EditProduct(ctx context.Context, req *dbmodel.Product, resp *dbmodel.Id) error {
 	return server.NewProduct().EditProduct(req, resp)
 }

@@ -316,10 +316,11 @@ message SysShop {//店铺
 message Product {
   string  id = 1;
   string goods_code = 2;
+  string goods_name=97;
   string goods_byname = 3;
 
   string factory = 4;//生产厂家
-  string pro_address = 5;//生产地址
+  string prd_address = 5;//生产地址
 
   string approval_num = 6;//批准文号
   string spec = 7;//规格
@@ -336,7 +337,7 @@ message Product {
   string goods_explain = 15;//商品描述
 
   SysShop shop=16;
-  SysFile imgs=17;
+  repeated SysFile imgs=17;
   ProductSku product_skus=18;
 
 

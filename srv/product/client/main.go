@@ -53,6 +53,7 @@ func SrvGin() *gin.Engine {
 		r.POST("EditProduct", EditProduct)
 		r.POST("DelProduct", DelProduct)
 		r.POST("ProductList", ProductList)
+		r.GET("/ProductById/:id", ProductById)
 	}
 	return g
 }
@@ -80,4 +81,11 @@ func ProductList(c *gin.Context) {
 		rs = append(rs, r)
 	}
 	resp.MicroTotalResp(c, result.Total, rs, err)
+}
+func ProductById(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.ProductById(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
 }
