@@ -48,6 +48,9 @@ func (g *Area) AreaById(id *dbmodel.Id, Area *dbmodel.SysArea) error {
 func (t *Area) AreaList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysArea
 	db := Conf.DbConfig.New().Model(&models.SysArea{}) //.Where("p_id=0")
+	if len(req.Text) > 0 {
+		db = db.Where("text like ?", "%"+req.Text+"%")
+	}
 	db.Count(&resp.Total)
 	req.Page -= 1 //分页查询页码减1
 	if resp.Total == 0 {

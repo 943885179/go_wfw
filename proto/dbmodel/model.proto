@@ -4,6 +4,12 @@ import "google/protobuf/any.proto";
 message PageReq{
     int32 page=1;//页码
     int32 row=2;//每页显示行数
+    string name=3;
+    string code=4;
+    string type=5;
+    string id=6;
+    string title=7;
+    string text=8;
   }
 message PageResp{
     int64 total=1;//数量

@@ -68,6 +68,9 @@ func (g *Tree) TreeByType(req *basic.TreeType, resp *dbmodel.TreeResp) error {
 func (t *Tree) TreeList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var ts []models.SysTree
 	db := Conf.DbConfig.New().Model(&models.SysTree{}) //.Where("p_id=''")
+	if len(req.Type) > 0 {
+		db = db.Where("type=?", req.Type)
+	}
 	db.Count(&resp.Total)
 	req.Page -= 1 //分页查询页码减1
 	if resp.Total == 0 {
