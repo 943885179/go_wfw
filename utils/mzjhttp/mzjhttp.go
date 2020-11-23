@@ -1,6 +1,7 @@
 package mzjhttp
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -97,6 +98,18 @@ func Get(url string) (string, int, error) {
 	//dbUtil.Exec(entity.EntityToAddSQL(HTTPLog, ""))
 	log.Info(fmt.Sprintf("请求地址：%s\n返回参数:%s\n", url, string(content)))
 	return string(content), resp.StatusCode, nil
+}
+
+//application/json请求http使用该接口，使用PostEntity好像会报错500
+func PostEntityJson(url string, req interface{}, resp interface{}, header http.Header) error {
+	reqBt, _ := json.Marshal(req)
+	rp, err := http.Post(url, "application.json", bytes.NewBuffer(reqBt))
+	if err != nil {
+		return err
+	}
+	defer rp.Body.Close()
+	result, _ := ioutil.ReadAll(rp.Body)
+	return json.Unmarshal(result, resp)
 }
 
 //PostEntity post请求返回实体

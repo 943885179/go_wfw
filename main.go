@@ -8,6 +8,7 @@ import (
 	"qshapi/utils/mzjinit"
 	"qshapi/utils/mzjmd5"
 	"qshapi/utils/mzjuuid"
+	//"unicode/utf8"
 )
 
 var (
@@ -22,14 +23,19 @@ func init() {
 		log.Fatal(err)
 	}
 }
+
+/*func firstLetter(s string) string {
+	_, size := utf8.DecodeRuneInString(s)
+	return s[:size]
+}*/
 func main() {
-	dbInit()
-	/*initArea()
-	initTree()
+	//dbInit()
+	//initArea()
+	/*initTree()
 	initMenu()
 	initApi()
-	initSrv()
-	initAdmin()*/
+	initSrv()*/
+	//initAdmin()
 	//test()
 }
 func test() {
@@ -55,6 +61,7 @@ func dbInit() {
 		},
 	}
 	db.Save(&menus)*/
+
 	db.AutoMigrate(
 		&models.SysMenu{},
 		&models.SysApi{},

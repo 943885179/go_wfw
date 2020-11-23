@@ -5,6 +5,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
 	"qshapi/proto/dbmodel"
+	"qshapi/utils/mzjpinyin"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
 )
@@ -23,7 +24,7 @@ func NewProduct() IProduct {
 type Product struct{}
 
 func (*Product) ProductById(id *dbmodel.Id, product *dbmodel.Product) error {
-	db := Conf.DbConfig.New().Model(&models.Product{}).Preload("Imgs")
+	db := Conf.DbConfig.New().Model(&models.Product{}).Preload("Imgs").Preload("ProductSkus").Preload("ProductSkus.Imgs")
 	var dbs models.Product
 	if err := db.First(&dbs, id.Id).Error; err != nil {
 		return err
@@ -54,10 +55,19 @@ func (*Product) DelProduct(req *dbmodel.Id, resp *dbmodel.Id) error {
 	resp.Id = req.Id
 	return db.Delete(models.Product{}, req.Id).Error
 }
-func (*Product) EditProduct(req *dbmodel.Product, resp *dbmodel.Id) error {
+func (*Product) EditProduct(req *dbmodel.Product, resp *dbmodel.Id) (err error) {
 	db := Conf.DbConfig.New()
 	//defer db.Close()
 	Product := &models.Product{}
+	if len(req.GoodsCode) == 0 {
+		return errors.New("商品编码不能为空")
+	}
+	if len(req.GoodsName) == 0 {
+		return errors.New("商品名称不能为空")
+	}
+	if len(req.Opcode) == 0 {
+		req.Opcode = mzjpinyin.DefalutStrToPinyin(req.GoodsName)
+	}
 	if len(req.Id) > 0 { //修改0
 		//if db.FirstOrInit(Product, req.Id).RecordNotFound() { v2版本移除了
 		if err := db.First(Product, req.Id).Error; err != nil {
@@ -66,6 +76,7 @@ func (*Product) EditProduct(req *dbmodel.Product, resp *dbmodel.Id) error {
 			}
 			return err
 		}
+		mzjstruct.CopyStruct(req, Product)
 		db.Model(&Product).Association("Imgs").Clear()
 		if req.Imgs != nil && len(req.Imgs) != 0 {
 			var ids []string
@@ -76,13 +87,41 @@ func (*Product) EditProduct(req *dbmodel.Product, resp *dbmodel.Id) error {
 				db.Where(ids).Find(&Product.Imgs)
 			}
 		}
-		mzjstruct.CopyStruct(req, Product)
+		db.Model(&Product).Association("ProductSkus").Clear()
 		resp.Id = Product.Id
-		return db.Updates(Product).Error
+		err = db.Updates(Product).Error
+		var q = NewProductSku()
+		if err != nil {
+			return err
+		}
+		for _, sku := range req.ProductSkus { //添加sku
+			sku.ProductId = Product.Id
+			err = q.EditProductSku(sku, &dbmodel.Id{})
+			if err != nil {
+				return err
+			}
+		}
+		return nil
 	} else { //添加
 		mzjstruct.CopyStruct(req, Product)
 		Product.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
+		db.Model(&Product).Association("ProductSkus").Clear()
 		resp.Id = Product.Id
-		return db.Create(Product).Error
+		err = db.Create(Product).Error
+		if err != nil {
+			return err
+		}
+		var q = NewProductSku()
+		if err != nil {
+			return err
+		}
+		for _, sku := range req.ProductSkus { //添加sku
+			sku.ProductId = Product.Id
+			err = q.EditProductSku(sku, &dbmodel.Id{})
+			if err != nil {
+				return err
+			}
+		}
+		return nil
 	}
 }

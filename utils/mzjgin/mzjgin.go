@@ -47,6 +47,11 @@ const (
 	APIWary RespCode = 1008
 )
 
+var (
+	UserId, LoginToken string   //基础变量 用户id，店铺id,登录的token
+	ShopId             []string //店铺，一个人可以开多个店铺
+)
+
 func (c RespCode) String() string {
 	switch c {
 	case APIOK:
@@ -168,6 +173,15 @@ func NewGin() *APIGin {
 	result := APIGin{}
 	return &result
 }
+
+//自定义context
+type MzjContext struct {
+	*gin.Context
+	UserId     string
+	ShopId     []string
+	LoginToken string
+}
+
 func (api *APIGin) Default(service string) *gin.Engine {
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f)
@@ -182,6 +196,7 @@ func (api *APIGin) Default(service string) *gin.Engine {
 	//g.Use(APITokenMiddleware)
 	//或者使用下面的方法
 	g.Use(TokenAuthMiddleware(service)) //权限认证先暂时关闭(外部调用吧)
+	//g.Use(api.handler(nil))
 	// 加载html文件，即template包下所有文件
 	//g.engine.LoadHTMLGlob("wwwroot/*")
 	//g.engine.LoadHTMLGlob("template/*")
@@ -232,6 +247,30 @@ func (g *APIGin) cors() gin.HandlerFunc {
 	}
 }
 
+/*
+//添加自定义参数
+type HandlerFunc func(context *MzjContext)
+
+func (g *APIGin) handler(handler HandlerFunc) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		context := new(MzjContext)
+		context.Context = c
+		if user_id, ok := c.Keys["user_id"]; ok {
+			context.user_id = user_id.(string)
+		}
+		if len(user_id) > 0 {
+			context.UserId = user_id
+		}
+		if len(login_token) > 0 {
+			context.LoginToken = login_token
+		}
+		if len(shop_id) > 0 {
+			context.ShopId = shop_id
+		}
+		handler(context)
+	}
+}*/
+
 func handleNotFound(c *gin.Context) {
 	apiresp.APIResult(c, http.StatusNotFound, "Not Found")
 }
@@ -246,7 +285,6 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 			}
 		}
 		resp, err := TokenResp(c)
-
 		if err != nil {
 			apiresp.APIResult(c, http.StatusUnauthorized, err.Error())
 			return
@@ -290,6 +328,15 @@ func TokenResp(c *gin.Context) (resp basic.LoginResp, err error) {
 	if resp.Token.Token != conf.Jwt.Token {
 		return resp, errors.New("已经再其他地方登录，被迫下线,请重新登录")
 	}
+	UserId = resp.User.Id
+	for _, shop := range resp.User.Shops {
+		ShopId = append(ShopId, shop.Id)
+	}
+	LoginToken = c.Request.Header.Get("token")
+	/*context := mzjContext{
+		user_id: resp.User.Id,
+		//shop_id: resp.User.Shop.Id,
+	}*/
 	return resp, nil
 }
 

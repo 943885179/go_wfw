@@ -39,6 +39,9 @@ type ProductSrvService interface {
 	DelProduct(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
 	ProductList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
 	ProductById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Product, error)
+	EditProductSku(ctx context.Context, in *dbmodel.ProductSku, opts ...client.CallOption) (*dbmodel.Id, error)
+	DelProductSku(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
+	ProductSkuById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.ProductSku, error)
 }
 
 type productSrvService struct {
@@ -99,6 +102,36 @@ func (c *productSrvService) ProductById(ctx context.Context, in *dbmodel.Id, opt
 	return out, nil
 }
 
+func (c *productSrvService) EditProductSku(ctx context.Context, in *dbmodel.ProductSku, opts ...client.CallOption) (*dbmodel.Id, error) {
+	req := c.c.NewRequest(c.name, "ProductSrv.EditProductSku", in)
+	out := new(dbmodel.Id)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productSrvService) DelProductSku(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error) {
+	req := c.c.NewRequest(c.name, "ProductSrv.DelProductSku", in)
+	out := new(dbmodel.Id)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productSrvService) ProductSkuById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.ProductSku, error) {
+	req := c.c.NewRequest(c.name, "ProductSrv.ProductSkuById", in)
+	out := new(dbmodel.ProductSku)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ProductSrv service
 
 type ProductSrvHandler interface {
@@ -106,6 +139,9 @@ type ProductSrvHandler interface {
 	DelProduct(context.Context, *dbmodel.Id, *dbmodel.Id) error
 	ProductList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
 	ProductById(context.Context, *dbmodel.Id, *dbmodel.Product) error
+	EditProductSku(context.Context, *dbmodel.ProductSku, *dbmodel.Id) error
+	DelProductSku(context.Context, *dbmodel.Id, *dbmodel.Id) error
+	ProductSkuById(context.Context, *dbmodel.Id, *dbmodel.ProductSku) error
 }
 
 func RegisterProductSrvHandler(s server.Server, hdlr ProductSrvHandler, opts ...server.HandlerOption) error {
@@ -114,6 +150,9 @@ func RegisterProductSrvHandler(s server.Server, hdlr ProductSrvHandler, opts ...
 		DelProduct(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
 		ProductList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
 		ProductById(ctx context.Context, in *dbmodel.Id, out *dbmodel.Product) error
+		EditProductSku(ctx context.Context, in *dbmodel.ProductSku, out *dbmodel.Id) error
+		DelProductSku(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
+		ProductSkuById(ctx context.Context, in *dbmodel.Id, out *dbmodel.ProductSku) error
 	}
 	type ProductSrv struct {
 		productSrv
@@ -140,4 +179,16 @@ func (h *productSrvHandler) ProductList(ctx context.Context, in *dbmodel.PageReq
 
 func (h *productSrvHandler) ProductById(ctx context.Context, in *dbmodel.Id, out *dbmodel.Product) error {
 	return h.ProductSrvHandler.ProductById(ctx, in, out)
+}
+
+func (h *productSrvHandler) EditProductSku(ctx context.Context, in *dbmodel.ProductSku, out *dbmodel.Id) error {
+	return h.ProductSrvHandler.EditProductSku(ctx, in, out)
+}
+
+func (h *productSrvHandler) DelProductSku(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error {
+	return h.ProductSrvHandler.DelProductSku(ctx, in, out)
+}
+
+func (h *productSrvHandler) ProductSkuById(ctx context.Context, in *dbmodel.Id, out *dbmodel.ProductSku) error {
+	return h.ProductSrvHandler.ProductSkuById(ctx, in, out)
 }

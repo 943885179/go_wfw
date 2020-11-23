@@ -32,6 +32,7 @@ type Qualification struct {
 	QuaType    SysTree   `gorm:"foreignKey:qua_type_id" json:"qua_type"`
 	UserId     string    `gorm:"index;column:user_id;comment:'用户ID'" json:"user_id"`
 	ShopId     string    `gorm:"index;column:shop_id;comment:'店铺ID'" json:"shop_id"`
+	PrdId      string    `gorm:"index;column:prd_id;comment:'商品ID'" json:"prd_id"`
 	QuaFiles   []SysFile `gorm:"many2many:qualification_files" json:"qua_files"` //资质文件
 	QuaExplain string    `gorm:"column:qua_explain;type:longblob;comment:'资质描述'" json:"qua_explain"`
 	StartTime  time.Time `gorm:"column:start_time;comment:'注册日期'" json:"start_time"`
@@ -68,14 +69,14 @@ type SysUser struct {
 	Point        float64 `gorm:"column:point;default:0;comment:'积分'" json:"point"`
 	IdCard       string  `gorm:"column:id_card;comment:'身份证号码'" json:"id_card"`
 
-	ProvinceId string  `gorm:"index;column:province_id;comment:'省'" json:"province_id"`
+	/*ProvinceId string  `gorm:"index;column:province_id;comment:'省'" json:"province_id"`
 	Province   SysArea `gorm:"foreignKey:province_id" json:"province"`
 	CityId     string  `gorm:"index;column:city_id;comment:'市'" json:"city_id"`
-	City       SysArea `gorm:"foreignKey:city_id"`
-	AreaId     string  `gorm:"index;column:area_id;comment:'区'" json:"area_id"`
-	Area       SysArea `gorm:"foreignKey:area_id"`
-	Address    string  `gorm:"column:address;" json:"address"`
-	Vip        int     `gorm:"index;column:vip;comment:'vip等级'" json:"vip"`
+	City       SysArea `gorm:"foreignKey:city_id"`*/
+	AreaId  string  `gorm:"index;column:area_id;comment:'区'" json:"area_id"`
+	Area    SysArea `gorm:"foreignKey:area_id"`
+	Address string  `gorm:"column:address;" json:"address"`
+	Vip     int     `gorm:"index;column:vip;comment:'vip等级'" json:"vip"`
 
 	BankName     string `gorm:"column:bank_name;comment:'银行名称'" json:"bank_name"`
 	BranchName   string `gorm:"column:branch_name;comment:'银行分行名称'" json:"branch_name"`
@@ -89,8 +90,9 @@ type SysUser struct {
 	LogisticsAddresss []LogisticsAddress `gorm:"foreignKey:user_id" json:"logistics_addresss"` //地址管理
 	Qualifications    []Qualification    `gorm:"foreignKey:user_id" json:"qualifications"`     //用户资质管理
 	//UserType          dbmodel.UserType   `gorm:"column:user_type;comment:'用户类型'" json:"user_type"`
-	UserTypeId string  `gorm:"index;column:user_type_id;not null;comment:'资质类型'" json:"user_type_id"`
-	UserType   SysTree `gorm:"foreignKey:user_type_id" json:"user_type"`
+	UserTypeId string    `gorm:"index;column:user_type_id;not null;comment:'资质类型'" json:"user_type_id"`
+	UserType   SysTree   `gorm:"foreignKey:user_type_id" json:"user_type"`
+	Shops      []SysShop `gorm:"many2many:sys_shop_user" json:"shops"`
 
 	//其他返回的实体，处理过的数据
 	//Menus []SysMenu `gorm:"many2many:sys_role_menu" json:"menus"`
@@ -249,12 +251,12 @@ type SysShop struct {
 	Point    float64 `gorm:"column:point;default:0;comment:'积分'" json:"point"`
 	Vip      int     `gorm:"index;column:vip;comment:'vip等级'" json:"vip"`
 
-	ProvinceId string  `gorm:"index;column:province_id;comment:'省'" json:"province_id"`
+	/*ProvinceId string  `gorm:"index;column:province_id;comment:'省'" json:"province_id"`
 	Province   SysArea `gorm:"foreignKey:province_id" json:"province"`
 	CityId     string  `gorm:"index;column:city_id;comment:'市'" json:"city_id"`
-	City       SysArea `gorm:"foreignKey:city_id"`
-	AreaId     string  `gorm:"index;column:area_id;comment:'区'" json:"area_id"`
-	Area       SysArea `gorm:"foreignKey:area_id"`
+	City       SysArea `gorm:"foreignKey:city_id"`*/
+	AreaId string  `gorm:"index;column:area_id;comment:'区'" json:"area_id"`
+	Area   SysArea `gorm:"foreignKey:area_id"`
 
 	LogoId string  `gorm:"index;column:logo_id;comment:'店铺logo'" json:"logo_id"`
 	Logo   SysFile `gorm:"foreignKey:logo_id" json:"logo"`
@@ -283,17 +285,17 @@ type SysShopCustomer struct {
 
 //LogisticsAddress 发收货地址管理
 type LogisticsAddress struct {
-	Id         string  `gorm:"primary_key;type:varchar(50);"`
-	IsDefault  bool    `gorm:"column:is_default;not null;default:0;comment:'是否默认收发货地址'" json:"is_default"`
-	UserId     string  `gorm:"index;column:user_id;not null;comment:'用户id'" json:"user_id"`
-	User       SysUser `gorm:"foreignKey:user_id"`
-	ProvinceId string  `gorm:"index;column:province_id;comment:'省id'" json:"province_id"`
+	Id        string  `gorm:"primary_key;type:varchar(50);"`
+	IsDefault bool    `gorm:"column:is_default;not null;default:0;comment:'是否默认收发货地址'" json:"is_default"`
+	UserId    string  `gorm:"index;column:user_id;not null;comment:'用户id'" json:"user_id"`
+	User      SysUser `gorm:"foreignKey:user_id"`
+	/*ProvinceId string  `gorm:"index;column:province_id;comment:'省id'" json:"province_id"`
 	Provuince  SysArea `gorm:"foreignKey:province_id" json:"provuince"`
 	CityId     string  `gorm:"index;column:city_id;comment:'市id'" json:"city_id"`
-	City       SysArea `gorm:"foreignKey:city_id"`
-	AreaId     string  `gorm:"index;column:area_id;comment:'区id'"json:"area_id"`
-	Area       SysArea `gorm:"foreignKey:area_id" json:"area"`
-	Address    string  `gorm:"column:address;" json:"address"`
+	City       SysArea `gorm:"foreignKey:city_id"`*/
+	AreaId  string  `gorm:"index;column:area_id;comment:'区id'"json:"area_id"`
+	Area    SysArea `gorm:"foreignKey:area_id" json:"area"`
+	Address string  `gorm:"column:address;" json:"address"`
 	Model
 }
 
@@ -325,7 +327,7 @@ type Product struct {
 	Sale         int     `gorm:"column:sale;comment:'销量'" json:"sale"`
 	Sort         int     `gorm:"column:sort;comment:'排序'" json:"sort"`
 	Keywords     int     `gorm:"column:keywords;comment:'SEO关键词'" json:"keywords"`
-	Config       int     `gorm:"column:config;comment:'商品配置'" json:"config"`
+	Config       string  `gorm:"column:config;comment:'商品配置'" json:"config"`
 	Stock        float64 `gorm:"column:stock;not null;comment:'库存'" json:"stock"`
 	StockEarly   float64 `gorm:"column:stock_early;not null;comment:'库存预警值'" json:"stock_early"`
 	SellPriceMin float64 `gorm:"column:sell_price_min;default:9999;comment:'销售价格'" json:"sell_price_min"`
@@ -338,17 +340,24 @@ type Product struct {
 	GoodsImg               string       `gorm:"index;column:goods_img;comment:'商品图片id'" json:"goods_img"`
 	ImgFile                SysFile      `gorm:"foreignKey:goods_img"`
 	ProductClassifyId      string       `gorm:"index;column:product_classify_id;not null;comment:'商品分类（平台统一）'" json:"product_classify_id"`
-	ProductClassify        SysTree      `gorm:"foreignKey:product_classify_id"`
+	ProductClassify        SysTree      `gorm:"foreignKey:product_classify_id" json:"product_classify"`
 	ShopClassifyId         string       `gorm:"index;column:shop_classify_id;not null;comment:'商家分类（店铺可编辑）'" json:"shop_classify_id"`
 	ShopClassify           SysTree      `gorm:"foreignKey:shop_classify_id"`
 	DistributionProportion string       `gorm:"column:distribution_proportion;not null;default:0;comment:'分销类型，0千分比，1.固定金额，2百分比'" json:"distribution_proportion"`
-	DistributionNumber     float64      `gorm:"column:distribution_number;default:0;comment:'分销值'" json:"distribution_number"`
-	Imgs                   []SysFile    `gorm:"many2many:product_img"`
+	DistributionNumber     float64      `gorm:"column:distribution_number;default:0;comment:'0'" json:"distribution_number"`
+	Imgs                   []SysFile    `gorm:"many2many:product_img" json:"imgs"`
 	BusinessRange          []SysTree    `gorm:"many2many:product_range;"`
-	ProductSkus            []ProductSku `gorm:"foreignKey:goods_id" json:"product_skus"`
-	//ProductPartServants    []ProductPartServant `gorm:"foreignKey:goods_id"` //商品分佣表
+	ProductSkus            []ProductSku `gorm:"foreignKey:product_id" json:"product_skus"`
+	//ProductPartServants    []ProductPartServant `gorm:"foreignKey:product_id"` //商品分佣表
+	/*ProvinceId string  `gorm:"index;column:province_id;comment:'省id'"json:"province_id"`
+	Provuince  SysArea `gorm:"foreignKey:province_id"`
+	CityId     string  `gorm:"index;column:city_id;comment:'市id'" json:"city_id"`
+	City       SysArea `gorm:"foreignKey:city_id"`*/
+	Qualifications []Qualification `gorm:"foreignKey:prd_id" json:"qualifications"` //店铺资质管理
+	AreaId         string          `gorm:"index;column:area_id;comment:'区id'" json:"area_id"`
+	Area           SysArea         `gorm:"foreignKey:area_id" json:"area"`
 
-	ProductLogs []ProductLog `gorm:"foreignKey:goods_id"`
+	ProductLogs []ProductLog `gorm:"foreignKey:product_id"`
 	Model
 }
 
@@ -365,20 +374,26 @@ type ProductSku struct {
 	SalePriceErp float64 `gorm:"column:sale_price_erp;default:9999;comment:'erp批发价格(当批发价为0或者9999读取erp价格)'" json:"sale_price_erp"`
 	Stock        float64 `gorm:"column:stock;not null;comment:'库存'" json:"stock"`
 
-	IsChecked bool    `gorm:"column:is_checked;not null;comment:'是否选择'" json:"is_checked"`
-	GoodsId   int     `gorm:"index;column:goods_id;not null" json:"goods_id"`
-	Goods     Product `gorm:"foreignKey:goods_id"`
+	BatchNumber   string    `gorm:"column:batch_number;comment:'批号'" json:"batch_number"`
+	ProdutionDate time.Time `gorm:"column:prodution_date;date;comment:'生产日期'" json:"prodution_date"`
+	EffectiveDate time.Time `gorm:"column:effective_date;date;comment:'有效期至'" json:"effective_date"`
+
+	Imgs      []SysFile `gorm:"many2many:product_sku_img" json:"imgs"`
+	IsChecked bool      `gorm:"column:is_checked;not null;comment:'是否选择'" json:"is_checked"`
+	ProductId string    `gorm:"index;column:product_id;not null"  json:"product_id"`
+
+	Product Product `gorm:"foreignKey:product_id"`
 	Model
 }
 
 //ProductLog 商品日志表
 type ProductLog struct {
-	Id      string  `gorm:"primary_key;type:varchar(50);"`
-	GoodsId int     `gorm:"index;column:goods_id;not null" json:"goods_id"`
-	Goods   Product `gorm:"foreignKey:goods_id"`
-	Action  string  `gorm:"column:action;comment:'操作内容（比如发货之类的）'" json:"action"`
-	UserId  string  `gorm:"index;column:user_id;not null" json:"user_id"`
-	User    SysUser `gorm:"foreignKey:user_id"`
+	Id        string  `gorm:"primary_key;type:varchar(50);"`
+	ProductId int     `gorm:"index;column:product_id;not null" json:"product_id"`
+	Product   Product `gorm:"foreignKey:product_id"`
+	Action    string  `gorm:"column:action;comment:'操作内容（比如发货之类的）'" json:"action"`
+	UserId    string  `gorm:"index;column:user_id;not null" json:"user_id"`
+	User      SysUser `gorm:"foreignKey:user_id"`
 	Model
 }
 
@@ -387,11 +402,12 @@ type PartServant struct {
 	Id        string  `gorm:"primary_key;type:varchar(50);"`
 	PartType  string  `gorm:"index;column:part_type;not null;default:0;comment:'分佣方式（1固定金额，0百分比）'" json:"part_type"`
 	PartValue float64 `gorm:"column:part_value;not null;comment:'分佣值'" json:"part_value"`
-	//GoodsId                   string    `gorm:"index;column:goods_id;not null;comment:'商品编码'" json:"goods_id"`
-	//Goods           Product `gorm:"foreignKey:goods_id"`
-	PartPriceTypeId string    `gorm:"index;column:part_price_type_id;not null;comment:'费用类型（平台推广费。。。）'" json:"part_price_type_id"`
-	PartPriceType   SysTree   `gorm:"foreignKey:part_price_type_id"`
-	Area            []SysTree `gorm:"many2many:part_servant_"`
+	//ProductId                   string    `gorm:"index;column:product_id;not null;comment:'商品编码'" json:"product_id"`
+	//Goods           Product `gorm:"foreignKey:product_id"`
+	PartPriceTypeId string  `gorm:"index;column:part_price_type_id;not null;comment:'费用类型（平台推广费。。。）'" json:"part_price_type_id"`
+	PartPriceType   SysTree `gorm:"foreignKey:part_price_type_id"`
+	AreaId          string  `gorm:"index;column:area_id;not null;comment:'地址'" json:"area_id"`
+	Area            SysTree `gorm:"foreignKey:area_id"`
 	Model
 }
 
@@ -416,7 +432,7 @@ type Freight struct {
 	SecondPrice  float64 `gorm:"column:second_price;not null;comment:'续重价格'" json:"second_price"`
 	ExpressId    string  `gorm:"index;column:express_id;not null;comment:'物流公司ID'" json:"express_id"`
 	Express      Express `gorm:"foreignKey:express_id"`
-	AreaId       string  `gorm:"index;column:area_id;not null;comment:'物流公司ID'" json:"area_id"`
+	AreaId       string  `gorm:"index;column:area_id;not null;comment:'地址" json:"area_id"`
 	Area         SysTree `gorm:"foreignKey:area_id"`
 	IsDefault    bool    `gorm:"column:is_default;not null;comment:'是否为默认（只能有一个是默认的，默认地址支持全部可售范围）'" json:"is_default"`
 	Model
@@ -460,13 +476,13 @@ type Orders struct {
 	Remark string `gorm:"column:remark;comment:'订单备注'" json:"remark"`
 	Note   string `gorm:"column:note;comment:'管理员备注和促销规则描述'" json:"note"`
 
-	ProvinceId string  `gorm:"index;column:province_id;comment:'省id'"json:"province_id"`
+	/*ProvinceId string  `gorm:"index;column:province_id;comment:'省id'"json:"province_id"`
 	Provuince  SysArea `gorm:"foreignKey:province_id"`
 	CityId     string  `gorm:"index;column:city_id;comment:'市id'" json:"city_id"`
-	City       SysArea `gorm:"foreignKey:city_id"`
-	AreaId     string  `gorm:"index;column:area_id;comment:'区id'" json:"area_id"`
-	Area       SysArea `gorm:"foreignKey:area_id"`
-	Address    string  `gorm:"column:address;" json:"address"`
+	City       SysArea `gorm:"foreignKey:city_id"`*/
+	AreaId  string  `gorm:"index;column:area_id;comment:'区id'" json:"area_id"`
+	Area    SysArea `gorm:"foreignKey:area_id"`
+	Address string  `gorm:"column:address;" json:"address"`
 
 	Version int `gorm:"column:version;" json:"version"`
 
@@ -491,7 +507,7 @@ type Orders struct {
 //OrderItem 订单明细表
 type OrderItem struct {
 	Id                    string                 `gorm:"primary_key;type:varchar(50);"`
-	GoodsSkuId            string                 `gorm:"index;column:goods_sku_id;not null;comment:'商品编码'" json:"goods_sku_id"`
+	PrdSkuId              string                 `gorm:"index;column:prd_sku_id;not null;comment:'商品编码'" json:"prd_sku_id"`
 	OrderId               string                 `gorm:"index;column:order_id;" json:"order_id"`
 	Orders                Orders                 `gorm:"foreignKey:order_id"`
 	UnitPrice             float64                `gorm:"column:unit_price;not null;comment:'商品价格（单价（不打折前价格））'" json:"unit_price"`
@@ -540,11 +556,11 @@ type OrderItemPartServant struct {
 
 //Cart 购物车
 type Cart struct {
-	Id         string  `gorm:"primary_key;type:varchar(50);"`
-	UserId     string  `gorm:"index;column:userid;not null" json:"userid"`
-	GoodsSkuId string  `gorm:"index;column:goods_sku_id;not null" json:"goods_sku_id"`
-	Quantity   float64 `gorm:"column:quantity;not null" json:"quantity"`
-	IsChecked  bool    `gorm:"column:is_checked;not null" json:"is_checked"`
+	Id        string  `gorm:"primary_key;type:varchar(50);"`
+	UserId    string  `gorm:"index;column:userid;not null" json:"userid"`
+	PrdSkuId  string  `gorm:"index;column:prd_sku_id;not null" json:"prd_sku_id"`
+	Quantity  float64 `gorm:"column:quantity;not null" json:"quantity"`
+	IsChecked bool    `gorm:"column:is_checked;not null" json:"is_checked"`
 	Model
 }
 
@@ -569,7 +585,7 @@ type Prop struct {
 	Img        SysFile   `gorm:"foreignKey:img_id"`
 	ShopId     string    `gorm:"column:shop_id;comment:'商家'" json:"shop_id"`
 	Shop       SysShop   `gorm:"foreignKey:shop_id"`
-	Goods      []Product `gorm:"many2many:prop_goods"` //针对特定产品使用
+	Product    []Product `gorm:"many2many:prop_product" json:"product"` //针对特定产品使用
 	Model
 }
 

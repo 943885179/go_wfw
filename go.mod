@@ -8,6 +8,7 @@ require (
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/blevesearch/bleve v1.0.10 // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc
+	github.com/cao-guang/pinyin v0.0.0-20190927081849-38872b67965d // indirect
 	github.com/chai2010/webp v1.1.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200910202707-1e08a3fab204 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -42,6 +43,7 @@ require (
 	github.com/micro/grpc-go v0.0.0-20190130160115-549af9fb4bf2 // indirect
 	github.com/micro/protoc-gen-micro v1.0.0 // indirect
 	github.com/mojocn/base64Captcha v1.3.1
+	github.com/mozillazg/go-pinyin v0.18.0
 	github.com/onsi/ginkgo v1.10.1 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/pkg/errors v0.9.1
@@ -50,6 +52,7 @@ require (
 	github.com/smartystreets/assertions v1.0.1 // indirect
 	github.com/streadway/amqp v1.0.0 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
+	github.com/struCoder/Go-pinyin v1.0.3 // indirect
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.20
 	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
@@ -62,6 +65,7 @@ require (
 	github.com/yanyiwu/gojieba v1.1.2
 	golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee // indirect
 	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5
+	golang.org/x/sys v0.0.0-20201118182958-a01c418693c7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.23.0

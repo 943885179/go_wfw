@@ -102,6 +102,7 @@ message SysUser {//用户表
   //UserType user_type=30;
   SysTree user_type=30;
   string user_type_id=31;
+  repeated SysShop shops=32;
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
 }
@@ -338,8 +339,11 @@ message Product {
 
   SysShop shop=16;
   repeated SysFile imgs=17;
-  ProductSku product_skus=18;
-
+  repeated ProductSku product_skus=18;
+  string product_classify_id=19;//sha
+  SysTree product_classify=20;
+  string  area_id=21;
+  SysArea area=22;
 
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
@@ -357,7 +361,16 @@ message ProductSku {
   float sale_price_erp = 8;
   float stock = 9;//库存
   bool is_checked = 10;
-  Product goods=11;
+  //float  mpack_total = 11;//中包装数量
+  //float pack_total = 12;//件包装数量
+  string batch_number=11;
+  string prodution_date=12;
+  string effective_date=13;
+  
+  Product goods=14;
+  repeated SysFile imgs=15;
+  string product_id=16;
+  float cost_price = 17;//成本价格
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
 }

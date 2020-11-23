@@ -87,6 +87,7 @@ func (*Shop) EditShop(req *dbmodel.SysShop, resp *dbmodel.Id) error {
 				db.Where(ids).Find(&Shop.Imgs)
 			}
 		}
+		db.Model(&Shop).Association("Qualifications").Clear()
 		var q = NewQualifications()
 		for _, qualification := range req.Qualifications { //添加资质
 			qualification.ShopId = Shop.Id

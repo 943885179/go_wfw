@@ -63,9 +63,9 @@ func (*Qualifications) EditQualifications(req *dbmodel.Qualification, resp *dbmo
 	}
 	if strings.Contains(req.EndTime, "-") {
 		EndTime, _ = mzjtime.ParseInlocation(req.EndTime, mzjtime.YYYYMMDD_HORIZONTAL)
-	} else if strings.Contains(req.StartTime, "/") {
+	} else if strings.Contains(req.EndTime, "/") {
 		EndTime, _ = mzjtime.ParseInlocation(req.EndTime, mzjtime.YYYYMMDD_SLASH)
-	} else if strings.Contains(req.StartTime, ".") {
+	} else if strings.Contains(req.EndTime, ".") {
 		EndTime, _ = mzjtime.ParseInlocation(req.EndTime, mzjtime.YYYYMMDD_SPOT)
 	}
 	db := Conf.DbConfig.New()

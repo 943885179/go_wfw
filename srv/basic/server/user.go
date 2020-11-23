@@ -28,6 +28,7 @@ func (u User) UserById(id *dbmodel.Id, user *dbmodel.SysUser) error {
 	db := Conf.DbConfig.New().Model(&models.SysUser{})
 	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles")
 	db = db.Preload("Qualifications").Preload("Qualifications.QuaFiles").Preload("Qualifications.QuaType")
+	db = db.Preload("Area")
 	var dbu models.SysUser
 	if err := db.First(&dbu, id.Id).Error; err != nil {
 		return err
@@ -61,6 +62,7 @@ func (u User) EditUser(req *dbmodel.SysUser, resp *dbmodel.Id) error {
 		}
 	}
 	var q = NewQualifications()
+	db.Model(&user).Association("Qualifications").Clear()
 	for _, qualification := range req.Qualifications { //添加资质
 		qualification.UserId = user.Id
 		q.EditQualifications(qualification, &dbmodel.Id{})
@@ -103,8 +105,9 @@ func (u User) UserInfoList(req *basic.UserInfoListReq, resp *dbmodel.PageResp) e
 	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
 	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")
 	db = db.Limit(int(req.PageReq.Row)).Offset(int(req.PageReq.Page * req.PageReq.Row))
-	db = db.Preload("Province").Preload("City").Preload("Area") //地址
-	db = db.Preload("Icon")                                     //头像
+	//db = db.Preload("Province").Preload("City")
+	db = db.Preload("Area") //地址
+	db = db.Preload("Icon") //头像
 	var us []models.SysUser
 	if err := db.Find(&us).Error; err != nil {
 		return err
