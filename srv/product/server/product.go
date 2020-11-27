@@ -24,7 +24,9 @@ func NewProduct() IProduct {
 type Product struct{}
 
 func (*Product) ProductById(id *dbmodel.Id, product *dbmodel.Product) error {
-	db := Conf.DbConfig.New().Model(&models.Product{}).Preload("Imgs").Preload("ProductSkus").Preload("ProductSkus.Imgs")
+	db := Conf.DbConfig.New().Model(&models.Product{})
+	db = db.Preload("Imgs").Preload("ProductSkus").Preload("ProductSkus.Imgs")
+	db = db.Preload("Qualifications").Preload("Qualifications.QuaFiles")
 	var dbs models.Product
 	if err := db.First(&dbs, id.Id).Error; err != nil {
 		return err
@@ -35,6 +37,12 @@ func (*Product) ProductById(id *dbmodel.Id, product *dbmodel.Product) error {
 func (*Product) ProductList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.Product
 	db := Conf.DbConfig.New().Model(&models.Product{}).Preload("Imgs")
+	if len(req.Code) > 0 {
+		db = db.Where("goods_code like ?", "%"+req.Code+"%")
+	}
+	if len(req.Name) > 0 {
+		db = db.Where("goods_name like ? or goods_byname like ? or opcode like ?", "%"+req.Name+"%", "%"+req.Name+"%", "%"+req.Name+"%")
+	}
 	db.Count(&resp.Total)
 	req.Page -= 1 //分页查询页码减1
 	if resp.Total == 0 {
@@ -101,6 +109,15 @@ func (*Product) EditProduct(req *dbmodel.Product, resp *dbmodel.Id) (err error) 
 				return err
 			}
 		}
+		/*db.Model(&Product).Association("Qualifications").Clear()
+		for _, qualification := range req.Qualifications {
+			qualification.ForeignId = Product.Id
+			var quaReq = dbmodel.Id{}
+			err := EditQualifications(qualification, &quaReq)
+			if err != nil {
+				return err
+			}
+		}*/
 		return nil
 	} else { //添加
 		mzjstruct.CopyStruct(req, Product)
@@ -122,6 +139,14 @@ func (*Product) EditProduct(req *dbmodel.Product, resp *dbmodel.Id) (err error) 
 				return err
 			}
 		}
+		/*for _, qualification := range req.Qualifications {
+			qualification.ForeignId = Product.Id
+			var quaReq = dbmodel.Id{}
+			err := EditQualifications(qualification, &quaReq)
+			if err != nil {
+				return err
+			}
+		}*/
 		return nil
 	}
 }

@@ -11,6 +11,14 @@ import (
 type Handler struct {
 }
 
+func (h Handler) EditQualifications(ctx context.Context, qualifications *basic.Qualifications, e *empty.Empty) error {
+	return server.NewQualification().EditQualifications(qualifications)
+}
+
+func (h Handler) QualificationByForeignId(ctx context.Context, id *dbmodel.Id, qualifications *basic.Qualifications) error {
+	return server.NewQualification().QualificationByForeignId(id, qualifications)
+}
+
 func (h Handler) AreaById(ctx context.Context, id *dbmodel.Id, area *dbmodel.SysArea) error {
 	return server.NewArea().AreaById(id, area)
 }
@@ -35,12 +43,12 @@ func (h Handler) TreeByType(ctx context.Context, treeType *basic.TreeType, resp 
 	return server.NewTree().TreeByType(treeType, resp)
 }
 
-func (h Handler) EditQualifications(ctx context.Context, qualification *dbmodel.Qualification, id *dbmodel.Id) error {
-	return server.NewQualifications().EditQualifications(qualification, id)
+func (h Handler) EditQualification(ctx context.Context, qualification *dbmodel.Qualification, id *dbmodel.Id) error {
+	return server.NewQualification().EditQualification(qualification, id)
 }
 
-func (h Handler) DelQualifications(ctx context.Context, id *dbmodel.Id, id2 *dbmodel.Id) error {
-	return server.NewQualifications().DelQualifications(id, id2)
+func (h Handler) DelQualification(ctx context.Context, id *dbmodel.Id, id2 *dbmodel.Id) error {
+	return server.NewQualification().DelQualification(id, id2)
 }
 
 func (h Handler) MenuListByUser(ctx context.Context, user *dbmodel.SysUser, menu *dbmodel.OnlyMenu) error {

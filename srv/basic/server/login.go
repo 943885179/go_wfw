@@ -38,12 +38,13 @@ func (*loginByName) Login(req *basic.LoginReq, resp *basic.LoginResp) error {
 		return errors.New("用户名或密码不能为空")
 	}
 	db := Conf.DbConfig.New().Model(&models.SysUser{})
-	db = db.Preload("UserType")
+	//db = db.Preload("UserType")
 	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles") //注意大小写
 	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
 	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")
 	db = db.Preload("Area") //地址
 	db = db.Preload("Icon") //头像
+	db = db.Preload("Shop") //
 	u := models.SysUser{}
 	err := db.Where(&models.SysUser{UserName: req.UserNameOrPhoneOrEmail, UserPassword: mzjmd5.MD5(req.UserPasswordOrCode)}).First(&u).Error
 	if err != nil {
@@ -66,7 +67,7 @@ func (*loginByEmail) Login(req *basic.LoginReq, resp *basic.LoginResp) error {
 		return errors.New("验证码错误")
 	}
 	db := Conf.DbConfig.New().Model(&models.SysUser{})
-	db = db.Preload("UserType")
+	//db = db.Preload("UserType")
 	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles") //注意大小写
 	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
 	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")
@@ -96,7 +97,7 @@ func (*loginByPhone) Login(req *basic.LoginReq, resp *basic.LoginResp) error {
 		return errors.New("验证码错误")
 	}
 	db := Conf.DbConfig.New().Model(&models.SysUser{})
-	db = db.Preload("UserType")
+	//db = db.Preload("UserType")
 	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles") //注意大小写
 	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
 	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")

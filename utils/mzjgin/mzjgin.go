@@ -48,8 +48,7 @@ const (
 )
 
 var (
-	UserId, LoginToken string   //基础变量 用户id，店铺id,登录的token
-	ShopId             []string //店铺，一个人可以开多个店铺
+	UserId, ShopId, LoginToken string //基础变量 用户id，店铺id,登录的token 店铺
 )
 
 func (c RespCode) String() string {
@@ -284,7 +283,8 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 				return
 			}
 		}
-		resp, err := TokenResp(c)
+		LoginToken = c.Request.Header.Get("token")
+		resp, err := TokenResp(LoginToken)
 		if err != nil {
 			apiresp.APIResult(c, http.StatusUnauthorized, err.Error())
 			return
@@ -313,8 +313,10 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 		c.Next()
 	}
 }
-func TokenResp(c *gin.Context) (resp basic.LoginResp, err error) {
-	conf.Jwt.Token = c.Request.Header.Get("token")
+func TokenResp(token string) (resp basic.LoginResp, err error) {
+	//conf.Jwt.Token = c.Request.Header.Get("token")
+	//LoginToken = c.Request.Header.Get("token")
+	conf.Jwt.Token = token
 	if conf.Jwt.Token == "" {
 		return resp, errors.New("读取token失败")
 	}
@@ -329,10 +331,7 @@ func TokenResp(c *gin.Context) (resp basic.LoginResp, err error) {
 		return resp, errors.New("已经再其他地方登录，被迫下线,请重新登录")
 	}
 	UserId = resp.User.Id
-	for _, shop := range resp.User.Shops {
-		ShopId = append(ShopId, shop.Id)
-	}
-	LoginToken = c.Request.Header.Get("token")
+	ShopId = resp.User.Shop.Id
 	/*context := mzjContext{
 		user_id: resp.User.Id,
 		//shop_id: resp.User.Shop.Id,

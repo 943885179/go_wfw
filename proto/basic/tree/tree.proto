@@ -1,0 +1,18 @@
+syntax ="proto3";
+package tree;
+import "google/protobuf/empty.proto";
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
+service TreeSrv{
+  rpc EditTree(dbmodel.SysTree)returns(dbmodel.Id){}//编辑树
+  rpc DelTree(dbmodel.Id)returns(dbmodel.Id){}
+  rpc TreeList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc TreeById(dbmodel.Id)returns(dbmodel.SysTree){}
+  rpc TreeTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
+  rpc TreeByType (TreeType) returns (dbmodel.TreeResp);
+
+  
+}
+message TreeType {
+  dbmodel.TreeType tree_type=1;
+}

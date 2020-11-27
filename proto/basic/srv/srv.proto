@@ -1,0 +1,11 @@
+syntax ="proto3";
+package srv;
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
+service SrvSrv{
+  rpc EditSrv(dbmodel.SysSrv)returns(dbmodel.Id){}//编辑服务
+  rpc DelSrv(dbmodel.Id)returns(dbmodel.Id){}
+  rpc SrvList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc SrvById(dbmodel.Id)returns(dbmodel.SysSrv){}
+  rpc SrvListByUser(dbmodel.SysUser)returns(dbmodel.OnlySrv){}
+}

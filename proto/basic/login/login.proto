@@ -1,0 +1,21 @@
+syntax ="proto3";
+package login;
+import "proto/dbmodel/dbmodel.proto";
+service LoginSrv{
+  rpc Login(LoginReq)returns(LoginResp){} //登录
+}
+//用户登录
+message LoginReq{
+  dbmodel.LoginType login_type=1;
+  string  user_name_or_phone_or_email=2;//用户名
+  string user_password_or_code=3;//密码
+}
+//用户登录返回
+message LoginResp{
+  TokenResp token=1;//token
+  dbmodel.SysUser user=2;//用户名
+}
+message TokenResp{
+  string token=1;//token
+  int64 expired=2;//过期时间
+}

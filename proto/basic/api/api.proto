@@ -1,0 +1,11 @@
+syntax ="proto3";
+package api;
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
+service ApiSrv{
+  rpc EditApi(dbmodel.SysApi)returns(dbmodel.Id){}//编辑SysApi
+  rpc DelApi(dbmodel.Id)returns(dbmodel.Id){}
+  rpc ApiList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc ApiById(dbmodel.Id)returns(dbmodel.SysApi){}
+  rpc ApiListByUser(dbmodel.SysUser)returns(dbmodel.OnlyApi){}
+}

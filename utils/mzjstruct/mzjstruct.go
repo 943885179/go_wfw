@@ -37,3 +37,19 @@ func CopyStructs(src, dst interface{}) {
 		}
 	}
 }
+func RemoveSliceMap(a []interface{}) (ret []interface{}) {
+	n := len(a)
+	for i := 0; i < n; i++ {
+		state := false
+		for j := i + 1; j < n; j++ {
+			if j > 0 && reflect.DeepEqual(a[i], a[j]) {
+				state = true
+				break
+			}
+		}
+		if !state {
+			ret = append(ret, a[i])
+		}
+	}
+	return
+}

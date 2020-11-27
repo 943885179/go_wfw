@@ -29,14 +29,14 @@ service BasicSrv{
   rpc MenuList(dbmodel.PageReq)returns(dbmodel.PageResp){}
   rpc MenuTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
 
-
+  
   rpc EditArea(dbmodel.SysArea)returns(dbmodel.Id){}//编辑地址
   rpc DelArea(dbmodel.Id)returns(dbmodel.Id){}
   rpc AreaList(dbmodel.PageReq)returns(dbmodel.PageResp){}
   rpc AreaTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
   rpc AreaById(dbmodel.Id)returns(dbmodel.SysArea){}
 
-
+  
   rpc MenuListByUser(dbmodel.SysUser)returns(dbmodel.OnlyMenu){}
 
   rpc MenuById(dbmodel.Id)returns(dbmodel.SysMenu){}
@@ -59,16 +59,16 @@ service BasicSrv{
   rpc TreeById(dbmodel.Id)returns(dbmodel.SysTree){}
   rpc TreeTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
   rpc TreeByType (TreeType) returns (dbmodel.TreeResp);
-
+  
   rpc EditShop (dbmodel.SysShop) returns (dbmodel.Id);
   rpc DelShop(dbmodel.Id)returns(dbmodel.Id){}
   rpc ShopList(dbmodel.PageReq)returns(dbmodel.PageResp){}
   rpc ShopById(dbmodel.Id)returns(dbmodel.SysShop){}
 
   rpc EditQualification (dbmodel.Qualification) returns (dbmodel.Id);
-  rpc EditQualifications (Qualifications) returns (google.protobuf.Empty);
   rpc DelQualification(dbmodel.Id)returns(dbmodel.Id){}
-  rpc QualificationByForeignId(dbmodel.Id)returns(Qualifications){}
+  rpc QualificationByForeignId(dbmodel.Id)returns(dbmodel.Qualification){}
+  
 }
 message TreeType {
   dbmodel.TreeType tree_type=1;
@@ -91,12 +91,13 @@ message TokenResp{
 }
 //用户注册请求
 message RegistryReq{
-  // dbmodel.UserType user_type=6;//用户类型（注册通道）
+  //dbmodel.UserType user_type=6;//用户类型（注册通道）
   string user_name=1;//用户名
   string user_password=2;//密码
   string user_password_again=3;//确认密码
   string user_phone=4;//电话
   string user_phone_code=5;//验证码
+  string user_type_code=6;//用户类型（注册通道）
 }
 //修改密码
 message ChangePasswordReq{
@@ -110,7 +111,4 @@ message UserInfoListReq{
   string user_name=3;//用户名(查询条件)
   string user_phone=4;//电话(查询条件)
   string user_email=5;//邮箱(查询条件)
-}
-message Qualifications{
-  repeated dbmodel.Qualification data=1;
 }

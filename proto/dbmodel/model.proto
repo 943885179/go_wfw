@@ -11,7 +11,8 @@ message PageReq{
     string title=7;
     string text=8;
     string user_id=9;//登录的用户id
-    repeated string user_shop=10;//店铺
+    string shop_id=10;//登录的用户id
+    //repeated string user_shop=10;//店铺
     string token =11;//登录token
   }
 message PageResp{

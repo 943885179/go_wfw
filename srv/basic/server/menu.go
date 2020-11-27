@@ -2,12 +2,12 @@ package server
 
 import (
 	"errors"
-	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
-	"strings"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
 type IMenu interface {
@@ -64,28 +64,20 @@ func (m *Menu) MenuListByUser(req *dbmodel.SysUser, resp *dbmodel.OnlyMenu) erro
 	db = db.Preload("Children.Children.Children.Children")
 	db.Find(&ms)
 	var hasIds []string
-	if strings.ToLower(req.UserType.Code) == strings.ToLower("admin") { // 超级管理员有所有的菜单权限，不受约束
-		var allmenus []models.SysMenu
-		Conf.DbConfig.New().Find(&allmenus)
-		for _, menu := range allmenus {
-			hasIds = append(hasIds, menu.Id)
-		}
-	} else {
-		for _, group := range req.Groups {
-			for _, role := range group.Roles {
-				for _, menu := range role.Menus {
-					hasIds = append(hasIds, menu.Id)
-				}
-			}
-		}
-		for _, role := range req.Roles {
+	for _, group := range req.Groups {
+		for _, role := range group.Roles {
 			for _, menu := range role.Menus {
 				hasIds = append(hasIds, menu.Id)
 			}
 		}
-		tree := menuTree(hasIds, ms)
-		mzjstruct.CopyStruct(&tree, &resp.Menus)
 	}
+	for _, role := range req.Roles {
+		for _, menu := range role.Menus {
+			hasIds = append(hasIds, menu.Id)
+		}
+	}
+	tree := menuTree(hasIds, ms)
+	mzjstruct.CopyStruct(&tree, &resp.Menus)
 	return nil
 }
 func menuTree(hasIds []string, menus []models.SysMenu) []models.SysMenu {
@@ -112,7 +104,7 @@ func (m *Menu) MenuList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.SysMenu
 	db := Conf.DbConfig.New().Model(&models.SysMenu{}) //.Where("p_id=''")
 	db.Count(&resp.Total)
-	req.Page -= 1 //分页查询页码减1
+	req.Page = req.Page - 1 //分页查询页码减1
 	if resp.Total == 0 {
 		return nil
 	}
@@ -150,7 +142,7 @@ func (*Menu) EditMenu(req *dbmodel.SysMenu, resp *dbmodel.Id) error {
 		menu.Title = menu.Text
 		resp.Id = menu.Id
 		return db.Updates(menu).Error
-	} else { //添加
+	} else {
 		mzjstruct.CopyStruct(req, menu)
 		menu.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 		menu.Key = menu.Id

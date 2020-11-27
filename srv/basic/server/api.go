@@ -2,12 +2,12 @@ package server
 
 import (
 	"errors"
-	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
-	"strings"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
 type IApi interface {
@@ -29,39 +29,30 @@ func (a *Api) ApiListByUser(req *dbmodel.SysUser, resp *dbmodel.OnlyApi) error {
 	Conf.DbConfig.New().Find(&all)
 	/*var ut models.SysTree
 	Conf.DbConfig.New().First(&ut, req.UserTypeId)*/
-	if strings.ToLower(req.UserType.Code) == strings.ToLower("admin") { // 超级管理员有所有的菜单权限，不受约束
-		for _, a := range all {
-			var d dbmodel.SysApi
-			mzjstruct.CopyStruct(&a, &d)
-			resp.Apis = append(resp.Apis, &d)
-		}
-		return nil
-	} else {
-		var hasIds []string
-		for _, group := range req.Groups {
-			for _, role := range group.Roles {
-				for _, a := range role.Apis {
-					hasIds = append(hasIds, a.Id)
-				}
-			}
-		}
-		for _, role := range req.Roles {
+	var hasIds []string
+	for _, group := range req.Groups {
+		for _, role := range group.Roles {
 			for _, a := range role.Apis {
 				hasIds = append(hasIds, a.Id)
 			}
 		}
-		for _, a := range all {
-			for _, id := range hasIds {
-				if id == a.Id {
-					var d dbmodel.SysApi
-					mzjstruct.CopyStruct(&a, &d)
-					resp.Apis = append(resp.Apis, &d)
-					break
-				}
+	}
+	for _, role := range req.Roles {
+		for _, a := range role.Apis {
+			hasIds = append(hasIds, a.Id)
+		}
+	}
+	for _, a := range all {
+		for _, id := range hasIds {
+			if id == a.Id {
+				var d dbmodel.SysApi
+				mzjstruct.CopyStruct(&a, &d)
+				resp.Apis = append(resp.Apis, &d)
+				break
 			}
 		}
-		return nil
 	}
+	return nil
 }
 
 func (a *Api) ApiById(id *dbmodel.Id, api *dbmodel.SysApi) error {
@@ -107,7 +98,7 @@ func (*Api) EditApi(req *dbmodel.SysApi, resp *dbmodel.Id) error {
 		mzjstruct.CopyStruct(req, api)
 		resp.Id = api.Id
 		return db.Updates(api).Error
-	} else { //添加
+	} else {
 		mzjstruct.CopyStruct(req, api)
 		api.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 		resp.Id = api.Id

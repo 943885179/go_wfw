@@ -1,0 +1,15 @@
+syntax ="proto3";
+package qualification;
+import "google/protobuf/empty.proto";
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
+service QualificationSrv{
+  rpc EditQualification (dbmodel.Qualification) returns (dbmodel.Id);
+  rpc EditQualifications (Qualifications) returns (google.protobuf.Empty);
+  rpc DelQualification(dbmodel.Id)returns(dbmodel.Id){}
+  rpc QualificationByForeignId(dbmodel.Id)returns(Qualifications){}
+  
+}
+message Qualifications{
+  repeated dbmodel.Qualification data=1;
+}

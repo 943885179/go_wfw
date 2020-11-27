@@ -2,11 +2,12 @@ package server
 
 import (
 	"errors"
-	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
 type IArea interface {
@@ -52,7 +53,7 @@ func (t *Area) AreaList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 		db = db.Where("text like ?", "%"+req.Text+"%")
 	}
 	db.Count(&resp.Total)
-	req.Page -= 1 //分页查询页码减1
+	req.Page = req.Page - 1 //分页查询页码减1
 	if resp.Total == 0 {
 		return nil
 	}
@@ -90,7 +91,7 @@ func (*Area) EditArea(req *dbmodel.SysArea, resp *dbmodel.Id) error {
 		resp.Id = Area.Id
 		Area.Title = Area.Text
 		return db.Updates(Area).Error
-	} else { //添加
+	} else {
 		mzjstruct.CopyStruct(req, Area)
 		Area.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 		Area.Key = Area.Id

@@ -2,12 +2,13 @@ package server
 
 import (
 	"errors"
-	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
 	"qshapi/proto/basic"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
 type ITree interface {
@@ -17,6 +18,7 @@ type ITree interface {
 	TreeById(id *dbmodel.Id, tree *dbmodel.SysTree) error
 	TreeTree(resp *dbmodel.TreeResp) error
 	TreeByType(req *basic.TreeType, resp *dbmodel.TreeResp) error
+	TreeOneByCode(code string, resp *dbmodel.SysTree) error
 }
 
 func NewTree() ITree {
@@ -24,6 +26,10 @@ func NewTree() ITree {
 }
 
 type Tree struct{}
+
+func (t *Tree) TreeOneByCode(code string, resp *dbmodel.SysTree) error {
+	return Conf.DbConfig.New().Model(&models.SysTree{}).Where("code=?", code).First(resp).Error
+}
 
 func (r *Tree) TreeTree(resp *dbmodel.TreeResp) error {
 	var data []models.SysTree
@@ -99,7 +105,12 @@ func (*Tree) DelTree(req *dbmodel.Id, resp *dbmodel.Id) error {
 func (*Tree) EditTree(req *dbmodel.SysTree, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	Tree := &models.SysTree{}
+	var codeTree = models.SysTree{}
+	db.Model(&models.SysTree{}).Where("code=?", req.Code).First(&codeTree)
 	if len(req.Id) > 0 { //修改0
+		if req.Id != codeTree.Id {
+			return errors.New("编码已存在")
+		}
 		if err := db.First(Tree, req.Id).Error; err != nil {
 			if Conf.DbConfig.IsErrRecordNotFound(err) {
 				return errors.New("修改失败,数据不存在")
@@ -111,6 +122,9 @@ func (*Tree) EditTree(req *dbmodel.SysTree, resp *dbmodel.Id) error {
 		Tree.Title = Tree.Text
 		return db.Updates(Tree).Error
 	} else { //添加
+		if len(codeTree.Id) > 0 {
+			return errors.New("编码已存在")
+		}
 		mzjstruct.CopyStruct(req, Tree)
 		Tree.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 		Tree.Key = Tree.Id

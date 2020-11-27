@@ -1,0 +1,17 @@
+syntax ="proto3";
+package registry;
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
+service RegistrySrv{
+  rpc Registry(RegistryReq)returns(dbmodel.Id){} //注册
+}
+//用户注册请求
+message RegistryReq{
+  //dbmodel.UserType user_type=6;//用户类型（注册通道）
+  string user_name=1;//用户名
+  string user_password=2;//密码
+  string user_password_again=3;//确认密码
+  string user_phone=4;//电话
+  string user_phone_code=5;//验证码
+  string user_type_code=6;//用户类型（注册通道）
+}

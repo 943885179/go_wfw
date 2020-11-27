@@ -29,7 +29,7 @@ func init() {
 	return s[:size]
 }*/
 func main() {
-	//dbInit()
+	dbInit()
 	//initArea()
 	/*initTree()
 	initMenu()

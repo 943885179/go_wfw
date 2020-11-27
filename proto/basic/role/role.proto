@@ -1,0 +1,12 @@
+syntax ="proto3";
+package role;
+import "google/protobuf/empty.proto";
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
+service RoleSrv{
+  rpc EditRole(dbmodel.SysRole)returns(dbmodel.Id){}//编辑角色
+  rpc DelRole(dbmodel.Id)returns(dbmodel.Id){}
+  rpc RoleList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc RoleById(dbmodel.Id)returns(dbmodel.SysRole){}//查询
+  rpc RoleTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
+}

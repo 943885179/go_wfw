@@ -105,8 +105,10 @@ func SrvGin() *gin.Engine {
 		r.POST("ShopList", ShopList)
 		r.GET("/ShopById/:id", ShopById)
 
+		r.POST("EditQualification", EditQualification)
 		r.POST("EditQualifications", EditQualifications)
-		r.POST("DelQualifications", DelQualifications)
+		r.POST("DelQualification", DelQualification)
+		r.GET("/QualificationByForeignId/:id", QualificationByForeignId)
 
 		r.GET("Token", Token)
 	}
@@ -114,7 +116,9 @@ func SrvGin() *gin.Engine {
 }
 
 func Token(c *gin.Context) {
-	user, err := mzjgin.TokenResp(c)
+	//user, err := mzjgin.TokenResp(c)
+	token := c.Request.Header.Get("token")
+	user, err := mzjgin.TokenResp(token)
 	result, err := client.MenuListByUser(context.TODO(), user.User)
 	resp.MicroResp(c, result, err)
 }
@@ -326,18 +330,23 @@ func ChangePassword(c *gin.Context) {
 func EditShop(c *gin.Context) {
 	req := dbmodel.SysShop{}
 	c.Bind(&req)
+	//添加当前用户
+	req.UserId = mzjgin.UserId
 	result, err := client.EditShop(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func DelShop(c *gin.Context) {
 	req := dbmodel.Id{}
 	c.Bind(&req)
+	//添加当前用户
+	req.UserId = mzjgin.UserId
 	result, err := client.DelShop(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 func ShopList(c *gin.Context) {
 	req := dbmodel.PageReq{}
 	c.Bind(&req)
+	req.UserId = mzjgin.UserId
 	result, err := client.ShopList(context.TODO(), &req)
 	var rs []dbmodel.SysShop
 	for _, any := range result.Data {
@@ -426,17 +435,29 @@ func RoleTree(c *gin.Context) {
 	result, err := client.RoleTree(context.TODO(), &empty.Empty{})
 	resp.MicroResp(c, result, err)
 }
-func EditQualifications(c *gin.Context) {
+func EditQualification(c *gin.Context) {
 	req := dbmodel.Qualification{}
+	c.Bind(&req)
+	result, err := client.EditQualification(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func EditQualifications(c *gin.Context) {
+	req := basic.Qualifications{}
 	c.Bind(&req)
 	result, err := client.EditQualifications(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
-
-func DelQualifications(c *gin.Context) {
+func DelQualification(c *gin.Context) {
 	req := dbmodel.Id{}
 	c.Bind(&req)
-	result, err := client.DelQualifications(context.TODO(), &req)
+	result, err := client.DelQualification(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func QualificationByForeignId(c *gin.Context) {
+	req := dbmodel.Id{
+		Id: c.Param("id"),
+	}
+	result, err := client.QualificationByForeignId(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
 

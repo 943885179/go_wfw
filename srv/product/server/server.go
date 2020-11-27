@@ -1,9 +1,11 @@
 package server
 
 import (
+	"context"
 	"github.com/micro/go-micro/v2/util/log"
 	"qshapi/models"
 	"qshapi/proto/basic"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjinit"
 )
 
@@ -22,16 +24,11 @@ func init() {
 	basicClient = basic.NewBasicSrvService(Conf.Services[svName].Name, service.NewRoundSrv().Options().Client)
 }
 
-/*
-func CodeVerify(emailOrPhone, code string) (bool, error) {
-	req := &send.CodeVerifyReq{
-		Code:         code,
-		EmailOrPhone: emailOrPhone,
-	}
-	resp, err := sendClient.CodeVerify(context.Background(), req)
-	if err != nil {
-		fmt.Println("读取服务失败", err)
-		return false, err
-	}
-	return resp.Verify, nil
+/*func TokenResp(token string) (basic.LoginResp, error) {
+	return mzjgin.TokenResp(token)
 }*/
+
+func EditQualifications(req *dbmodel.Qualification, resp *dbmodel.Id) error {
+	resp, err := basicClient.EditQualification(context.TODO(), req)
+	return err
+}

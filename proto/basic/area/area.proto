@@ -1,0 +1,12 @@
+syntax ="proto3";
+package area;
+import "google/protobuf/empty.proto";
+import "proto/dbmodel/dbmodel.proto";
+import "proto/dbmodel/model.proto";
+service AreaSrv{
+  rpc EditArea(dbmodel.SysArea)returns(dbmodel.Id){}//编辑地址
+  rpc DelArea(dbmodel.Id)returns(dbmodel.Id){}
+  rpc AreaList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc AreaTree(google.protobuf.Empty)returns(dbmodel.TreeResp){}
+  rpc AreaById(dbmodel.Id)returns(dbmodel.SysArea){}
+}

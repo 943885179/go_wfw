@@ -2,11 +2,12 @@ package server
 
 import (
 	"errors"
-	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
 type IShop interface {
@@ -38,7 +39,7 @@ func (a *Shop) ShopList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.SysShop
 	db := Conf.DbConfig.New().Model(&models.SysShop{}).Preload("Logo").Preload("Imgs")
 	db.Count(&resp.Total)
-	req.Page -= 1 //分页查询页码减1
+	req.Page = req.Page - 1 //分页查询页码减1
 	if resp.Total == 0 {
 		return nil
 	}
@@ -87,24 +88,24 @@ func (*Shop) EditShop(req *dbmodel.SysShop, resp *dbmodel.Id) error {
 				db.Where(ids).Find(&Shop.Imgs)
 			}
 		}
-		db.Model(&Shop).Association("Qualifications").Clear()
-		var q = NewQualifications()
+		/*db.Model(&Shop).Association("Qualifications").Clear()
+		var q = NewQualification()
 		for _, qualification := range req.Qualifications { //添加资质
-			qualification.ShopId = Shop.Id
-			q.EditQualifications(qualification, &dbmodel.Id{})
-		}
+			qualification.ForeignId = Shop.Id
+			q.EditQualification(qualification, &dbmodel.Id{})
+		}*/
 		return db.Updates(Shop).Error
-	} else { //添加
+	} else {
 		mzjstruct.CopyStruct(req, Shop)
 		Shop.Id = mzjuuid.WorkerDefaultStr(Conf.WorkerId)
 		resp.Id = Shop.Id
 		if req.Logo != nil {
 			Shop.LogoId = req.Logo.Id
 		}
-		var q = NewQualifications()
+		var q = NewQualification()
 		for _, qualification := range req.Qualifications { //添加资质
-			qualification.ShopId = Shop.Id
-			q.EditQualifications(qualification, &dbmodel.Id{})
+			qualification.ForeignId = Shop.Id
+			q.EditQualification(qualification, &dbmodel.Id{})
 		}
 		return db.Create(Shop).Error
 	}

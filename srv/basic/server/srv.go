@@ -7,7 +7,6 @@ import (
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjuuid"
-	"strings"
 )
 
 type ISrv interface {
@@ -27,39 +26,30 @@ type Srv struct{}
 func (a *Srv) SrvListByUser(req *dbmodel.SysUser, resp *dbmodel.OnlySrv) error {
 	var all []models.SysSrv
 	Conf.DbConfig.New().Find(&all)
-	if strings.ToLower(req.UserType.Code) == strings.ToLower("admin") { // 超级管理员有所有的菜单权限，不受约束
-		for _, a := range all {
-			var d dbmodel.SysSrv
-			mzjstruct.CopyStruct(&a, &d)
-			resp.Srvs = append(resp.Srvs, &d)
-		}
-		return nil
-	} else {
-		var hasIds []string
-		for _, group := range req.Groups {
-			for _, role := range group.Roles {
-				for _, a := range role.Srvs {
-					hasIds = append(hasIds, a.Id)
-				}
-			}
-		}
-		for _, role := range req.Roles {
+	var hasIds []string
+	for _, group := range req.Groups {
+		for _, role := range group.Roles {
 			for _, a := range role.Srvs {
 				hasIds = append(hasIds, a.Id)
 			}
 		}
-		for _, a := range all {
-			for _, id := range hasIds {
-				if id == a.Id {
-					var d dbmodel.SysSrv
-					mzjstruct.CopyStruct(&a, &d)
-					resp.Srvs = append(resp.Srvs, &d)
-					break
-				}
+	}
+	for _, role := range req.Roles {
+		for _, a := range role.Srvs {
+			hasIds = append(hasIds, a.Id)
+		}
+	}
+	for _, a := range all {
+		for _, id := range hasIds {
+			if id == a.Id {
+				var d dbmodel.SysSrv
+				mzjstruct.CopyStruct(&a, &d)
+				resp.Srvs = append(resp.Srvs, &d)
+				break
 			}
 		}
-		return nil
 	}
+	return nil
 }
 func (a *Srv) SrvById(id *dbmodel.Id, srv *dbmodel.SysSrv) error {
 	return Conf.DbConfig.New().Model(&models.SysSrv{}).First(srv, id.Id).Error

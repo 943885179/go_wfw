@@ -2,12 +2,13 @@ package server
 
 import (
 	"errors"
-	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
 	"qshapi/proto/basic"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjmd5"
 	"qshapi/utils/mzjstruct"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
 type IUser interface {
@@ -29,6 +30,7 @@ func (u User) UserById(id *dbmodel.Id, user *dbmodel.SysUser) error {
 	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles")
 	db = db.Preload("Qualifications").Preload("Qualifications.QuaFiles").Preload("Qualifications.QuaType")
 	db = db.Preload("Area")
+	db = db.Preload("Shop") //
 	var dbu models.SysUser
 	if err := db.First(&dbu, id.Id).Error; err != nil {
 		return err
@@ -61,12 +63,13 @@ func (u User) EditUser(req *dbmodel.SysUser, resp *dbmodel.Id) error {
 			db.Model(&models.SysGroup{}).Where(ids).Find(&user.Groups)
 		}
 	}
-	var q = NewQualifications()
+	//资质上传单独处理
+	/*var q = NewQualification()
 	db.Model(&user).Association("Qualifications").Clear()
 	for _, qualification := range req.Qualifications { //添加资质
-		qualification.UserId = user.Id
-		q.EditQualifications(qualification, &dbmodel.Id{})
-	}
+		qualification.ForeignId = user.Id
+		q.EditQualification(qualification, &dbmodel.Id{})
+	}*/
 	return db.Updates(user).Error
 }
 
@@ -100,7 +103,7 @@ func (u User) UserInfoList(req *basic.UserInfoListReq, resp *dbmodel.PageResp) e
 	if resp.Total == 0 {
 		return nil
 	}
-	req.PageReq.Page -= 1                                              //分页查询页码减1
+	req.PageReq.Page = req.PageReq.Page - 1                            //分页查询页码减1
 	db = db.Preload("Roles").Preload("Groups").Preload("Groups.Roles") //注意大小写
 	db = db.Preload("Roles.Srvs").Preload("Roles.Apis").Preload("Roles.Menus").Preload("Roles.Menus.Children").Preload("Roles.Menus.Children.Children")
 	db = db.Preload("Groups.Roles.Srvs").Preload("Groups.Roles.Apis").Preload("Groups.Roles.Menus").Preload("Groups.Roles.Menus.Children").Preload("Groups.Roles.Menus.Children.Children")

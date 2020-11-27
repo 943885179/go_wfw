@@ -62,6 +62,7 @@ func SrvGin() *gin.Engine {
 func EditProduct(c *gin.Context) {
 	req := dbmodel.Product{}
 	c.Bind(&req)
+	req.ShopId = mzjgin.ShopId
 	result, err := client.EditProduct(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }
@@ -75,7 +76,7 @@ func ProductList(c *gin.Context) {
 	req := dbmodel.PageReq{}
 	c.Bind(&req)
 	req.UserId = mzjgin.UserId
-	req.UserShop = mzjgin.ShopId
+	req.ShopId = mzjgin.ShopId
 	req.Token = mzjgin.LoginToken
 	result, err := client.ProductList(context.TODO(), &req)
 	var rs []dbmodel.Product

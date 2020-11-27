@@ -3,11 +3,11 @@ package dbmodel;
 import public "google/protobuf/timestamp.proto";
 
 enum TreeType{
-  AREA=0;//地址
+  AREA=0;//地址，已经提取出去单独做表
   PRD=1;//商品类型
   QUA=2;//资质类型
-  USER=3;//用户类型
-  FILE=4;//文件类型
+  USER=3;//用户类型，已经提取出去做常量了
+  FILE=4;//文件类型,已经提取出去做产量
   DEP=5;//部门结构
   MENU=6;//菜单，已经单独独立出去了
   LOGIN=7;//登录方式，单独做枚举了，因为添加登录类型的时候也要添加相应的登录方式代码
@@ -21,12 +21,11 @@ enum LoginType{
   EMAIL=2;//邮箱登录
 }
 
-/*
-enum UserType{
-  PLATFORM=0;//平台用户（业务员）
-  SHOP=1;//平台入驻商家（商家，批发商）
-  CUSTOMER=2;//平台客户（客户，采购商）
-  
+
+enum UserType{//用于设计用户数据权限
+  PLATFORM=0;//平台用户（业务员）：能够查询区域的商家
+  SHOP=1;//平台入驻商家（商家，批发商）：能够查询自己的商品
+  CUSTOMER=2;//平台客户（客户，采购商）：能够查询区域的商家
   ADMIN =9527; //超级管理员
 }
 enum FileType{
@@ -37,6 +36,8 @@ enum FileType{
   PRODUCTIMG=4;//商品图片
   OTHERIMG=5;//其他图片
 }
+
+/*资质先不单独拿出来，因为资质不固定
 enum QuaType{//资质类型 参照http://www.twgrace.cn/chanpinrenzheng/p12.html
   IDCARD=0;//身份证
   BANCKCARD=1;//银行卡
@@ -60,9 +61,8 @@ enum QuaType{//资质类型 参照http://www.twgrace.cn/chanpinrenzheng/p12.html
   KHXKZ=19;//开户许可证
   SHOPURL=20;//网店完整的域名截图照片（含店铺信息）
   BIZLICENSEADREES=21;//商户营业场所照片
-  OTHER=22;//其他资质
-}
-*/
+  OTHERS=22;//其他资质
+}*/
 
 message SysUser {//用户表
   string  id = 1;
@@ -99,10 +99,11 @@ message SysUser {//用户表
   repeated SysGroup groups=27;
   repeated LogisticsAddress logistics_addresss=28;// 发收货地址管理
   repeated Qualification qualifications=29;
-  //UserType user_type=30;
-  SysTree user_type=30;
-  string user_type_id=31;
-  repeated SysShop shops=32;
+  UserType user_type=30;
+  //SysTree user_type=30;
+  //string user_type_id=31;
+  //repeated SysShop shops=32;
+  SysShop shop=32;
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
 }
@@ -123,9 +124,9 @@ message SysFile{//SysFile文件
   string size=4;//大小
   string  file_explain=5;//描述
   int32 sort=6;//排序
- // FileType file_type=7;//图片类型
-  SysTree file_type=7;//图片类型
-  string file_type_id=8;
+  FileType file_type=7;//图片类型
+ /* SysTree file_type=7;//图片类型
+  string file_type_id=8;*/
   string file_suffix=9;//图片后缀
 
   string created = 98;//创建时间，时间戳秒
@@ -263,8 +264,10 @@ message Qualification {
 
   string id=1;//id,有则修改，无则添加
   bool is_default = 2;
-  string user_id = 3;
+  /*string user_id = 3;
   string shop_id=4;
+  string prd_id=12;*/
+  string foreign_id=3;
   //QuaType qua_type=5;
   SysTree qua_type=5;
   string qua_type_id=11;
@@ -299,7 +302,8 @@ message SysShop {//店铺
   float point = 15;//积分
   SysFile logo=16;
   repeated SysFile classify=17;//商家分类
-  repeated SysUser user=18;
+  //repeated SysUser user=18;
+  string user_id=18;
   repeated SysFile imgs=19;
   repeated Qualification qualifications=20;
 
@@ -338,12 +342,14 @@ message Product {
   string goods_explain = 15;//商品描述
 
   SysShop shop=16;
-  repeated SysFile imgs=17;
-  repeated ProductSku product_skus=18;
-  string product_classify_id=19;//sha
-  SysTree product_classify=20;
-  string  area_id=21;
-  SysArea area=22;
+  string shop_id=17;
+  repeated SysFile imgs=18;
+  repeated ProductSku product_skus=19;
+  string product_classify_id=20;//sha
+  SysTree product_classify=21;
+  string  area_id=22;
+  SysArea area=23;
+  repeated Qualification qualifications=24;
 
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，

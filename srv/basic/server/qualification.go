@@ -2,34 +2,59 @@ package server
 
 import (
 	"errors"
-	"github.com/golang/protobuf/ptypes"
 	"qshapi/models"
+	"qshapi/proto/basic"
 	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjstruct"
 	"qshapi/utils/mzjtime"
 	"qshapi/utils/mzjuuid"
 	"strings"
 	"time"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
-type IQualifications interface {
-	EditQualifications(req *dbmodel.Qualification, resp *dbmodel.Id) error
-	DelQualifications(req *dbmodel.Id, resp *dbmodel.Id) error
+type IQualification interface {
+	EditQualification(req *dbmodel.Qualification, resp *dbmodel.Id) error
+	DelQualification(req *dbmodel.Id, resp *dbmodel.Id) error
 	QualificationsList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error
 	QualificationsById(id *dbmodel.Id, Qualifications *dbmodel.Qualification) error
+	QualificationByForeignId(id *dbmodel.Id, qualifications *basic.Qualifications) error
+	EditQualifications(qualifications *basic.Qualifications) error
 }
 
-func NewQualifications() IQualifications {
-	return &Qualifications{}
+func NewQualification() IQualification {
+	return &Qualification{}
 }
 
-type Qualifications struct{}
+type Qualification struct{}
 
-func (a *Qualifications) QualificationsById(id *dbmodel.Id, Qualifications *dbmodel.Qualification) error {
+func (a *Qualification) EditQualifications(qualifications *basic.Qualifications) error {
+	/*var quas = []models.Qualification{}
+	mzjstruct.CopyStruct(&qualifications.Data, &quas)
+
+	return Conf.DbConfig.New().Model(&models.Qualification{}).Create(quas).Error*/
+	for _, q := range qualifications.Data {
+		a.EditQualification(q, &dbmodel.Id{})
+	}
+	return nil
+}
+func (a *Qualification) QualificationByForeignId(id *dbmodel.Id, qualifications *basic.Qualifications) error {
+	var qua = []models.Qualification{}
+	db := Conf.DbConfig.New().Model(&models.Qualification{})
+	db = db.Preload("QuaFiles").Where("foreign_id=?", id.Id)
+	err := db.Find(&qua).Error
+	if err != nil {
+		return err
+	}
+	mzjstruct.CopyStruct(&qua, &qualifications.Data)
+	return nil
+}
+func (a *Qualification) QualificationsById(id *dbmodel.Id, Qualifications *dbmodel.Qualification) error {
 	return Conf.DbConfig.New().Model(&models.Qualification{}).First(Qualifications, id.Id).Error
 }
 
-func (a *Qualifications) QualificationsList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
+func (a *Qualification) QualificationsList(req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
 	var t []models.Qualification
 	db := Conf.DbConfig.New().Model(&models.Qualification{}).Order("id")
 	db.Count(&resp.Total)
@@ -47,12 +72,12 @@ func (a *Qualifications) QualificationsList(req *dbmodel.PageReq, resp *dbmodel.
 	return nil
 }
 
-func (*Qualifications) DelQualifications(req *dbmodel.Id, resp *dbmodel.Id) error {
+func (*Qualification) DelQualification(req *dbmodel.Id, resp *dbmodel.Id) error {
 	db := Conf.DbConfig.New()
 	resp.Id = req.Id
 	return db.Delete(models.Qualification{}, req.Id).Error
 }
-func (*Qualifications) EditQualifications(req *dbmodel.Qualification, resp *dbmodel.Id) error {
+func (*Qualification) EditQualification(req *dbmodel.Qualification, resp *dbmodel.Id) error {
 	var StartTime, EndTime time.Time
 	if strings.Contains(req.StartTime, "-") {
 		StartTime, _ = mzjtime.ParseInlocation(req.StartTime, mzjtime.YYYYMMDD_HORIZONTAL)

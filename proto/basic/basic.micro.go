@@ -82,8 +82,10 @@ type BasicSrvService interface {
 	DelShop(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
 	ShopList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
 	ShopById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.SysShop, error)
-	EditQualifications(ctx context.Context, in *dbmodel.Qualification, opts ...client.CallOption) (*dbmodel.Id, error)
-	DelQualifications(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
+	EditQualification(ctx context.Context, in *dbmodel.Qualification, opts ...client.CallOption) (*dbmodel.Id, error)
+	EditQualifications(ctx context.Context, in *Qualifications, opts ...client.CallOption) (*empty.Empty, error)
+	DelQualification(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
+	QualificationByForeignId(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*Qualifications, error)
 }
 
 type basicSrvService struct {
@@ -564,8 +566,8 @@ func (c *basicSrvService) ShopById(ctx context.Context, in *dbmodel.Id, opts ...
 	return out, nil
 }
 
-func (c *basicSrvService) EditQualifications(ctx context.Context, in *dbmodel.Qualification, opts ...client.CallOption) (*dbmodel.Id, error) {
-	req := c.c.NewRequest(c.name, "BasicSrv.EditQualifications", in)
+func (c *basicSrvService) EditQualification(ctx context.Context, in *dbmodel.Qualification, opts ...client.CallOption) (*dbmodel.Id, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.EditQualification", in)
 	out := new(dbmodel.Id)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -574,9 +576,29 @@ func (c *basicSrvService) EditQualifications(ctx context.Context, in *dbmodel.Qu
 	return out, nil
 }
 
-func (c *basicSrvService) DelQualifications(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error) {
-	req := c.c.NewRequest(c.name, "BasicSrv.DelQualifications", in)
+func (c *basicSrvService) EditQualifications(ctx context.Context, in *Qualifications, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.EditQualifications", in)
+	out := new(empty.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *basicSrvService) DelQualification(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.DelQualification", in)
 	out := new(dbmodel.Id)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *basicSrvService) QualificationByForeignId(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*Qualifications, error) {
+	req := c.c.NewRequest(c.name, "BasicSrv.QualificationByForeignId", in)
+	out := new(Qualifications)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -633,8 +655,10 @@ type BasicSrvHandler interface {
 	DelShop(context.Context, *dbmodel.Id, *dbmodel.Id) error
 	ShopList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
 	ShopById(context.Context, *dbmodel.Id, *dbmodel.SysShop) error
-	EditQualifications(context.Context, *dbmodel.Qualification, *dbmodel.Id) error
-	DelQualifications(context.Context, *dbmodel.Id, *dbmodel.Id) error
+	EditQualification(context.Context, *dbmodel.Qualification, *dbmodel.Id) error
+	EditQualifications(context.Context, *Qualifications, *empty.Empty) error
+	DelQualification(context.Context, *dbmodel.Id, *dbmodel.Id) error
+	QualificationByForeignId(context.Context, *dbmodel.Id, *Qualifications) error
 }
 
 func RegisterBasicSrvHandler(s server.Server, hdlr BasicSrvHandler, opts ...server.HandlerOption) error {
@@ -685,8 +709,10 @@ func RegisterBasicSrvHandler(s server.Server, hdlr BasicSrvHandler, opts ...serv
 		DelShop(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
 		ShopList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
 		ShopById(ctx context.Context, in *dbmodel.Id, out *dbmodel.SysShop) error
-		EditQualifications(ctx context.Context, in *dbmodel.Qualification, out *dbmodel.Id) error
-		DelQualifications(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
+		EditQualification(ctx context.Context, in *dbmodel.Qualification, out *dbmodel.Id) error
+		EditQualifications(ctx context.Context, in *Qualifications, out *empty.Empty) error
+		DelQualification(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
+		QualificationByForeignId(ctx context.Context, in *dbmodel.Id, out *Qualifications) error
 	}
 	type BasicSrv struct {
 		basicSrv
@@ -883,10 +909,18 @@ func (h *basicSrvHandler) ShopById(ctx context.Context, in *dbmodel.Id, out *dbm
 	return h.BasicSrvHandler.ShopById(ctx, in, out)
 }
 
-func (h *basicSrvHandler) EditQualifications(ctx context.Context, in *dbmodel.Qualification, out *dbmodel.Id) error {
+func (h *basicSrvHandler) EditQualification(ctx context.Context, in *dbmodel.Qualification, out *dbmodel.Id) error {
+	return h.BasicSrvHandler.EditQualification(ctx, in, out)
+}
+
+func (h *basicSrvHandler) EditQualifications(ctx context.Context, in *Qualifications, out *empty.Empty) error {
 	return h.BasicSrvHandler.EditQualifications(ctx, in, out)
 }
 
-func (h *basicSrvHandler) DelQualifications(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error {
-	return h.BasicSrvHandler.DelQualifications(ctx, in, out)
+func (h *basicSrvHandler) DelQualification(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error {
+	return h.BasicSrvHandler.DelQualification(ctx, in, out)
+}
+
+func (h *basicSrvHandler) QualificationByForeignId(ctx context.Context, in *dbmodel.Id, out *Qualifications) error {
+	return h.BasicSrvHandler.QualificationByForeignId(ctx, in, out)
 }
