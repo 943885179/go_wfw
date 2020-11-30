@@ -140,7 +140,7 @@ type SysTree struct {
 	Code     string           `gorm:"column:code;comment:'编码';unique" json:"code"`
 	Text     string           `gorm:"column:text;not null;comment:'树名称'" json:"text"`
 	Title    string           `gorm:"column:title;not null;comment:'树名称'" json:"title"`
-	Sort     int32            `gorm:"column:sort;comment:'排序'" json:"sort"`
+	Sort     int32            `gorm:"column:sort;comment:'排序';default:100" json:"sort"`
 	PId      string           `gorm:"column:p_id;comment:'上级id，为0表示没有上级'" json:"p_id"`
 	Type     dbmodel.TreeType `gorm:"column:type;comment:'树类型'" json:"type"`
 	Children []SysTree        `gorm:"foreignKey:p_id"  json:"children"`
@@ -154,7 +154,7 @@ type SysArea struct {
 	Code       string    `gorm:"column:code;comment:'编码'" json:"code"`
 	Text       string    `gorm:"column:text;not null;comment:'树名称'" json:"text"`
 	Title      string    `gorm:"column:title;not null;comment:'树名称'" json:"title"`
-	Sort       int32     `gorm:"column:sort;comment:'排序'" json:"sort"`
+	Sort       int32     `gorm:"column:sort;comment:'排序';default:100" json:"sort"`
 	ShortName  string    `gorm:"column:short_name;comment:'简称'" json:"short_name"`
 	CityCode   string    `gorm:"column:city_code;comment:'区号'"  json:"city_code"`
 	ZipCode    string    `gorm:"column:zip_code;comment:'邮编'" json:"zip_code"`
@@ -197,7 +197,7 @@ type SysMenu struct {
 	ExternalLink string `gorm:"column:external_link;comment:'外部链接'" json:"external_link"`
 	Target       string `gorm:"column:target;comment:'链接 target_blank,_self,_parent,_top'" json:"target"`
 
-	Sort int `gorm:"column:sort;comment:'排序'" json:"sort"`
+	Sort int `gorm:"column:sort;comment:'排序';default:100" json:"sort"`
 
 	Badge       int    `gorm:"column:badge;comment:'标签数量'" json:"badge"`
 	BadgeDoc    string `gorm:"column:badge_doc;comment:'标签文字'" json:"badgeDot"`
@@ -229,7 +229,7 @@ type SysFile struct {
 	FileType   SysTree `gorm:"foreignKey:file_type_id"`*/
 
 	FileSuffix string `gorm:"index;column:file_suffix;not null;comment:'文件后缀（.img,.png等）'" json:"file_suffix"`
-	Sort       int32  `gorm:"column:sort;coment:'排序'" json:"sort"`
+	Sort       int32  `gorm:"column:sort;coment:'排序';default:100" json:"sort"`
 	Model
 }
 
@@ -249,7 +249,7 @@ type SysShop struct {
 	GradeFw  float64 `gorm:"index;column:grade_fw;default:5;comment:'服务评分总数'" json:"grade_fw"`
 	GradeMs  float64 `gorm:"index;column:grade_ms;default:5;comment:'描述评分总数'" json:"grade_ms"`
 	Cash     int     `gorm:"index;column:cash;comment:'保证金'" json:"cash"`
-	Sort     int     `gorm:"index;column:sort;comment:'排序'" json:"sort"`
+	Sort     int     `gorm:"index;column:sort;comment:'排序';default:100" json:"sort"`
 	Comments int     `gorm:"index;column:comments;comment:'评价次数'" json:"comments"`
 	Point    float64 `gorm:"column:point;default:0;comment:'积分'" json:"point"`
 	Vip      int     `gorm:"index;column:vip;comment:'vip等级'" json:"vip"`
@@ -330,8 +330,8 @@ type Product struct {
 	Favorite     int     `gorm:"column:favorite;comment:'收藏次数'" json:"favorite"`
 	Comments     int     `gorm:"column:comments;comment:'评论次数'" json:"comments"`
 	Sale         int     `gorm:"column:sale;comment:'销量'" json:"sale"`
-	Sort         int     `gorm:"column:sort;comment:'排序'" json:"sort"`
-	Keywords     int     `gorm:"column:keywords;comment:'SEO关键词'" json:"keywords"`
+	Sort         int     `gorm:"column:sort;comment:'排序';default:100;" json:"sort"`
+	Keywords     string  `gorm:"column:keywords;comment:'SEO关键词'" json:"keywords"`
 	Config       string  `gorm:"column:config;comment:'商品配置'" json:"config"`
 	Stock        float64 `gorm:"column:stock;not null;comment:'库存'" json:"stock"`
 	StockEarly   float64 `gorm:"column:stock_early;not null;comment:'库存预警值'" json:"stock_early"`
@@ -340,19 +340,20 @@ type Product struct {
 	SalePriceMin float64 `gorm:"column:sale_price_min;default:9999;comment:'批发价格'" json:"sale_price_min"`
 	SalePriceMax float64 `gorm:"column:sale_price_max;default:9999;comment:'批发价格'" json:"sale_price_max"`
 
-	ShopId                 string       `gorm:"index;column:shop_id;not null;comment:'商家编号'" json:"shop_id"`
-	Shop                   SysShop      `gorm:"foreignKey:shop_id"`
-	GoodsImg               string       `gorm:"index;column:goods_img;comment:'商品图片id'" json:"goods_img"`
-	ImgFile                SysFile      `gorm:"foreignKey:goods_img"`
-	ProductClassifyId      string       `gorm:"index;column:product_classify_id;not null;comment:'商品分类（平台统一）'" json:"product_classify_id"`
-	ProductClassify        SysTree      `gorm:"foreignKey:product_classify_id" json:"product_classify"`
-	ShopClassifyId         string       `gorm:"index;column:shop_classify_id;not null;comment:'商家分类（店铺可编辑）'" json:"shop_classify_id"`
-	ShopClassify           SysTree      `gorm:"foreignKey:shop_classify_id"`
-	DistributionProportion string       `gorm:"column:distribution_proportion;not null;default:0;comment:'分销类型，0千分比，1.固定金额，2百分比'" json:"distribution_proportion"`
-	DistributionNumber     float64      `gorm:"column:distribution_number;default:0;comment:'0'" json:"distribution_number"`
-	Imgs                   []SysFile    `gorm:"many2many:product_img" json:"imgs"`
-	BusinessRange          []SysTree    `gorm:"many2many:product_range;"`
-	ProductSkus            []ProductSku `gorm:"foreignKey:product_id" json:"product_skus"`
+	ShopId                 string          `gorm:"index;column:shop_id;not null;comment:'商家编号'" json:"shop_id"`
+	Shop                   SysShop         `gorm:"foreignKey:shop_id"`
+	GoodsImg               string          `gorm:"index;column:goods_img;comment:'商品图片id'" json:"goods_img"`
+	ImgFile                SysFile         `gorm:"foreignKey:goods_img"`
+	ProductClassifyId      string          `gorm:"index;column:product_classify_id;not null;comment:'商品分类（平台统一）'" json:"product_classify_id"`
+	ProductClassify        SysTree         `gorm:"foreignKey:product_classify_id" json:"product_classify"`
+	ShopClassifyId         string          `gorm:"index;column:shop_classify_id;not null;comment:'商家分类（店铺可编辑）'" json:"shop_classify_id"`
+	ShopClassify           SysTree         `gorm:"foreignKey:shop_classify_id"`
+	DistributionProportion string          `gorm:"column:distribution_proportion;not null;default:0;comment:'分销类型，0千分比，1.固定金额，2百分比'" json:"distribution_proportion"`
+	DistributionNumber     float64         `gorm:"column:distribution_number;default:0;comment:'0'" json:"distribution_number"`
+	Imgs                   []SysFile       `gorm:"many2many:product_img" json:"imgs"`
+	BusinessRange          []SysTree       `gorm:"many2many:product_range;"`
+	ProductSkus            []ProductSku    `gorm:"foreignKey:product_id" json:"product_skus"`
+	PrdType                dbmodel.PrdType `gorm:"index,column:'prd_type',not null;comment:'商品审核状态';default:0" json:"prd_type"`
 	//ProductPartServants    []ProductPartServant `gorm:"foreignKey:product_id"` //商品分佣表
 	/*ProvinceId string  `gorm:"index;column:province_id;comment:'省id'"json:"province_id"`
 	Provuince  SysArea `gorm:"foreignKey:province_id"`

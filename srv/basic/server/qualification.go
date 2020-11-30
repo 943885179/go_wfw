@@ -42,7 +42,7 @@ func (a *Qualification) EditQualifications(qualifications *basic.Qualifications)
 func (a *Qualification) QualificationByForeignId(id *dbmodel.Id, qualifications *basic.Qualifications) error {
 	var qua = []models.Qualification{}
 	db := Conf.DbConfig.New().Model(&models.Qualification{})
-	db = db.Preload("QuaFiles").Where("foreign_id=?", id.Id)
+	db = db.Preload("QuaFiles").Preload("QuaType").Where("foreign_id=?", id.Id)
 	err := db.Find(&qua).Error
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func (a *Qualification) QualificationsList(req *dbmodel.PageReq, resp *dbmodel.P
 	var t []models.Qualification
 	db := Conf.DbConfig.New().Model(&models.Qualification{}).Order("id")
 	db.Count(&resp.Total)
-	req.Page -= 1 //分页查询页码减1
+	req.Page -= 1 //分页查询页码减1qua_type
 	if resp.Total == 0 {
 		return nil
 	}

@@ -36,6 +36,12 @@ enum FileType{
   PRODUCTIMG=4;//商品图片
   OTHERIMG=5;//其他图片
 }
+enum  PrdType{
+  DOWN=0;//下架商品，一审拒绝，二审拒绝
+  ONEING=1;//一审中
+  TWOING=2;//二审中,一审通过
+  UP=3;//上架销售中，二审通过
+}
 
 /*资质先不单独拿出来，因为资质不固定
 enum QuaType{//资质类型 参照http://www.twgrace.cn/chanpinrenzheng/p12.html
@@ -350,7 +356,8 @@ message Product {
   string  area_id=22;
   SysArea area=23;
   repeated Qualification qualifications=24;
-
+  int64 sort=96;
+  PrdType prd_type=95;
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
 }
