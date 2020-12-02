@@ -1,6 +1,7 @@
 syntax = "proto3";
 package dbmodel;
 import "google/protobuf/any.proto";
+import "proto/dbmodel/dbmodel.proto";
 message PageReq{
     int32 page=1;//页码
     int32 row=2;//每页显示行数
@@ -14,6 +15,7 @@ message PageReq{
     string shop_id=10;//登录的用户id
     //repeated string user_shop=10;//店铺
     string token =11;//登录token
+    dbmodel.UserType user_type=12;
   }
 message PageResp{
     int64 total=1;//数量
@@ -31,7 +33,18 @@ message Id{
     string user_id=9;//登录的用户id
     repeated string user_shop=10;//店铺
     string token =11;//登录token
+    dbmodel.UserType user_type=12;
 }
+message Ids{
+  repeated string id=1;//Id集合
+  string key=2;//修改字段
+  string value=3;//修改后的值
+  string user_id=9;//登录的用户id
+  repeated string user_shop=10;//店铺
+  string token =11;//登录token
+  dbmodel.UserType user_type=12;
+}
+
 
 message Tree{
   string title = 1;

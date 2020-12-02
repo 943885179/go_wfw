@@ -87,16 +87,17 @@ message LoginResp{
 }
 message TokenResp{
   string token=1;//token
-  int64 expired=2;//过期时间
+  int64 expired=3;//过期时间
 }
 //用户注册请求
 message RegistryReq{
-  // dbmodel.UserType user_type=6;//用户类型（注册通道）
+  dbmodel.UserType user_type=6;//用户类型（注册通道）,判断数据权限
   string user_name=1;//用户名
   string user_password=2;//密码
   string user_password_again=3;//确认密码
   string user_phone=4;//电话
   string user_phone_code=5;//验证码
+  
 }
 //修改密码
 message ChangePasswordReq{

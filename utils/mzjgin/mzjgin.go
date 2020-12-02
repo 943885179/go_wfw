@@ -10,6 +10,7 @@ import (
 	"os"
 	"qshapi/models"
 	"qshapi/proto/basic"
+	"qshapi/proto/dbmodel"
 	"qshapi/utils/mzjinit"
 	"strings"
 
@@ -49,6 +50,7 @@ const (
 
 var (
 	UserId, ShopId, LoginToken string //基础变量 用户id，店铺id,登录的token 店铺
+	UserType                   dbmodel.UserType
 )
 
 func (c RespCode) String() string {
@@ -332,6 +334,7 @@ func TokenResp(token string) (resp basic.LoginResp, err error) {
 	}
 	UserId = resp.User.Id
 	ShopId = resp.User.Shop.Id
+	UserType = resp.User.UserType
 	/*context := mzjContext{
 		user_id: resp.User.Id,
 		//shop_id: resp.User.Shop.Id,

@@ -2,11 +2,23 @@ package handler
 
 import (
 	"context"
+	"github.com/golang/protobuf/ptypes/empty"
 	"qshapi/proto/dbmodel"
+	"qshapi/proto/product"
 	"qshapi/srv/product/server"
 )
 
 type Handler struct {
+}
+
+func (h Handler) ProductList(ctx context.Context, req *product.ProductListReq, resp *dbmodel.PageResp) error {
+
+	return server.NewProduct().ProductList(req, resp)
+}
+
+func (h Handler) EditProductByIds(ctx context.Context, ids *dbmodel.Ids, empty *empty.Empty) error {
+
+	return server.NewProduct().EditProductByIds(ids)
 }
 
 func (h Handler) EditProductSku(ctx context.Context, sku *dbmodel.ProductSku, id *dbmodel.Id) error {
@@ -31,8 +43,4 @@ func (h Handler) EditProduct(ctx context.Context, req *dbmodel.Product, resp *db
 
 func (h Handler) DelProduct(ctx context.Context, req *dbmodel.Id, resp *dbmodel.Id) error {
 	return server.NewProduct().DelProduct(req, resp)
-}
-
-func (h Handler) ProductList(ctx context.Context, req *dbmodel.PageReq, resp *dbmodel.PageResp) error {
-	return server.NewProduct().ProductList(req, resp)
 }

@@ -54,6 +54,7 @@ func SrvGin() *gin.Engine {
 		r.POST("DelProduct", DelProduct)
 		r.POST("DelProductSku", DelProductSku)
 		r.POST("ProductList", ProductList)
+		r.POST("EditProductByIds", EditProductByIds)
 		r.GET("/ProductById/:id", ProductById)
 	}
 	return g
@@ -73,7 +74,7 @@ func DelProduct(c *gin.Context) {
 	resp.MicroResp(c, result, err)
 }
 func ProductList(c *gin.Context) {
-	req := dbmodel.PageReq{}
+	req := product.ProductListReq{}
 	c.Bind(&req)
 	req.UserId = mzjgin.UserId
 	req.ShopId = mzjgin.ShopId
@@ -99,5 +100,11 @@ func DelProductSku(c *gin.Context) {
 	req := dbmodel.Id{}
 	c.Bind(&req)
 	result, err := client.DelProductSku(context.TODO(), &req)
+	resp.MicroResp(c, result, err)
+}
+func EditProductByIds(c *gin.Context) {
+	req := dbmodel.Ids{}
+	c.Bind(&req)
+	result, err := client.EditProductByIds(context.TODO(), &req)
 	resp.MicroResp(c, result, err)
 }

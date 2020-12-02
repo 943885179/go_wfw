@@ -6,6 +6,7 @@ package product
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	math "math"
 	dbmodel "qshapi/proto/dbmodel"
 )
@@ -37,8 +38,9 @@ var _ server.Option
 type ProductSrvService interface {
 	EditProduct(ctx context.Context, in *dbmodel.Product, opts ...client.CallOption) (*dbmodel.Id, error)
 	DelProduct(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
-	ProductList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
+	ProductList(ctx context.Context, in *ProductListReq, opts ...client.CallOption) (*dbmodel.PageResp, error)
 	ProductById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Product, error)
+	EditProductByIds(ctx context.Context, in *dbmodel.Ids, opts ...client.CallOption) (*empty.Empty, error)
 	EditProductSku(ctx context.Context, in *dbmodel.ProductSku, opts ...client.CallOption) (*dbmodel.Id, error)
 	DelProductSku(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Id, error)
 	ProductSkuById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.ProductSku, error)
@@ -82,7 +84,7 @@ func (c *productSrvService) DelProduct(ctx context.Context, in *dbmodel.Id, opts
 	return out, nil
 }
 
-func (c *productSrvService) ProductList(ctx context.Context, in *dbmodel.PageReq, opts ...client.CallOption) (*dbmodel.PageResp, error) {
+func (c *productSrvService) ProductList(ctx context.Context, in *ProductListReq, opts ...client.CallOption) (*dbmodel.PageResp, error) {
 	req := c.c.NewRequest(c.name, "ProductSrv.ProductList", in)
 	out := new(dbmodel.PageResp)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -95,6 +97,16 @@ func (c *productSrvService) ProductList(ctx context.Context, in *dbmodel.PageReq
 func (c *productSrvService) ProductById(ctx context.Context, in *dbmodel.Id, opts ...client.CallOption) (*dbmodel.Product, error) {
 	req := c.c.NewRequest(c.name, "ProductSrv.ProductById", in)
 	out := new(dbmodel.Product)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productSrvService) EditProductByIds(ctx context.Context, in *dbmodel.Ids, opts ...client.CallOption) (*empty.Empty, error) {
+	req := c.c.NewRequest(c.name, "ProductSrv.EditProductByIds", in)
+	out := new(empty.Empty)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -137,8 +149,9 @@ func (c *productSrvService) ProductSkuById(ctx context.Context, in *dbmodel.Id, 
 type ProductSrvHandler interface {
 	EditProduct(context.Context, *dbmodel.Product, *dbmodel.Id) error
 	DelProduct(context.Context, *dbmodel.Id, *dbmodel.Id) error
-	ProductList(context.Context, *dbmodel.PageReq, *dbmodel.PageResp) error
+	ProductList(context.Context, *ProductListReq, *dbmodel.PageResp) error
 	ProductById(context.Context, *dbmodel.Id, *dbmodel.Product) error
+	EditProductByIds(context.Context, *dbmodel.Ids, *empty.Empty) error
 	EditProductSku(context.Context, *dbmodel.ProductSku, *dbmodel.Id) error
 	DelProductSku(context.Context, *dbmodel.Id, *dbmodel.Id) error
 	ProductSkuById(context.Context, *dbmodel.Id, *dbmodel.ProductSku) error
@@ -148,8 +161,9 @@ func RegisterProductSrvHandler(s server.Server, hdlr ProductSrvHandler, opts ...
 	type productSrv interface {
 		EditProduct(ctx context.Context, in *dbmodel.Product, out *dbmodel.Id) error
 		DelProduct(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
-		ProductList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error
+		ProductList(ctx context.Context, in *ProductListReq, out *dbmodel.PageResp) error
 		ProductById(ctx context.Context, in *dbmodel.Id, out *dbmodel.Product) error
+		EditProductByIds(ctx context.Context, in *dbmodel.Ids, out *empty.Empty) error
 		EditProductSku(ctx context.Context, in *dbmodel.ProductSku, out *dbmodel.Id) error
 		DelProductSku(ctx context.Context, in *dbmodel.Id, out *dbmodel.Id) error
 		ProductSkuById(ctx context.Context, in *dbmodel.Id, out *dbmodel.ProductSku) error
@@ -173,12 +187,16 @@ func (h *productSrvHandler) DelProduct(ctx context.Context, in *dbmodel.Id, out 
 	return h.ProductSrvHandler.DelProduct(ctx, in, out)
 }
 
-func (h *productSrvHandler) ProductList(ctx context.Context, in *dbmodel.PageReq, out *dbmodel.PageResp) error {
+func (h *productSrvHandler) ProductList(ctx context.Context, in *ProductListReq, out *dbmodel.PageResp) error {
 	return h.ProductSrvHandler.ProductList(ctx, in, out)
 }
 
 func (h *productSrvHandler) ProductById(ctx context.Context, in *dbmodel.Id, out *dbmodel.Product) error {
 	return h.ProductSrvHandler.ProductById(ctx, in, out)
+}
+
+func (h *productSrvHandler) EditProductByIds(ctx context.Context, in *dbmodel.Ids, out *empty.Empty) error {
+	return h.ProductSrvHandler.EditProductByIds(ctx, in, out)
 }
 
 func (h *productSrvHandler) EditProductSku(ctx context.Context, in *dbmodel.ProductSku, out *dbmodel.Id) error {

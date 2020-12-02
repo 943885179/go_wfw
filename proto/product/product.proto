@@ -1,16 +1,58 @@
 syntax = "proto3";
 package product;
+import "google/protobuf/empty.proto";
 import "proto/dbmodel/dbmodel.proto";
 
 import "proto/dbmodel/model.proto";
 service ProductSrv {
   rpc EditProduct (dbmodel.Product) returns (dbmodel.Id);
   rpc DelProduct(dbmodel.Id)returns(dbmodel.Id){}
-  rpc ProductList(dbmodel.PageReq)returns(dbmodel.PageResp){}
+  rpc ProductList(ProductListReq)returns(dbmodel.PageResp){}
   rpc ProductById(dbmodel.Id)returns(dbmodel.Product){}//查询
+
+  rpc EditProductByIds(dbmodel.Ids)returns(google.protobuf.Empty){}//批量修改某个字段
 
   rpc EditProductSku (dbmodel.ProductSku) returns (dbmodel.Id);
   rpc DelProductSku(dbmodel.Id)returns(dbmodel.Id){}
   rpc ProductSkuById(dbmodel.Id)returns(dbmodel.ProductSku){}//查询
+
   
+}
+message ProductListReq{
+
+  string goods_code = 2;
+  string goods_name=1;
+  string goods_byname = 3;
+
+  string factory = 4;//生产厂家
+  string prd_address = 5;//生产地址
+
+  string approval_num = 6;//批准文号
+  string spec = 7;//规格
+  string dosage_form = 8;//剂型
+  string unit = 9;//单位
+  string opcode = 10;//拼音助记码
+  
+  //float  mpack_total = 11;//中包装数量
+  //float pack_total = 12;//件包装数量
+
+  bool is_unbundled = 13;//是否可拆零
+  bool is_stop = 14;//是否停售
+  string goods_explain = 15;//商品描述
+  string sort=96;
+  string prd_type=16;
+
+
+  int32 page=100;//页码
+  int32 row=101;//每页显示行数
+  string name=102;
+  string code=103;
+  string type=104;
+  string id=105;
+  string title=106;
+  string text=107;
+  string user_id=108;//登录的用户id
+  string shop_id=109;//登录的用户id
+  //repeated string user_shop=10;//店铺
+  string token =11;//登录token
 }

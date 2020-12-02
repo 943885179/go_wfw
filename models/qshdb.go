@@ -369,26 +369,26 @@ type Product struct {
 
 //ProductSku 商品规格表
 type ProductSku struct {
-	Id           string  `gorm:"primary_key;type:varchar(50);"`
-	SkuName      string  `gorm:"column:sku_name;not null;comment:'Sku值（医药批发多批号，所以默认为批号）'" json:"sku_name"`
-	AttriList    string  `gorm:"column:attri_list;type:text;size:800;not null;comment:'Sku描述（这里还没想好，初步打算存放json）'" json:"attri_list"` //datatypes.JSON
-	Point        float64 `gorm:"column:point;default:0;comment:'积分'" json:"point"`
-	SellPrice    float64 `gorm:"column:sell_price;default:9999;comment:'销售价格'" json:"sell_price"`
-	MarketPrice  float64 `gorm:"column:market_price;default:9999;comment:'市场价格'" json:"market_price"`
-	CostPrice    float64 `gorm:"column:cost_price;default:9999;comment:'成本价格'" json:"cost_price"`
-	SalePrice    float64 `gorm:"column:sale_price;default:9999;comment:'批发价格'" json:"sale_price"`
-	SalePriceErp float64 `gorm:"column:sale_price_erp;default:9999;comment:'erp批发价格(当批发价为0或者9999读取erp价格)'" json:"sale_price_erp"`
-	Stock        float64 `gorm:"column:stock;not null;comment:'库存'" json:"stock"`
-
+	Id          string  `gorm:"primary_key;type:varchar(50);"`
+	SkuName     string  `gorm:"column:sku_name;not null;comment:'Sku值（医药批发多批号，所以默认为批号）'" json:"sku_name"`
+	AttriList   string  `gorm:"column:attri_list;type:text;size:800;not null;comment:'Sku描述（这里还没想好，初步打算存放json）'" json:"attri_list"` //datatypes.JSON
+	Point       float64 `gorm:"column:point;default:0;comment:'积分'" json:"point"`
+	SellPrice   float64 `gorm:"column:sell_price;default:9999;comment:'销售价格'" json:"sell_price"`
+	MarketPrice float64 `gorm:"column:market_price;default:9999;comment:'市场价格'" json:"market_price"`
+	CostPrice   float64 `gorm:"column:cost_price;default:9999;comment:'成本价格'" json:"cost_price"`
+	SalePrice   float64 `gorm:"column:sale_price;default:9999;comment:'批发价格'" json:"sale_price"`
+	//SalePriceErp  float64   `gorm:"column:sale_price_erp;default:9999;comment:'erp批发价格(当批发价为0或者9999读取erp价格)'" json:"sale_price_erp"`
+	Stock         float64   `gorm:"column:stock;not null;comment:'库存'" json:"stock"`
 	BatchNumber   string    `gorm:"column:batch_number;comment:'批号'" json:"batch_number"`
 	ProdutionDate time.Time `gorm:"column:prodution_date;date;comment:'生产日期'" json:"prodution_date"`
 	EffectiveDate time.Time `gorm:"column:effective_date;date;comment:'有效期至'" json:"effective_date"`
 
-	Imgs      []SysFile `gorm:"many2many:product_sku_img" json:"imgs"`
-	IsChecked bool      `gorm:"column:is_checked;not null;comment:'是否选择'" json:"is_checked"`
-	ProductId string    `gorm:"index;column:product_id;not null"  json:"product_id"`
-
-	Product Product `gorm:"foreignKey:product_id"`
+	Imgs           []SysFile `gorm:"many2many:product_sku_img" json:"imgs"`
+	IsChecked      bool      `gorm:"column:is_checked;not null;comment:'是否选择'" json:"is_checked"`
+	IsErpSalePrice bool      `gorm:"column:is_erp_sale_price;not null;comment:'是否同步erp价格'"json:"is_erp_sale_price"`
+	IsErpStock     bool      `gorm:"column:is_erp_stock;not null;comment:'是否同步erp库存'"  json:"is_erp_stock"`
+	ProductId      string    `gorm:"index;column:product_id;not null"  json:"product_id"`
+	Product        Product   `gorm:"foreignKey:product_id"`
 	Model
 }
 

@@ -90,6 +90,7 @@ func (*ProductSku) EditProductSku(req *dbmodel.ProductSku, resp *dbmodel.Id) err
 			}
 			return err
 		}
+		mzjstruct.CopyStruct(req, ProductSku)
 		db.Model(&ProductSku).Association("Imgs").Clear()
 		if req.Imgs != nil && len(req.Imgs) != 0 {
 			var ids []string
@@ -100,7 +101,6 @@ func (*ProductSku) EditProductSku(req *dbmodel.ProductSku, resp *dbmodel.Id) err
 				db.Where(ids).Find(&ProductSku.Imgs)
 			}
 		}
-		mzjstruct.CopyStruct(req, ProductSku)
 		ProductSku.EffectiveDate = EffectiveDate
 		ProductSku.ProdutionDate = ProdutionDate
 		resp.Id = ProductSku.Id
@@ -112,6 +112,16 @@ func (*ProductSku) EditProductSku(req *dbmodel.ProductSku, resp *dbmodel.Id) err
 		ProductSku.EffectiveDate = EffectiveDate
 		ProductSku.ProdutionDate = ProdutionDate
 		resp.Id = ProductSku.Id
+		db.Model(&ProductSku).Association("Imgs").Clear()
+		if req.Imgs != nil && len(req.Imgs) != 0 {
+			var ids []string
+			for _, a := range req.Imgs {
+				ids = append(ids, a.Id)
+			}
+			if len(ids) > 0 {
+				db.Where(ids).Find(&ProductSku.Imgs)
+			}
+		}
 		return db.Create(ProductSku).Error
 	}
 }

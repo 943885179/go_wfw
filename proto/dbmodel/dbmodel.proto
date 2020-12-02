@@ -339,8 +339,8 @@ message Product {
   string unit = 9;//单位
   string opcode = 10;//拼音助记码
   
-  float  mpack_total = 11;//中包装数量
-  float pack_total = 12;//件包装数量
+  //float  mpack_total = 11;//中包装数量
+  //float pack_total = 12;//件包装数量
 
   bool is_unbundled = 13;//是否可拆零
   bool is_stop = 14;//是否停售
@@ -371,19 +371,21 @@ message ProductSku {
   float sell_price = 5;//销售价格
   float market_price = 6;//市场价格
   float sale_price = 7;//批发价格
-  float sale_price_erp = 8;
+  //float sale_price_erp = 8;
   float stock = 9;//库存
   bool is_checked = 10;
-  //float  mpack_total = 11;//中包装数量
-  //float pack_total = 12;//件包装数量
-  string batch_number=11;
-  string prodution_date=12;
-  string effective_date=13;
-  
-  Product goods=14;
-  repeated SysFile imgs=15;
-  string product_id=16;
-  float cost_price = 17;//成本价格
+  float  mpack_total = 11;//中包装数量
+  float pack_total = 12;//件包装数量
+  string batch_number=13;
+  string prodution_date=14;
+  string effective_date=15;
+
+  Product goods=16;
+  repeated SysFile imgs=17;
+  string product_id=18;
+  float cost_price = 19;//成本价格
+  float is_erp_sale_price=20;//是否同步erp价格
+  float is_erp_stock=21;//是否同步erp库存
   string created = 98;//创建时间，时间戳秒
   string updated = 99;//修改时间，
 }

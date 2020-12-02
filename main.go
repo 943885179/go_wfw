@@ -8,6 +8,7 @@ import (
 	"qshapi/utils/mzjinit"
 	"qshapi/utils/mzjmd5"
 	"qshapi/utils/mzjuuid"
+	"strconv"
 	//"unicode/utf8"
 )
 
@@ -29,7 +30,7 @@ func init() {
 	return s[:size]
 }*/
 func main() {
-	dbInit()
+	//dbInit()
 	//initArea()
 	/*initTree()
 	initMenu()
@@ -37,6 +38,17 @@ func main() {
 	initSrv()*/
 	//initAdmin()
 	//test()
+	db := conf.DbConfig.New().Model(&models.Product{})
+	for i := 1000000; i < 100000000; i++ {
+		prd := models.Product{
+			Id:          mzjuuid.WorkerDefaultStr(conf.WorkerId),
+			GoodsCode:   fmt.Sprintf("%08d", i),
+			GoodsName:   "商品" + strconv.Itoa(i),
+			GoodsByname: "商品" + strconv.Itoa(i),
+			Sort:        i,
+		}
+		db.Create(&prd)
+	}
 }
 func test() {
 	var i = 0

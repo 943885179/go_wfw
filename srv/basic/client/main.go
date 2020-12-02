@@ -347,6 +347,7 @@ func ShopList(c *gin.Context) {
 	req := dbmodel.PageReq{}
 	c.Bind(&req)
 	req.UserId = mzjgin.UserId
+	req.UserType = mzjgin.UserType
 	result, err := client.ShopList(context.TODO(), &req)
 	var rs []dbmodel.SysShop
 	for _, any := range result.Data {
