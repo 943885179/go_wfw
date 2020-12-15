@@ -1,13 +1,13 @@
 {
     "dbConfig":{ #数据库配置
-        "driverName":1,
+        "dbType":1,
+        "driverName":"dbType=>mysql:0,postgres:1,sqlserver:2",
         "server":"127.0.0.1",
-        "port":3306,
-        "user":"root",
-        "password":"123456",
+        "port":5432,
+        "user":"postgres",
+        "password":"123abc",
         "database":"test",
         "dateSourceName":"",
-        "workerId":1,
         "isDebug":true
     },
     "filePath":"static/upload",#前缀加./或不加表示在该程序下，只加/表示在磁盘文件下
@@ -58,7 +58,7 @@
     },
     "services":{
         "basicSrv":{
-            "etcd":"",
+            "etcd":"127.0.0.1:2379",
             "name":"com.weixiao.api.basic",
             "version":"latest",
             "ip":"",
@@ -66,14 +66,18 @@
         },
         "basicCli":{
             "etcd":"",
+            "nac_os":"",
             "name":"com.weixiao.web.basic",
             "version":"latest",
             "ip":"",
             ## "port":8701
         },
         "sendSrv":{
-            "etcd":"",
-            "name":"com.weixiao.api.send",
+           "etcd":"127.0.0.1:2379",
+            ##"nacos":"console.nacos.io:80",
+            #"nacos":"127.0.0.1:8848",
+            # "consul":"127.0.0.1:8500" # micro_registry=consul;micro_registry_address=127.0.0.1:8500
+            "name":"go.micro.api.weixiao.send",
             "version":"latest",
             "ip":"",
             "port":8702
@@ -118,5 +122,13 @@
             "name":"com.weixiao.web.mid",#中间服务调用micro接口
             "version":"latest",
         }
-    }
+    },
+    "nac_os_server_configs":[
+        {
+            "scheme":"",
+            "context_path":"/nacos",
+            "ip_addr":"127.0.0.1",
+            "port":8848
+        }
+    ]
 }

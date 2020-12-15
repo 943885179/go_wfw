@@ -2,7 +2,14 @@
 
 ## 系统架构
 
->go micro + gin + grpc
+1. go micro + gin + grpc
+2. 后端主要开发框架 go-micro v2
+3. webapi提供前端 gin
+4. 数据库 postgresql
+5. 服务注册 etcd 【备选 nacos zokeeper consul】
+6. 配置中心 nacos (这个也支持服务注册，但是go-micro优先支持etcd,所以用etcd做服务注册与发现，nacos做配置中心) 【备选eureka consul】 配置中心采取本地配置+nacos配置
+7. MQ (初步设计使用kafka)
+8. orm框架 gorm 【备选：xorm】
 
 ## 项目注意
 
@@ -102,7 +109,7 @@
             "name":"com.weixiao.fileWeb",
             "version":"latest",
             "ip":"",
-            "port":8705
+            "port":8705 
         }
     }
 }
@@ -237,9 +244,13 @@
         }
     ```
 4. 注册服务后如果成功则返回{}，失败返回失败内容，然后再去service去看是否有该服务生成
-6. 备注(如果使用etcd的话需要先指定使用etcd才能注册到etcd中)
+
+5. 备注(如果使用etcd的话需要先指定使用etcd才能注册到etcd中)
     1. `set micro_registry=etcd`
     2. `set micro_registry_address=127.0.0.1:6379`
+    3. 同样也可以在go run main.go --registry=etcd --registry_adress=127.0.0.1:2379
+    4. micro api --namespace=com.weixiao.web --registry=etcd --registry_address=ip
+    
 
 ### 店铺微服务(shop)
 
@@ -265,6 +276,10 @@ set MICRO_CLIENT=grpc
 set MICRO_SERVER=grpc
 micro api --handler=rpc
 ```
+## 使用micro网关
+
+1. 将所有的服务名称改为 go.micro.api.项目.模块
+2. 将所有webapi改为go.micro.web.项目.模块（这个有点问题，docker 安装micro 是v3版本，需要降级成v2,才有web）
 ## docker 部署微服务
 
 ## 部署micro
@@ -286,3 +301,6 @@ micro api --handler=rpc
  
  `docker exec -it 7184a69ac6cc /micro env`env是在本地或其他地方托管的微型服务器。它定义为映射到指向微型代理（gRPC代理）的host:port的名称。我们引入了两种环境，即“local”和“platform”。
  
+## nacos 
+
+1. 需要使用sdk github.com/nacos-group/nacos-sdk-go
