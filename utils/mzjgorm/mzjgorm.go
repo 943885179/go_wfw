@@ -2,9 +2,11 @@ package mzjgorm
 
 import (
 	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlserver"
+
 	//"gorm.io/driver/clickhouse"
 	"gorm.io/driver/mysql"
-	///"gorm.io/driver/postgres"
 	//"gorm.io/driver/sqlite"
 	//"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
@@ -24,9 +26,9 @@ var dbList = map[string]*gorm.DB{} //数据库集合
 
 const (
 	DbType_Mysql      DbType = iota //Mysql
+	DbType_Postgres                 //Postgres
 	DbType_SqlServer                //SqlServer
 	DbType_Sqlite                   //Sqlite
-	DbType_Postgres                 //Postgres
 	DbType_Clickhouse               //云数据库ClickHouse
 )
 
@@ -73,7 +75,7 @@ type Postgresql struct {
 
 //DbConfig 数据库配置
 type DbConfig struct {
-	DbType     DbType     `json:"dbType"`      //驱动类型（这个是我自定义的）
+	DbType     DbType     `json:"dbType"`      //驱动类型（这个是我自定义的） driverName
 	Server     string     `json:"server"`      //服务器
 	Port       int        `json:"port"`        //端口
 	User       string     `json:"user"`        //用户名
@@ -136,21 +138,26 @@ func (c *DbConfig) New() (db *gorm.DB) {
 			DontSupportRenameColumn:   true,     // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
 			SkipInitializeWithVersion: false,    // 根据版本自动配置,
 		}), gormConfig)
-	/*case DbType_SqlServer:
+		break
+	case DbType_SqlServer:
 		c.Source = fmt.Sprintf("server=%s;port=%d;database=%s;user id=%s;password=%s", c.Server, c.Port, c.Database, c.User, c.Password)
 		db, err = gorm.Open(sqlserver.Open(c.Source), gormConfig)
+		break
 	//case ORACLE: //不支持
 	//	c.Source = fmt.Sprintf("%s/%s@%s:%d/%s", c.User, c.Password, c.Server, c.Port, c.Database)
-	case DbType_Sqlite:
-		c.Source = "gorm.db" //设置默认的db
-		db, err = gorm.Open(sqlite.Open(c.Source), gormConfig)
 	case DbType_Postgres:
 		//c.Source = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=verify-full", c.User, c.Password, c.Server, c.Database)
-		c.Source = fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s sslmode=verify-full", c.User, c.Password, c.Server, c.Port, c.Database) //https://godoc.org/github.com/lib/pq 参数请参阅
+		c.Source = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d  sslmode=disable TimeZone=Asia/Shanghai", c.Server, c.User, c.Password, c.Database, c.Port) //https://godoc.org/github.com/lib/pq 参数请参阅
 		db, err = gorm.Open(postgres.Open(c.Source), gormConfig)
-	case DbType_Clickhouse:
-		c.Source = fmt.Sprintf("tcp://%s:%d?debug=true", c.Server, c.Port) //设置默认的db
-		db, err = gorm.Open(clickhouse.Open(c.Source), gormConfig)*/
+		break
+		//这里这样导入sqllite会报错
+		/*case DbType_Sqlite:
+		c.Source = "gorm.db" //设置默认的db
+		db, err = gorm.Open(sqlite.Open(c.Source), gormConfig)
+		break*/
+	/*case DbType_Clickhouse:
+	c.Source = fmt.Sprintf("tcp://%s:%d?debug=true", c.Server, c.Port) //设置默认的db
+	db, err = gorm.Open(clickhouse.Open(c.Source), gormConfig)*/
 	default:
 		log.Fatal("暂时没有设置该驱动")
 	}

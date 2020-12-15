@@ -2,6 +2,7 @@ package mzjdb
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -120,6 +121,113 @@ func (c *DbConfig) New() *sql.DB {
 	return db
 }
 
+func FindStr(db *sql.DB, sqlStr string, args ...interface{}) (string, error) {
+	maps, err := QueryMap(db, sqlStr, args)
+	if err != nil || len(maps) == 0 {
+		return "", err
+	}
+	jsonData, err := json.Marshal(maps)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Map转错误:%s", err.Error()))
+	}
+	return string(jsonData), nil
+}
+
+func Find(db *sql.DB, sqlStr string, data interface{}, args ...interface{}) error {
+	str, err := FindStr(db, sqlStr, args...)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal([]byte(str), data)
+}
+
+func FirstStr(db *sql.DB, sqlStr string, args ...interface{}) (string, error) {
+	maps, err := QueryMap(db, sqlStr, args)
+	if err != nil || len(maps) == 0 {
+		return "", err
+	}
+	jsonData, err := json.Marshal(maps[0])
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Map转错误:%s", err.Error()))
+	}
+	fmt.Println(string(jsonData))
+	return string(jsonData), nil
+}
+func First(db *sql.DB, sqlStr string, data interface{}, args ...interface{}) error {
+	str, err := FirstStr(db, sqlStr, args...)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal([]byte(str), data)
+}
+func QueryMap(db *sql.DB, sqlStr string, args ...interface{}) ([]map[string]interface{}, error) {
+	rows, err := db.Query(sqlStr)
+	if err != nil {
+		//log.Fatal(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+	columns, err := rows.Columns()
+	if err != nil {
+		//log.Fatal(err.Error())
+		return nil, err
+	}
+	count := len(columns)
+	tableData := make([]map[string]interface{}, 0)
+	values := make([]interface{}, count)
+	valuePtrs := make([]interface{}, count)
+	for i := 0; i < count; i++ {
+		valuePtrs[i] = &values[i]
+	}
+	//遍历每一行
+	for rows.Next() {
+		rows.Scan(valuePtrs...)
+		entry := make(map[string]interface{})
+		for i, col := range columns {
+			var v interface{}
+			val := values[i]
+			b, ok := val.([]byte)
+			if ok {
+				v = string(b)
+			} else {
+				//TODO:编码需要确认
+				v = val
+				//先确定编码，如果编码是gb2312使用下面的代码
+				/*c, ok := val.(string)
+				if ok {
+					//v, _ = iconv.ConvertString(c, "utf-8", "GB2312")
+					v, _ = iconv.ConvertString(c, "GB2312", "utf-8")
+				} else {
+					v = val
+				}*/
+			}
+			entry[col] = v
+		}
+		tableData = append(tableData, entry)
+	}
+	return tableData, nil
+}
+
+//QueryOne 只能查询一条数据的一个值
+func QueryOne(db *sql.DB, sqlStr string, data interface{}) error {
+	defer db.Close()
+	var dataCopy interface{}
+	fmt.Println(db)
+	defer db.Close()
+	row := db.QueryRow(sqlStr)
+	err := row.Scan(&dataCopy)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println(err)
+		return err
+	}
+	if dataCopy != nil {
+		err = db.QueryRow(sqlStr).Scan(data)
+		if err != nil && err != sql.ErrNoRows {
+			return err
+		}
+	}
+	return nil
+}
 func main() {
 	c := DbConfig{0, "127.0.0.1", 3306, "root", "123456", "test", "", true}
 	db := c.New()

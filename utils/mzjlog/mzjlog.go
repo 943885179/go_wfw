@@ -38,21 +38,14 @@ func main() {
 }
 
 var logPath = "log"
-var fileName = "erp.log"
+var fileName = "wfw.log"
 var baseLogPaht string
 
-func init() {
-	if _, err := os.Stat(logPath); os.IsNotExist(err) {
-		// 必须分成两步
-		// 先创建文件夹
-		os.Mkdir(logPath, 0777)
-		// 再修改权限
-		os.Chmod(logPath, 0777)
-	}
+func init() { //不想new,所以直接点第一次就会去做一个日志基础配置，需要说明一点是go-micro也带有logrus，所以那边就用它的插件了
 	logrus.SetFormatter(&logrus.JSONFormatter{}) //设置日志的输出格式为json格式，还可以设置为text格式
 	logrus.SetOutput(os.Stdout)                  //设置日志的输出为标准输出
 	logrus.SetLevel(logrus.InfoLevel)            //设置日志的显示级别，这一级别以及更高级别的日志信息将会输出
-	ConfigLocalFilesystemLogger(logPath, fileName, time.Hour*24*7, time.Hour)
+	log.AddHook(GetHook(logPath, fileName, time.Hour*24*7, time.Hour))
 }
 
 //Info Info日志
@@ -83,8 +76,14 @@ func Warn(msg string) {
 	}).Warn(msg)
 }
 
-//ConfigLocalFilesystemLogger config logrus log to local filesystem, with file rotation
-func ConfigLocalFilesystemLogger(logPath string, logFileName string, maxAge time.Duration, rotationTime time.Duration) {
+func GetHook(logPath, logFileName string, maxAge, rotationTime time.Duration) *lfshook.LfsHook {
+	if _, err := os.Stat(logPath); os.IsNotExist(err) {
+		// 必须分成两步
+		// 先创建文件夹
+		os.Mkdir(logPath, 0777)
+		// 再修改权限
+		os.Chmod(logPath, 0777)
+	}
 	baseLogPaht = path.Join(logPath, logFileName)
 	writer, err := rotatelogs.New(
 		baseLogPaht+".Bug%Y%m%d%H%M",
@@ -104,15 +103,15 @@ func ConfigLocalFilesystemLogger(logPath string, logFileName string, maxAge time
 	if err != nil {
 		log.Errorf("config local file system logger error. %+v", errors.WithStack(err))
 	}
-	lfHook := lfshook.NewHook(lfshook.WriterMap{
-		log.DebugLevel: infoFiles, // 为不同级别设置不同的输出目的
-		log.InfoLevel:  infoFiles,
+	return lfshook.NewHook(lfshook.WriterMap{
+		//log.DebugLevel: infoFiles, // 为不同级别设置不同的输出目的
+		//log.InfoLevel:  infoFiles,
+		//debug等不做记录了，浪费资源
 		log.WarnLevel:  infoFiles,
-		log.ErrorLevel: infoFiles,
+		log.ErrorLevel: writer,
 		log.FatalLevel: writer,
 		log.PanicLevel: writer,
 	}, &log.JSONFormatter{})
-	log.AddHook(lfHook)
 }
 
 //ConfigAmqpLogger config logrus log to amqp

@@ -49,8 +49,9 @@ const (
 )
 
 var (
-	UserId, ShopId, LoginToken string //基础变量 用户id，店铺id,登录的token 店铺
-	UserType                   dbmodel.UserType
+	//UserId, ShopId, LoginToken string //基础变量 用户id，店铺id,登录的token 店铺
+	//UserType                   dbmodel.UserType
+	UserTk *dbmodel.UserTk
 )
 
 func (c RespCode) String() string {
@@ -285,7 +286,7 @@ func TokenAuthMiddleware(service string) gin.HandlerFunc {
 				return
 			}
 		}
-		LoginToken = c.Request.Header.Get("token")
+		LoginToken := c.Request.Header.Get("token")
 		resp, err := TokenResp(LoginToken)
 		if err != nil {
 			apiresp.APIResult(c, http.StatusUnauthorized, err.Error())
@@ -332,9 +333,13 @@ func TokenResp(token string) (resp basic.LoginResp, err error) {
 	if resp.Token.Token != conf.Jwt.Token {
 		return resp, errors.New("已经再其他地方登录，被迫下线,请重新登录")
 	}
-	UserId = resp.User.Id
-	ShopId = resp.User.Shop.Id
-	UserType = resp.User.UserType
+	fmt.Println("教师", resp.User)
+	UserTk = &dbmodel.UserTk{
+		UserId:     resp.User.Id,
+		UserShopId: resp.User.Shop.Id,
+		Token:      token,
+		UserType:   resp.User.UserType,
+	}
 	/*context := mzjContext{
 		user_id: resp.User.Id,
 		//shop_id: resp.User.Shop.Id,

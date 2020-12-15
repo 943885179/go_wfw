@@ -12,8 +12,9 @@ type RedisConfig struct {
 	Addr     string `json:"addr"`
 	Password string `json:"password"`
 	DB       int    `json:"db"`
-	IsDebug    bool     `json:"isDebug"`    //是否为调试模式
+	IsDebug  bool   `json:"isDebug"` //是否为调试模式
 }
+
 /*
 func Init(op models.RedisConfig) *RedisConfig {
 	cf:= RedisConfig{
@@ -25,15 +26,16 @@ func Init(op models.RedisConfig) *RedisConfig {
 	return &cf
 }*/
 
-func redisInit(op *RedisConfig)*redis.Options {
+func redisInit(op *RedisConfig) *redis.Options {
 	option := redis.Options{
 		Addr:     op.Addr,
 		Password: op.Password,
 		Network:  op.Network,
 		DB:       op.DB,
 	}
-	return  &option
+	return &option
 }
+
 //Ping 测试
 func (ops *RedisConfig) Ping() (string, error) {
 	client := redis.NewClient(redisInit(ops))
@@ -50,7 +52,7 @@ func (ops *RedisConfig) Set(key string, value interface{}, expiration time.Durat
 }
 
 //SetEntity 写入实体（转json后写入）
-func  (ops *RedisConfig)SetEntity(key string, entity interface{}, expiration time.Duration) error {
+func (ops *RedisConfig) SetEntity(key string, entity interface{}, expiration time.Duration) error {
 	client := redis.NewClient(redisInit(ops))
 	defer client.Close()
 	value, err := json.Marshal(entity)
@@ -61,7 +63,7 @@ func  (ops *RedisConfig)SetEntity(key string, entity interface{}, expiration tim
 }
 
 //GetEntity 读取
-func  (ops *RedisConfig)GetEntity(key string, resp interface{}) (err error) {
+func (ops *RedisConfig) GetEntity(key string, resp interface{}) (err error) {
 	client := redis.NewClient(redisInit(ops))
 	defer client.Close()
 	value, err := client.Get(key).Result()
@@ -94,7 +96,7 @@ func (ops *RedisConfig) Get(key string) (value string, err error) {
 }
 
 //Del 删除
-func  (ops *RedisConfig)Del(key string) error {
+func (ops *RedisConfig) Del(key string) error {
 	client := redis.NewClient(redisInit(ops))
 	defer client.Close()
 	return client.Del(key).Err()
